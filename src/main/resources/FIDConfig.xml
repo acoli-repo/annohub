@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FIDConfiguration>
+
+<!-- Example for basic configuration file -->
+
+<!-- *** Databases *** -->
+<Databases>
+
+    <GremlinServer>
+    	<conf>Path to gremlin-server-neo4j.yaml file</conf>
+    	<home>Path to apache-tinkerpop-gremlin-server-3.3.3 directory </home>
+    </GremlinServer>
+
+	<Data>
+		<Neo4jDirectory>Directory that will contain Neo4j database</Neo4jDirectory>
+		<!-- e.g. /tmp/fid-DATA-->
+	</Data> 
+
+</Databases>
+
+
+<!-- *** General parameter *** -->
+<RunParameter>
+
+	<downloadFolder></downloadFolder>
+	<!-- e.g. /tmp/fid-download -->
+	
+	<ServiceUploadDirectory></ServiceUploadDirectory>
+	<!-- e.g. /tmp/fid-upload -->
+	
+	<decompressionUtility></decompressionUtility>
+	<!-- e.g. 7za if installed in the search path -->
+		
+</RunParameter>
+
+
+</FIDConfiguration>

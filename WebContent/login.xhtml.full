@@ -1,0 +1,889 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+   
+    <h:head>
+        <title>Annohub (Beta)</title>     
+    </h:head>
+    
+    <style>
+    
+    .ui-autocomplete input {
+    width:320px;
+	}
+	
+	  .ui-autocomplete-panel {
+    width: 450px;
+	}
+	
+	.ui-layout-unit {
+   	border: 0;
+	}
+    
+    </style>
+    
+    <h:body id="page">
+	    
+	<h:form id="form">
+    <p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+    <p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+    
+	<p:remoteCommand name="uploadResourceFile" action="#{login.uploadResourceFile}"/>
+	<p:remoteCommand name="updateFilteredValue" update="myResources"/>		
+
+		<p:outputPanel style="display:block; text-align: center;background-color: Orange;height: 50px;">
+		 <h3>Annohub Database</h3>
+	    </p:outputPanel>
+		
+	<p:outputPanel style="background-color: SteelBlue;color: White;">
+	        <h:outputText style="display: block;text-align: right;font-style: italic;font-size:small;padding-right: 20px" value="Logged in as #{login.userAccount.accountTypeAsString}  "/>	
+	</p:outputPanel>
+	
+		<p:toolbar id="toolbar">
+	        <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            	          
+	           		<p:menuitem value="Upload" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" icon="ui-icon-arrowthick-1-n" update="a4811" oncomplete="PF('uploadData').show()" />
+	            	<p:menuitem value="Metadata as RDF" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" id="exportAll" icon=" ui-icon-circle-arrow-s" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);">
+	       			<p:fileDownload value="#{login.getFile('workspace')}"/>
+					</p:menuitem>
+					<p:menuitem value="Parse Options" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" icon="ui-icon-wrench" update="parseOptions" oncomplete="PF('parseOptionsDialog').show()" />
+					<p:menuitem value="Error Log" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" action="#{login.initRflError}" update="a4821" icon="ui-icon-clipboard" oncomplete="PF('showLog').show()"/>
+					<p:menuitem value="Language Profiles" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showLanguageManager}" icon="ui-icon-flag"/>
+					<p:menuitem value="Ontology Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showOntologyManager}" icon="ui-icon-script"/>
+					<p:menuitem value="Backup Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showBackupManager}" icon="ui-icon-newwin" />
+					<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+					<p:menuitem value="My Account" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" action="#{login.initMyAccountGui}" icon="ui-icon-person" update="myAccountData" oncomplete="PF('myAccount').show()" />
+					<p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" id="adminFunctions" value="Administration" icon="ui-icon-gear" oncomplete="PF('adminFunctionsDialog').show()"/>
+					<p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" id="userManagement" value="User Management" action="#{login.initUserManagement}" update="userManagementGrid userManagement3Grid userManagement2Grid" icon="ui-icon-cart" oncomplete="PF('userManagementDialog').show()"/>
+					<p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" value="Shutdown" action="#{login.shutdown}" icon="ui-icon-power" />
+					<p:menuitem id="userLogout" value="Logout" icon="ui-icon-arrowreturnthick-1-e" action="#{auth.logout}" oncomplete=";javascript:location.reload(true)"/>
+	            
+	            </p:menuButton>
+	            
+	        <p:menuButton id="findResources" value="Search" icon="ui-icon-search">
+	        
+	        	<p:menuitem style="font-style: italic;" value="Languages and Tagsets" oncomplete="PF('findData').show()" />
+	     	    <p:menuitem style="font-style: italic;" value="Metadata" oncomplete="PF('findData2').show()" />
+	     	    <p:menuitem style="font-style: italic;" value="Comments" oncomplete="PF('findData5').show()" />	     	    
+	     	    <p:menuitem style="font-style: italic;" value="Annotations" oncomplete="PF('findData3').show()" />
+	        	<p:menuitem style="font-style: italic;" value="OLiA Ontology" oncomplete="PF('findData4').show()" />
+	        	<p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.initUserSearch}" update="findOptions6" style="font-style: italic;" value="Users" oncomplete="PF('findData6').show()" />
+	        
+	        </p:menuButton>
+	        
+	        </f:facet>
+	        <f:facet name="right">
+	        	<h:outputText rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" value="Language Resources  " style="font-size:medium;padding-right: 20px"/>
+	        	<p:selectBooleanCheckbox rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" value="#{login.showMyResources}" itemLabel="My" style="padding-right: 0px">
+	        	<p:ajax listener="#{login.refreshButton}" update="myResources"/>
+	        	</p:selectBooleanCheckbox>
+	        	<p:selectBooleanCheckbox rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" value="#{login.showSelectedResources}" itemLabel="Other">
+	        	<p:ajax listener="#{login.refreshButton}" update="myResources" />
+	        	</p:selectBooleanCheckbox>
+	        	<p:selectBooleanCheckbox rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" value="#{login.showSearchResources}" itemLabel="Search">
+				<p:ajax listener="#{login.refreshButton}" update="myResources" />
+				</p:selectBooleanCheckbox>
+			<p:commandButton rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" id="rfb" style="width:20px;height:15px;padding-top: 11px" value="" action="#{login.refreshButton}" styleClass="refreshButton" icon="ui-icon-refresh"/>
+				
+			</f:facet>
+	        
+    	</p:toolbar>
+    	
+    	<script type="text/javascript">
+		    //<![CDATA[
+		function start() {
+		    PF('statusDialog').show();
+		}
+		 
+		function stop() {
+		    PF('statusDialog').hide();
+		}
+		    //]]>
+		</script>
+		
+		<script type="text/javascript">
+//patch to fix a problem that the context menu disappears after update
+//delay the show to occure after the update 
+var siteFunctions = {
+    patchContextMenuShow: function() {
+        var protShow = PrimeFaces.widget.ContextMenu.prototype.show;
+        siteFunctions.patchContextMenuShow.lastEvent = null;
+        PrimeFaces.widget.ContextMenu.prototype.show = function(e) {
+            var ret;
+            if (e) {
+//saving last event
+                siteFunctions.patchContextMenuShow.lastEvent = e;
+                siteFunctions.patchContextMenuShow.lastEventArg = arguments;
+                siteFunctions.patchContextMenuShow.lastEventContext = this;
+            } else if (siteFunctions.patchContextMenuShow.lastEvent) {
+//executing last event
+                ret = protShow.apply(siteFunctions.patchContextMenuShow.lastEventContext, siteFunctions.patchContextMenuShow.lastEventArg);
+//clearing last event
+                siteFunctions.patchContextMenuShow.lastEvent = null;
+            }
+            return ret;
+        };
+    }
+};
+
+$(document).ready(function() {
+    try {
+        siteFunctions.patchContextMenuShow();
+    	$(document.getElementById("form:myResources")).bind("contextmenu", function (event) {event.preventDefault();});
+    	$(document.getElementById("form:a7831")).bind("contextmenu", function (event) {event.preventDefault();});
+
+    } catch (e) {
+        console.error(e);
+    }
+});
+</script>
+ 
+ 
+		<p:dialog modal="true" widgetVar="statusDialog" header="File export in progress - please stand by  !" draggable="false" closable="false" resizable="false" style="text-align:center;">
+    		<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
+		</p:dialog>
+    	
+    	
+    
+		<p:blockUI id="block-2" block="form" trigger="exportSingle">
+		Export in progress ... <br />
+		</p:blockUI>
+    	
+    	<p:blockUI id="block-3" block="form" trigger="rfb">
+		Updating ... <br />
+		</p:blockUI>
+                        
+        <p:dataTable 
+    			widgetVar="resourceList" 
+				id="myResources"
+    			value="#{login.resourceInfoList}" 
+    			var="r"
+    			editable="false"
+    			editMode="cell"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{r.fileInfo.processingEndDate}"
+                sortOrder="descending"
+                filteredValue="#{login.filteredResourceInfoList}"
+                rowKey="#{r.resourceID}"
+ 				selection="#{login.selectedDummyResource}" selectionMode="single"
+ 				first="#{login.tableFirstPage}"
+ 				emptyMessage="#{login.emptyMessage}"
+                >
+                
+                
+                <p:ajax event="contextMenu" listener="#{login.onContextMenu}"
+                 update="form:resourceOptions" oncomplete="PF('resourceOptions_wv').show();"/>
+                               
+                <p:column style="max-width: 120px;text-align:left" headerText="Resource" sortBy="#{r.dataURL}" resizable="true" visible="true">
+    			  <h:outputLink value="#{r.dataURL}" target="_blank">
+                <h:outputText value="#{r.dataURL}" style="word-wrap:break-word;"/>
+                </h:outputLink>
+    			</p:column>
+    			
+    			<p:column style="text-align:center;" headerText="Uploader" resizable="true" sortBy="#{r.userID}" visible="true">
+    			<h:outputText value="#{r.shadedUserID}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;" headerText="Queued / Processed Date" resizable="true" sortBy="#{r.fileInfo.processingStartDate.time}" visible="true">
+    			<h:outputText value="#{r.fileInfo.processingStartDate}" />
+    			</p:column>
+    			
+    			<p:column rendered="#{login.userAccount.accountTypeAsString != 'guest'}" style="text-align:center;" headerText="Status" resizable="true" sortBy="#{r.resourceProcessState}" visible="true">
+    			<h:outputText value="#{r.extendedResourceProcessState}" />
+    			</p:column>
+    			
+    			
+    			<p:column  style="text-align:center;max-width:120px" headerText="Comments" sortBy="#{r.latestComment.date}" resizable="true" visible="true">
+    			<h:outputText escape="false" style="white-space:pre-line" rendered="#{not empty r.latestComment}" value="#{r.commentInfo}" />
+    			</p:column>
+    			
+    			<p:column  style="text-align:center;max-width:120px" headerText="Metadata" sortBy="#{r.resourceMetadata.metadataSource}" resizable="true" visible="true">
+    			<h:outputText value="#{r.resourceMetadata.metadataSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;" headerText="Approved" resizable="true" sortBy="#{r.approved}" visible="true">
+    			<h:outputText value="#{r.approvedText}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;" headerText="Type" resizable="true" sortBy="#{r.resourceTypeInfosAsString}" visible="true">
+    			<h:outputText value="#{r.resourceTypeInfosAsString}" />
+    			</p:column>
+    			
+    			
+    			<p:column style="text-align:center;" headerText="Online" resizable="true" sortBy="#{r.resourceIsOnline}" visible="true">
+    			
+					<p:graphicImage value="#{login.processStateImage}" width="14" heigth="14" style="display: block;margin-left: auto;margin-right: auto">
+						<f:param name="resourceIsOnline" value="#{r.resourceIsOnline}"/>
+					</p:graphicImage>
+								
+    			</p:column>
+    			
+              </p:dataTable>  
+       
+              <p:dialog header="Analyze RDF, CoNLL or XML Data" id="a4811" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="uploadData" resizeable="false">
+    	 
+    	 	<h:outputText  style="font: bold 20px arial, sans-serif;" value="Upload File"/>
+    	 	<br/>
+		    <p:fileUpload oncomplete="uploadResourceFile();" style="margin-top: 10px;height: 100px;font-size:85%;min-width:600px;" skinSimple="true" enctype="multipart/form-data"
+		    label="Select" cancelLabel="Cancel" fileUploadListener="#{fileUploadBean.fileUploadListener}" mode="advanced"
+		    update="messages fileName" auto="true" sizeLimit="20000000000"/>
+		    <p:growl id="messages" showDetail="true" />
+		    
+		    <h:outputText value="Upload URL" style="font: bold 20px arial, sans-serif;"/>    
+		    <br/>
+		    <p:panelGrid columnClasses="label,value" style="margin-top: 10px;width:100%;background-color:#c7d4de">
+		    <p:row style="width:100%">
+		    <p:column style="width:60px;text-align:center;">
+		    <p:commandButton action="#{login.uploadResourceUrl}" value="Upload" style="width:88px;font-size:15px;" update="uploadUrl"/>
+		    </p:column>
+		    <p:column style="text-align:center;">
+		    <h:inputText id="uploadUrl" value="#{login.uploadURL}" style="width:100%;"/>
+		    </p:column>
+		    </p:row>
+		    </p:panelGrid>
+		    <br/>
+		    <p:separator rendered="#{login.userAccount.accountTypeAsString == 'admin'}" style="width=400px;size=8;align=center"/> 
+		    <p:selectBooleanCheckbox id="importMD" style="padding-left: 12px" value="#{login.resourceUploadImportMetadata}" itemLabel="Import metadata"/> 
+		    
+		    <h:outputText id="fileName" style="font: 20px arial, sans-serif;" value="#{fileUploadBean.fileName}"/>
+    	 
+    	 </p:dialog>
+    	 
+    	 <p:contextMenu  id="resourceOptions" widgetVar="resourceOptions_wv" for="myResources">
+    	 <p:menuitem value="About" update="a4715m" icon="ui-icon-contact" oncomplete="PF('editMetadata').show()"/>
+    	 <p:menuitem rendered="#{login.canRead}" id="editResults" value="Analysis" icon="ui-icon-star" action="#{login.editResource}"/>
+		 <p:menuitem rendered="#{login.canEdit}" id="editResourceType" action="#{login.readResourceTypes}" update="resourceTypeClassification" value="Edit type" icon="ui-icon-pencil" oncomplete="{PF('editResourceType').show()}"/>
+		 <p:menuitem rendered="#{login.canEdit}" id="editResourceUrl" action="#{login.initEditDataUrl}" update="edit108" value="Edit URL" icon="ui-icon-pencil" oncomplete="{PF('editResourceURLwv').show()}"/>
+		 <p:menuitem rendered="#{login.canExport}" id="exportSingle" value="Metadata as RDF" icon="ui-icon-arrowthick-1-s" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);">
+		 	<p:fileDownload value="#{login.getFile('single')}"/>
+		 </p:menuitem>
+		 <p:menuitem value="Permissions" rendered="#{not (login.userAccount.accountTypeAsString == 'guest' or not login.canRead)}" action="#{login.readPermissions}" update="otherpermissions" icon="ui-icon-key" oncomplete="{PF('setResourcePermissions').show()}"/>     
+		 <p:menuitem value="Comments" rendered="#{not (login.userAccount.accountTypeAsString == 'guest')}" action="#{login.readComments}" update="resourceComments" icon="ui-icon-clipboard" oncomplete="PF('resourceCommentswv').show()"/>
+		 <p:menuitem rendered="#{not (login.userAccount.accountTypeAsString == 'guest' or not login.canBeAdded)}" value="Add" action="#{login.addToWorkspace}" icon="ui-icon-plus"/>
+		 <p:menuitem rendered="#{login.canDelete}" value="Delete" icon="ui-icon-trash" action="#{login.deleteResource}">
+    	 <p:confirm header="Confirm delete" message="#{login.deleteMessage}" icon="ui-icon-alert"/>
+		 </p:menuitem>
+		 </p:contextMenu>
+		 
+                
+         <p:blockUI block="page" trigger="editResults">
+		 Loading results ... <br />
+		 </p:blockUI>
+		 
+		 <p:confirmDialog global="true">
+			<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+			icon="ui-icon-check"/>
+			<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+			icon="ui-icon-close"/>
+		</p:confirmDialog>
+		
+		
+	<p:dialog style="width:100px" position="center" closable="false" header="Resource Permissions" widgetVar="setResourcePermissions" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="otherpermissions" columns="1" style="margin-bottom:10px" cellpadding="5">
+		<h:outputText style="font-weight: bold" value="Other users" />
+        <p:selectBooleanCheckbox value="#{login.permOtherRead}" itemLabel="Read"/>
+        <p:selectBooleanCheckbox value="#{login.permOtherEdit}" itemLabel="Edit"/>
+        <p:selectBooleanCheckbox rendered="false" value="#{login.permOtherExport}" itemLabel="Export"/>
+        </h:panelGrid>
+        
+        <p:commandButton id="permissions_cancel" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('setResourcePermissions').hide()"/>
+        <p:commandButton id="permissions_save" action="#{login.savePermissions}" value="SAVE" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('setResourcePermissions').hide()"/>
+        
+    </p:dialog>
+    
+    <p:dialog position="center" closable="false" header="Languages and Tagsets" widgetVar="findData" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="findOptions" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+		<h:outputText value="Language (as ISO-639-3 code)" style="font-weight:bold"/>
+        <h:outputText value=""/>
+        
+        <h:inputText id="languageSearch" value="#{login.languageSearch}" style="width:300px;"/>
+
+        <p:selectOneRadio style="padding-left: 40px" id="findDataAndOR2" value="#{login.findDataAndOR2}" unselectable="true">
+            <f:selectItem itemLabel="AND" itemValue="and" />
+            <f:selectItem itemLabel="OR" itemValue="or" />
+        </p:selectOneRadio>
+        
+         <h:outputText value=""/>
+         <p:selectBooleanCheckbox disabled="false" id="exactLang" style="padding-left: 12px" value="#{login.findExclusiveLanguages}" itemLabel="exclusive"/> 
+         
+        <h:outputText value="Annotation tagset" style="font-weight:bold"/>
+        <h:outputText value=""/>
+        
+        <p:selectOneMenu value="#{login.findSelectedModel}" styleClass="menu" panelStyleClass="panel" style="width:150px">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{login.models}" var="model" itemLabel="#{model.id}" itemValue="#{model.id}"/>
+        </p:selectOneMenu>
+        <h:panelGrid id="addRemoveModelSearch" columns="2" style="margin-bottom:0px" cellpadding="5">
+		<p:commandButton action="#{login.addModelSearch}" id="addModelSearch" value="ADD" update="modelSearch"/>
+		<p:commandButton action="#{login.removeModelSearch}" id="removeModelSearch" value="CLEAR" update="modelSearch"/>
+		</h:panelGrid>
+        
+        <h:inputText readonly="true" id="modelSearch" value="#{login.modelSearch}" style="width:300px;"/>
+        <p:selectOneRadio style="padding-left: 40px" id="findDataAndOR1" value="#{login.findDataAndOR1}" unselectable="true">
+            <f:selectItem itemLabel="AND" itemValue="and" />
+            <f:selectItem itemLabel="OR" itemValue="or" />
+        </p:selectOneRadio>
+        
+         <h:outputText value=""/>
+         <p:selectBooleanCheckbox disabled="false" id="exactModels" style="padding-left: 12px" value="#{login.findExclusiveModels}" itemLabel="exclusive"/> 
+       
+        
+		<h:outputText value="Resource type filter" style="font-weight:bold"/>
+		<h:outputText value=""/>
+		<p:selectOneMenu value="#{login.findFilterByType}" styleClass="menu" panelStyleClass="panel" style="width:150px">
+              <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true"/>
+              <f:selectItem itemLabel="Corpus" itemValue="CORPUS"/>
+              <f:selectItem itemLabel="Lexicon" itemValue="LEXICON"/>
+              <f:selectItem itemLabel="Ontology" itemValue="ONTOLOGY"/>
+              <f:selectItem itemLabel="Unknown" itemValue="UNKNOWN"/>
+		</p:selectOneMenu>
+        <h:outputText value=""/>
+        
+        <h:outputText value="Resource name filter" style="font-weight:bold"/>
+        <h:outputText value=""/>
+        <h:inputText id="resourceNameSearch" value="#{login.resourceNameSearch}" style="width:300px;"/>
+		<p:selectBooleanCheckbox id="otherpadding45" style="padding-left: 12px" value="#{login.resourceNameSearchIgnoreCase}" itemLabel="Ignore case"/> 
+    	</h:panelGrid>
+    	
+    	<p:separator style="width=400px;size=8;align=center"/>
+    	<p:selectBooleanCheckbox rendered="#{login.userAccount.accountTypeAsString != 'guest'}" value="#{login.autoSelectSearchResults}" itemLabel="Add search results to workspace"/>
+    	
+    	<p:commandButton action="#{login.findData}" id="startSearch" update="myResources" value="GO" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData').hide()"/>
+        <p:commandButton id="cancelSearch" update="myResources" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData').hide()"/>
+     
+        <p:tooltip for="languageSearch" value="Search languages"/>
+        <p:tooltip for="modelSearch" value="Add tagsets here"/>
+        <p:tooltip for="resourceNameSearch" value="Search resources like .."/>
+    </p:dialog>
+    
+    
+    
+    <p:dialog position="center" closable="false" header="Resource Metadata" widgetVar="findData2" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="findOptions2" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+        	<h:outputText value="(e.g. title, author, etc.)" style="font-weight:bold"/>
+        	<h:outputText value=""/>
+        	<h:inputText id="metadataSearch" value="#{login.metadataSearch}" style="width:220px;"/>
+        	<p:selectBooleanCheckbox id="otherpadding44" style="padding-left: 12px" value="#{login.metadataSearchIgnoreCase}" itemLabel="Ignore case"/>
+        	
+            <p:tooltip showDelay="1000" hideDelay="500" for="metadataSearch" value="Characters: *,;()[]{} ignored !"/>
+        
+        </h:panelGrid>
+        <p:commandButton action="#{login.searchByMetadata}" id="startMetadataSearch" update="myResources findOptions2" value="GO" style="margin-left: 8px;margin-right: 4px;width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData2').hide()"/>
+        <p:commandButton action="#{login.noSearchByMetadata}" id="cancelSearch2" update="myResources findOptions2" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData2').hide()"/>
+        
+    </p:dialog>
+    
+    
+    <p:dialog position="center" closable="false" header="Annotation Occurrence" widgetVar="findData3" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="findOptions3" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+			<p:selectOneRadio style="padding-left: 0px" id="annotationSearchSelection" value="#{login.annotationSearchMode}" unselectable="true">
+            	<p:ajax event="change" update="annotationSearchSelection"/>
+            	<f:selectItem itemLabel="Tag" itemValue="Tag" />
+            	<f:selectItem itemLabel="Class" itemValue="Class" />
+            </p:selectOneRadio>
+	        <h:outputText value=""/>
+			
+			<p:autoComplete size="40" id="annotationSearch" minQueryLength="1" value="#{login.annotationSearch}"
+                      completeMethod="#{login.annotationAutoComplete}" effect="fade" scrollHeight="200">
+                        <p:ajax event="itemSelect" listener="#{login.splitAnnotationSearch}" update="annotationSearch"/>
+             </p:autoComplete>
+     		<h:outputText value=""/>
+        
+        </h:panelGrid>
+        <p:commandButton action="#{login.searchByAnnotation}" id="startAnnotationSearch" update="myResources annotationSearch" value="GO" style="margin-left: 8px;margin-right: 4px;width:100px;background:none;" styleClass="customStyleButton"/>
+        <p:commandButton action="#{login.noSearchByAnnotation}" id="cancelSearch3" update="myResources annotationSearch" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData3').hide()"/>
+        
+    </p:dialog> 
+    
+    
+    
+    <p:dialog position="center" closable="false" header="OLiA Ontology Class" widgetVar="findData4" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<p:panelGrid id="oliaSearchGrid" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+        <h:outputText value="OLiA Classes" style="font-weight:bold"/>
+        <h:outputText value=""/>
+        
+        <p:selectOneMenu value="#{login.oliaSearch}" styleClass="menu" panelStyleClass="panel" style="min-width:480px;">
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{login.oliaClasses}" />
+        <p:ajax event="change" update="oliaClassDescriptionArea" listener="#{login.updateOliaClassDescription}"/>            
+        </p:selectOneMenu>
+        
+        <h:outputText value="" style="font-weight:bold"/>
+        <p:inputTextarea id="oliaClassDescriptionArea" value="#{login.oliaClassDescription}" style="min-width:510px;max-width:510px" autoResize="false" readonly="true" rows="10"/>
+        
+        </p:panelGrid>
+      
+    	<p:commandButton action="#{login.searchByOlia}" update="myResources oliaSearchGrid" id="startOliaSearch" value="GO" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData4').hide()"/>
+        <p:commandButton action="#{login.noSearchByOlia}" update="myResources oliaSearchGrid" id="noOliaSearch" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData4').hide()"/>
+     
+    </p:dialog>
+    
+    
+     <p:dialog position="center" closable="false" header="Resource Comments" widgetVar="findData5" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="findOptions5" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+        	<h:outputText value="Containing text" style="font-weight:bold"/>
+        	<h:outputText value=""/>
+        	<h:inputText id="commentSearch" value="#{login.commentSearch}" style="width:220px;"/>
+        	<p:selectBooleanCheckbox id="otherpadding46" style="padding-left: 12px" value="#{login.commentSearchIgnoreCase}" itemLabel="Ignore case"/>
+        	
+            <p:tooltip showDelay="1000" hideDelay="500" for="commentSearch" value="characters: *,;()[]{} ignored !"/>
+        
+        </h:panelGrid>
+        <p:commandButton action="#{login.searchByComment}" id="startCommentSearch" update="myResources findOptions5" value="GO" style="margin-left: 8px;margin-right: 4px;width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData5').hide()"/>
+        <p:commandButton action="#{login.noSearchByComment}" id="cancelSearch5" update="myResources findOptions5" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData5').hide()"/>
+        
+    </p:dialog>
+    
+    
+    <p:dialog position="center" closable="false" header="User Resources" widgetVar="findData6" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<h:panelGrid id="findOptions6" columns="2" style="margin-bottom:10px" cellpadding="5">
+		    	  
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="User:"></h:outputText>
+            <p:selectOneMenu value="#{login.selectedUserSearch}" styleClass="menu" panelStyleClass="panel">
+                   <f:selectItems value="#{login.userLoginsList}" />
+            </p:selectOneMenu>   
+        </h:panelGrid>
+        
+        <p:commandButton action="#{login.searchByUser}" id="startUserSearch" update="myResources" value="GO" style="margin-left: 8px;margin-right: 4px;width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData6').hide()"/>
+        <p:commandButton action="#{login.noSearchByUser}" id="cancelSearch6" update="myResources" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('findData6').hide()"/>
+        
+    </p:dialog>
+    
+    
+    <p:dialog id="a4715m" position="center" widgetVar="editMetadata" modal="true" resizable="false" header="Resource Metadata" closable="false"> 
+        <p:panelGrid id="display" columns="4" columnClasses="label,value">
+         	<h:outputText value="Title : " />
+            <h:inputText value="#{login.metaTitle}" style="min-width:300px;"/>
+            <h:outputText value="UB-Title : " />
+            <h:inputText value="#{login.metaUbTitle}" style="min-width:300px;"/>     
+            <h:outputText value="Description: " />
+            <h:inputText value="#{login.metaDescription}" style="min-width:300px;"/> 
+            <h:outputText value="Keywords: " />
+            <h:inputText value="#{login.metaSubject}" style="min-width:300px;"/> 
+            <h:outputText value="Creator: " />  
+            <h:inputText value="#{login.metaCreator}" style="min-width:300px;"/>   
+            <h:outputText value="Contributor: " />
+            <h:inputText value="#{login.metaContributor}" style="min-width:300px;"/>  
+            <h:outputText value="Contact email: " />
+            <h:inputText value="#{login.metaContact}" style="min-width:300px;"/>    
+            <h:outputText value="Webpage: " />
+            <h:inputText value="#{login.metaWebpage}" style="min-width:300px;"/>    
+            <h:outputText value="Type: " />
+            <h:inputText value="#{login.metaType}" style="min-width:300px;"/>    
+            <h:outputText value="Format: " />
+            <h:inputText value="#{login.metaFormat}" style="min-width:300px;"/>
+            <h:outputText value="Licence: " />
+            <h:inputText value="#{login.metaRights}" style="min-width:300px;"/>    
+            <h:outputText value="Publisher: " />
+            <h:inputText value="#{login.metaPublisher}" style="min-width:300px;"/>
+            <h:outputText value="Year: " />
+        	<h:inputText value="#{login.metaYear}" style="min-width:300px;"/> 
+        	<h:outputText value="Location: " />  
+        	<h:inputText value="#{login.metaLocation}" style="min-width:300px;"/>   
+            <h:outputText value="Languages: " />
+            <h:inputText value="#{login.metaDcLanguageString}" style="min-width:300px;"/>
+            <h:outputText value="Metadata source: " />
+            <h:outputText value="#{login.metaSource}" style="min-width:300px;"/>  
+                         
+        </p:panelGrid>
+       	 			
+       	<p:commandButton id="mcancel_" action="#{login.cancelMetadataEdit}" update="a4715m" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton"  oncomplete="PF('editMetadata').hide()"/>	                              
+		<p:commandButton disabled="#{not login.canEdit}" id="msave_" action="#{login.saveMetadataEdit}" update="a4715m msgs" value="SAVE" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('editMetadata').hide()"/>
+      
+    </p:dialog>
+    
+    
+     <p:dialog id="parseOptions" position="center" widgetVar="parseOptionsDialog" modal="true" resizable="false" header="Parse options" closable="false"> 
+        <p:tooltip for="parseOptionTT" value="See documentation, chapter 5.2.2 'Sampling' !"/>	 			
+        <p:panelGrid id="pop1" columns="4">
+         	<h:outputText value=""/><h:outputText style="display: block;text-align:center" value="RDF"/><h:outputText style="display: block;text-align:center" value="XML"/><h:outputText style="display: block;text-align:center" value="CONLL"/>
+         	<h:outputText value="max sample files"/>
+         	<h:inputText readonly="true" value="#{login.rdfMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	<h:inputText readonly="true" value="#{login.xmlMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	<h:inputText readonly="true" value="#{login.conllMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	
+         	
+            <h:outputText value="activationThreshold"/>
+            <h:inputText id="parseOptionTT" value="#{login.rdfActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+                 
+                 
+            <h:outputText value="thresholdForGood"/>
+            <h:inputText value="#{login.rdfThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            
+            
+            <h:outputText value="thresholdForBad"/>
+            <h:inputText value="#{login.rdfThresholdForBad}" style="text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlThresholdForBad}" style="text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllThresholdForBad}" style="text-align:center;max-width:40px;"/>                    
+                                
+        </p:panelGrid>
+       	<p:commandButton id="ocancel_" action="#{login.saveParseOptionsEdit}" value="CLOSE" style="width:100px;background:none;" styleClass="customStyleButton"  oncomplete="PF('parseOptionsDialog').hide()"/>	                              
+      
+    </p:dialog>
+    
+    
+    <p:dialog position="center" closable="false" header="Edit resource classification" widgetVar="editResourceType" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<p:panelGrid id="resourceTypeClassification" columns="2" style="margin-bottom:10px" cellpadding="5">
+		
+        <h:outputText value="Classification" style="font-weight:bold"/>
+        <h:outputText value=""/>
+        
+        <p:selectOneMenu value="#{login.selectedResourceType}" styleClass="menu" panelStyleClass="panel" style="width:150px">
+                    <f:selectItems value="#{login.resourceTypes}" />
+        </p:selectOneMenu>
+        <h:outputText value="" style="font-weight:bold"/>
+        
+        </p:panelGrid>
+      
+    	<p:commandButton action="#{login.saveEditResourceType}" id="saveEditResourceType" value="SAVE" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('editResourceType').hide()"/>
+        <p:commandButton id="cancelEditResourceType" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('editResourceType').hide()"/>
+     
+    </p:dialog>
+    
+    
+    <p:dialog position="center" closable="false" header="Resource comments" widgetVar="resourceCommentswv" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<p:panelGrid id="resourceComments" columns="1" style="margin-bottom:10px" cellpadding="5">
+		
+        <p:inputTextarea style="min-width:350px" autoResize="false" readonly="true" rows="20" cols="60" value="#{login.resourceComments}"/>
+        
+        </p:panelGrid>
+      
+    	<p:commandButton id="addResourceComment" action="#{login.openAddComment}" update="addNewComment" value="NEW COMMENT" style="width:220px;background:none;" styleClass="customStyleButton" oncomplete="PF('addResourceCommentswv').show()"/>
+        <p:commandButton id="closeResourceComments" action="#{login.closeComments}" value="CLOSE" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('resourceCommentswv').hide()"/>
+     
+    </p:dialog>
+    
+    
+    <p:dialog position="center" widgetVar="addResourceCommentswv" modal="true" resizable="false" header="New Comment" closable="false"> 
+        
+        <p:outputPanel id="addNewComment" style="text-align:left;">
+        <p:panelGrid columns="4" columnClasses="label,value">
+         	<h:outputText value="Comment title : " />
+            <h:inputText value="#{login.newCommentTitle}" style="min-width:277px;"/>
+            <h:outputText value="Answer to post : " />
+            <p:selectOneMenu value="#{login.newRelatedPostId}" styleClass="menu" panelStyleClass="panel" style="width:30px">
+                    <f:selectItems value="#{login.previousCommentIds}" />
+        	</p:selectOneMenu>
+         </p:panelGrid> 
+         </p:outputPanel>
+        
+         <p:panelGrid>
+         <p:inputTextarea rows="10" cols="60" value="#{login.newCommentText}"/>
+	     </p:panelGrid>
+	    
+	    
+	       <p:commandButton action="#{login.addComment}" update="resourceComments" id="addNewCommentGo" value="POST" style="width:80px;background:none;" styleClass="customStyleButton" oncomplete="PF('addResourceCommentswv').hide()"/>
+	       <p:commandButton id="closeAddNewComment" value="CANCEL" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('addResourceCommentswv').hide()"/>
+       
+     </p:dialog>
+     
+     
+     <p:dialog id="myAcc" position="center" widgetVar="myAccount" modal="true" resizable="false" header="My Account" closable="false"> 
+
+        	<h:panelGrid id="myAccountData" columns="2" cellpadding="5">
+        
+             <h:outputText style="font: bold 18px arial, sans-serif;" value="Account data"></h:outputText>
+             <h:outputText></h:outputText>
+        
+            <h:outputText style="width:100px;" value="Login :"></h:outputText>
+            <h:inputText readonly="true" value="#{login.userAccount.userID}" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="Email :"></h:outputText>
+            <h:inputText value="#{login.cEmail}" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="New Password :"></h:outputText>
+            <p:password disabled="#{not login.cPasswdActive}" value="#{login.cPasswd_1a}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="Repeat Password :"></h:outputText>
+            <p:password disabled="#{not login.cPasswdActive}" value="#{login.cPasswd_2a}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Quota"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+ 			<h:outputText value="#{login.maxResourceUploadsMAX}"></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max total resource files"></h:outputText>
+ 			<h:outputText value="#{login.maxResourceFilesMAX}"></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+ 			<h:outputText value="#{login.maxResourceUploadSizeMAX}"></h:outputText>
+                              
+	        </h:panelGrid>
+	        
+	       <p:separator style="width=250px;size=8;align=center"/>
+	        
+	        
+	       <p:commandButton action="#{login.saveMyAccount}" value="SAVE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('myAccount').hide()"/>
+       	   <p:commandButton update="myAccountData" action="#{login.changeUserPassword}" value="CHANGE PASSWORD" style="width:270px;background:none;margin-left:3px" styleClass="customStyleButton" />
+       
+	 
+	 </p:dialog>
+	 
+	 
+	 <p:dialog id="adminDialog" position="center" widgetVar="adminFunctionsDialog" modal="true" resizable="false" header="Administration" closable="false"> 
+
+        	<h:panelGrid id="adminDialogGrid" columns="3" cellpadding="5">
+        
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Check broken data links"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Check interval [in days]"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="2" min="0" max="60" value="#{login.checkBrokenLinksInterval}" />         
+    		<p:commandButton style="width:150px" action="#{login.startBrokenLinkCheck}" id="checkBrokenLinkBtn" value="Check now" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       
+        	<h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+       
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Default Quotas (for member account)"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="100" value="#{login.maxResourceUploads}" />
+ 			<h:outputText value=""></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max total resource files"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="100" value="#{login.maxResourceFiles}" />
+ 			<h:outputText value=""></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="5000" value="#{login.maxResourceUploadSize}" />
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Publishing"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Publishing interval [in days]"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="2" min="0" max="60" value="#{login.publishRDFExportInterval}" />         
+    		<p:commandButton style="width:150px" action="#{login.publish}" id="publishRDFBtn" value="Publish now" oncomplete="PF('adminFunctionsDialog').hide()"/>
+   
+                           
+	        </h:panelGrid>
+	        
+	        <p:separator style="width=250px;size=8;align=center"/>
+	        
+	       <p:commandButton action="#{login.saveAdminOptions}" value="SAVE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       	   <p:commandButton id="closeAdminOptions" value="CANCEL" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       
+	 </p:dialog>
+	 
+	 
+	 <p:dialog id="userManagermentDialog" position="center" widgetVar="userManagementDialog" modal="true" resizable="false" header="User Management" closable="false"> 
+
+        	<h:panelGrid id="userManagementGrid" columns="13" cellpadding="5">
+        	
+        	<h:outputText style="font: bold 18px arial, sans-serif;" value="Users :"></h:outputText>
+  
+            <h:outputText value="Admins :"></h:outputText>
+            <h:outputText value="#{login.adminUserCount}"></h:outputText>
+            
+            <h:outputText value="Members :"></h:outputText>
+            <h:outputText value="#{login.memberUserCount}"></h:outputText>
+            
+            <h:outputText value="Guests :"></h:outputText>
+            <h:outputText value="#{login.guestUserCount}"></h:outputText>
+            
+            <h:outputText value="Total : "></h:outputText>
+            <h:outputText value="#{login.allUserCount}"></h:outputText>
+            
+            <h:outputText value="Retired : "></h:outputText>
+            <h:outputText value="#{login.retiredUserCount}"></h:outputText>
+            
+            <h:outputText value="Online : "></h:outputText>
+            <h:outputText value="#{login.onlineUserCount}"></h:outputText>
+            
+            </h:panelGrid>
+            
+            <p:separator style="width=250px;size=8;align=center"/>
+            
+            
+            <h:panelGrid id="userManagement3Grid"  columns="5" cellpadding="5">
+    	  
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Selected User"></h:outputText>
+            <p:selectOneMenu value="#{login.selectedUser}" styleClass="menu" panelStyleClass="panel">
+                   <f:selectItems value="#{login.userLoginsList}" />
+                   <p:ajax event="itemSelect" listener="#{login.selectUser}" update="userManagement2Grid selectedUserAccountType userManagement3Grid"/>
+            </p:selectOneMenu>
+            <p:commandButton action="#{login.saveUserAccount}" value="Save User" update="userManagementGrid userManagement2Grid userManagement3Grid" />
+            <p:commandButton action="#{login.newUserAccount}" value="New User" update="userManagement2Grid" />
+    	    <p:commandButton action="#{login.deleteUserAccount}" value="Delete User" update="userManagementGrid userManagement2Grid userManagement3Grid">
+     	 	<p:confirm disabled="#{login.selectedUserAccount.accountTypeAsString == 'admin'}" header="#{login.deleteUserMsg}" message="This will delete the user account as well as all metadata that was generated from uploaded data by that user. If you are uncertain you can disable the 
+     	 	account by selecting the account type Retired instead, thereby keeping the generated metadata !" icon="ui-icon-alert"/>
+		    </p:commandButton>
+ 
+            </h:panelGrid>
+            
+         	<p:separator style="width=250px;size=8;align=center"/>
+            
+             
+            <h:panelGrid id="userManagement2Grid" style="width: 100%;" columns="4" cellpadding="5">
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="User data"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Quota"></h:outputText>
+            <h:outputText value=""></h:outputText>
+
+            
+            <h:outputText style="width:100px;" value="Login :"></h:outputText>
+            <h:inputText readonly="#{not login.userLoginWritable}" value="#{login.selectedUserAccount.userID}" style="width:225px;"/>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+            <p:spinner id="mru" onkeypress="return false" size="2" maxlength="3" min="0" max="100" value="#{login.selectedUserAccount.quotas.maxResourceUploads}" />
+ 			
+            <h:outputText style="width:100px;" value="New Password :"></h:outputText>
+            <p:password value="#{login.cPasswd_1}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="" value="Max total resource files"></h:outputText>
+            <p:spinner id="mrf" onkeypress="return false" size="2" maxlength="3" min="0" max="100" value="#{login.selectedUserAccount.quotas.maxResourceFiles}" />
+ 			
+            <h:outputText style="width:100px;" value="Repeat Password :"></h:outputText>
+            <p:password value="#{login.cPasswd_2}" required="false" style="width:225px;"/>
+            
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+            <p:spinner id="mus" onkeypress="return false" size="2" maxlength="3" min="0" max="5000" value="#{login.selectedUserAccount.quotas.maxResourceUploadSize}" />
+            
+            <h:outputText style="width:100px;" value="Account Type :"></h:outputText>
+            <p:selectOneMenu disabled="#{login.selectedUserAccount.accountTypeAsString == 'admin'}" id="selectedUserAccountType" value="#{login.selectedUserAccountType}">
+                   <f:selectItems value="#{login.accountTypes}" />
+                  <p:ajax event="itemSelect" listener="#{login.setUserDefaultQuotas}" update="mru mrf mus selectedUserAccountType"/> 
+            </p:selectOneMenu>
+	        </h:panelGrid>
+	        
+	        <p:separator style="width=250px;size=8;align=center"/>
+	        
+       	   <p:commandButton id="closeUserManagement" action="#{login.closeUserManagement}" value="CLOSE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('userManagementDialog').hide()"/>
+       
+	 </p:dialog>
+	 
+	 
+	 <p:confirmDialog message="The resource has already been processed - reprocess resource ?"
+		header="Confirm reprocessing" severity="alert"
+		widgetVar="reprocessResourceswv">
+		 <p:commandButton id="reprocessYes" action="#{login.reprocessResource}" value="YES" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('reprocessResourceswv').hide()"/>
+         <p:commandButton id="reprocessNo" action="#{login.notReprocessResource}" value="NO" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('reprocessResourceswv').hide()"/>
+	 </p:confirmDialog>
+	 
+	 
+	 
+	 <p:dialog header="Error Log" id="a4821" closable="true" modal="true" widgetVar="showLog" resizeable="false">
+   	   
+		<p:dataTable 
+    			widgetVar="logList" 
+				id="a4831"
+    			value="#{login.rflError}" 
+    			var="rL"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{rL.fileInfo.processingEndDate}"
+                sortOrder="descending"
+                filteredValue="#{login.filteredRflError}"
+                rowKey="#{rL.resourceID}"
+                selection="#{login.selectedDummyResource}" selectionMode="single"
+                first="#{login.tableFirstPage}"
+                >
+                
+    			<p:column style="max-width: 120px;text-align:center" headerText="Data" sortBy="#{rL.dataURL}" resizable="true" filterMatchMode="contains" filterBy="#{rL.dataURL}">
+                <h:outputText value="#{rL.dataURL}" style="word-wrap:break-word;"/>
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="File" resizable="true" sortBy="#{rL.fileInfo.fileName}" filterMatchMode="contains" filterBy="#{rL.fileInfo.fileName}">
+    			<h:outputText value="#{rL.fileInfo.fileName}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Format" resizable="true" sortBy="#{rL.fileInfo.fileFormat}" filterMatchMode="contains" filterBy="#{rL.fileInfo.fileFormat}">
+    			<h:outputText value="#{rL.fileInfo.fileFormat}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Start" resizable="true" sortBy="#{rL.fileInfo.processingStartDate}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingStartDate}">
+    			<h:outputText value="#{rL.fileInfo.processingStartDate}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Duration" resizable="true" sortBy="#{rL.fileInfo.processingDuration.seconds}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingDuration}">
+    			<h:outputText value="#{rL.fileInfo.processingDuration}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Result" resizable="true" sortBy="#{rL.fileInfo.parseResult}" filterMatchMode="contains" filterBy="#{rL.fileInfo.parseResult}">
+    			<f:facet name="filter">
+                <h:selectOneMenu onchange="PF('logList').filter()">
+                   <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{login.parseResultStates}" />
+                </h:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{rL.fileInfo.parseResult}"/>
+            	</p:column>
+    			
+   				<p:column style="text-align:center" headerText="ErrorMsg" resizable="true" sortBy="#{rL.fileInfo.errorMsg}" filterMatchMode="contains" filterBy="#{rL.fileInfo.errorMsg}">
+    			<h:outputText value="#{rL.fileInfo.errorMsg}" />
+    			</p:column>
+    			
+                </p:dataTable>
+                <p:commandButton action="#{login.clearLog}" update="a4831" value="CLEAR LOG" style="width:130px;background:none;font-size:12px" styleClass="customStyleButton"/>	                              
+		
+		 </p:dialog>
+		 
+	
+	 <p:dialog id="edit108" position="center" closable="false" header="Edit Resource URL" widgetVar="editResourceURLwv" modal="true" showEffect="" hideEffect="" resizable="false">
+				
+		<p:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+		
+		    <h:inputText value="#{login.editedDataUrl}" style="width:700px;"/>
+        
+        </p:panelGrid>
+      
+        <p:commandButton id="edit_url_cancel" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('editResourceURLwv').hide()"/>
+        <p:commandButton id="edit_url_save" action="#{login.saveEditedDataUrl}" value="SAVE" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('editResourceURLwv').hide()"/>
+     
+    </p:dialog>
+		  
+     
+     <h:panelGrid id="infoBar" columns="1" style="border-style: none">
+     <h:outputText id="searchinfobar" value="#{login.searchInfobarText}"/>
+     <h:outputText id="infobar" value="#{login.infobarText}"/>
+     </h:panelGrid>
+    
+    
+    </h:form>
+    </h:body>
+</html>

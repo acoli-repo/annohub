@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# args1: parent of source dir
+# args2: source dir name
+# args3: target dir
+# args4: target file
+
+# create target backup directory if not existing
+mkdir -p $3
+
+# change to parent of source dir
+cd $1
+
+# make archive
+tar czf $4 $2

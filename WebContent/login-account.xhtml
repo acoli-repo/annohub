@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>FID Login</title>
+    </h:head>
+    <h:body>
+    	<h2>FID Login</h2>
+    	
+	<h:form>
+ 
+    <p:messages id="messages" showDetail="true" autoUpdate="true" />
+    
+ 
+    <h:panelGrid columns="2" id="matchGrid" cellpadding="4">                   
+        <h:outputLabel for="user" value="User" style="font-weight:bold;font-size:22px;"/>
+        <p:password id="user" value="#{auth.user}" label="User" required="false" />
+ 
+        <h:outputLabel for="pwd" value="Password" style="font-weight:bold;font-size:22px;"/>
+        <p:password id="pwd" value="#{auth.pwd}" label="Password" required="false" />
+        <!--h:inputSecret id="pwd" value="#{auth.pwd}"></h:inputSecret-->
+        <p:commandButton value="Login" action="#{auth.validateUsernamePassword}"></p:commandButton>
+     
+    </h:panelGrid>
+    
+    </h:form>
+    </h:body>
+</html>

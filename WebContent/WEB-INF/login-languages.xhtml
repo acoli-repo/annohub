@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+   
+
+    <h:head>
+    </h:head>
+    
+    <style>
+	.ui-picklist .ui-picklist-list{
+	height:250px;
+	width: 320px
+	}
+	a:link {text-decoration: none;}
+	
+	.menu .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+	}
+	
+	.menu2 .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+    text-align: left;
+	}
+	
+	.panel .ui-selectonemenu-list { 
+    font-size: 13px;
+    }
+    
+	</style>
+	
+    <h:body id="page">
+		<!--  css table parameter : https://www.w3schools.com/Css/css_table.asp , https://datatables.net/examples/advanced_init/html5-data-attributes.html -->
+    	 <!-- h1 align="center">Annohub - Editor</h1 --> 
+ 		
+		<h:form id="form">
+		
+		<p:outputPanel style="color: white; text-align: center;background-color: Green;width:100%;height: 55px;">
+		 <h3>Language Profile Manager</h3>
+	    </p:outputPanel>
+	    <p:outputPanel style="background-color:  Green;">
+	        <h:outputText style="font-style: italic;color: white;display: block;text-align: center" value=""/>	
+		</p:outputPanel>
+		
+		<p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+		<p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+		
+		<p:toolbar id="toolbar">
+	       
+	        <f:facet name="left">
+	          <p:commandButton value="CLOSE" icon="ui-icon-closethick" action="#{login.closeLanguageManager}" style="width:100px;background:none;" styleClass="customStyleButton" />	                              
+	        </f:facet>
+ 
+    	</p:toolbar>
+    	
+    	
+		<p:dataTable 
+    			widgetVar="lpList" 
+				id="langProfiles"
+    			value="#{lpbean.languageProfileList}"
+    			var="lp"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{lp.locale.language}"
+                sortOrder="ascending"
+                rowKey="#{lp.locale.language}"
+                filteredValue="#{lpbean.filteredLanguageProfileList}"
+                selection="#{lpbean.selectedDummyLP}" selectionMode="single"
+                first="#{lpbean.tableFirstPage}"
+                >
+                
+                <p:ajax event="contextMenu" listener="#{lpbean.onContextMenu}" oncomplete=""/>
+               
+    			<p:column width="80" style="text-align:center" headerText="ISO-639" resizable="true" sortBy="#{lp.locale.language}" filterMatchMode="startsWith" filterBy="#{lp.locale.language}">
+    			<h:outputText value="#{lp.locale.language}" />
+    			</p:column>
+    			
+    			<p:column width="350" style="text-align:center" headerText="Name" resizable="true" sortBy="#{login.getNameForLocale(lp.locale.language)}" filterMatchMode="startsWith" filterBy="#{login.getNameForLocale(lp.locale.language)}">
+    			<h:outputText value="#{lpbean.getNameForLocale(lp.locale.language)}" />
+    			</p:column>
+    			
+    			<p:column width="80" style="text-align:center" headerText="1-grams" resizable="true" sortBy="#{lp.getNumGrams((1).intValue())}" filterMatchMode="startsWith" filterBy="#{lp.getNumGrams((1).intValue())}">
+    			<h:outputText value="#{lp.getNumGrams((1).intValue())}" />
+    			</p:column>
+    			
+    			<p:column width="80" style="text-align:center" headerText="2-grams" resizable="true" sortBy="#{lp.getNumGrams((2).intValue())}" filterMatchMode="startsWith" filterBy="#{lp.getNumGrams((2).intValue())}">
+    			<h:outputText value="#{lp.getNumGrams((2).intValue())}" />
+    			</p:column>
+    			
+    			<p:column width="80" style="text-align:center" headerText="3-grams" resizable="true" sortBy="#{lp.getNumGrams((3).intValue())}" filterMatchMode="startsWith" filterBy="#{lp.getNumGrams((3).intValue())}">
+    			<h:outputText value="#{lp.getNumGrams((3).intValue())}" />
+    			</p:column>
+  	
+                </p:dataTable>
+                
+        
+      
+    	 <p:contextMenu id="languageProfileFunctions" widgetVar="languageProfileFunctions_wv" for="langProfiles">
+    	 <p:menuitem value="Add" icon="ui-icon-plus" action="#{lpbean.initLanguageEvaluation(add)}" update="langEvalForm1" oncomplete="PF('showLanguageEvaluation').show()"/>
+    	 <p:menuitem value="Replace" icon="ui-icon-arrowthickstop-1-e"/>
+		 <p:menuitem value="Delete" icon="ui-icon-trash">
+		 <p:confirm header="Confirm delete" message="#{login.deleteMessage}" icon="ui-icon-alert"/>
+		 </p:menuitem>
+		 <p:menuitem value="Test" icon="ui-icon-play" action="#{lpbean.initLanguageEvaluation(test)}" update="langEvalForm1" oncomplete="PF('showLanguageEvaluation').show()" />
+	  	  </p:contextMenu>
+                
+    
+		 <p:dialog header="Language Evaluation" id="a9821" closable="true" modal="true" widgetVar="showLanguageEvaluation" resizeable="false">
+       
+            <h:panelGrid id="langEvalForm1" columns="3" cellpadding="5">
+    	  
+    	    <h:outputText style="font: bold 18px arial, sans-serif;" value="Mode"></h:outputText>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Language"></h:outputText>
+             <h:outputText style="font: bold 18px arial, sans-serif;" value="ISO-639"></h:outputText>
+            
+            <p:selectOneMenu value="#{lpbean.selectedLanguageEvalMode}" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="TRAIN" itemValue="train" />
+            		<f:selectItem itemLabel="EVAL" itemValue="eval" />
+                   <p:ajax event="itemSelect" listener="#{lpbean.selectLanguageEvalMode}"/>
+            </p:selectOneMenu>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="#{lpbean.getNameForLocale(lpbean.selectedLanguageProfile.locale.language)}"></h:outputText>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="#{lpbean.selectedLanguageProfile.locale.language}"></h:outputText>    
+          
+            
+            </h:panelGrid>
+             
+            <h:panelGrid id="langEvalForm2"  columns="3" cellpadding="5">
+            
+            <p:commandButton action="#{lpbean.languageEvalStart}" value="START"/>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Result"></h:outputText>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="#{lpbean.languageEvalResult}"></h:outputText>
+  
+            </h:panelGrid>
+            <p:separator style="width=250px;size=8;align=center"/>
+            <p:inputTextarea id="langEvalInput" value="#{lpbean.languageEvaluationInput}" style="min-width:510px;max-width:510px" autoResize="false" readonly="true" rows="10"/>
+
+     </p:dialog>
+  	
+  
+  		  
+	 <p:confirmDialog global="true">
+		<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+		icon="ui-icon-check"/>
+		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+		icon="ui-icon-close"/>
+	  </p:confirmDialog>  
+    		
+ 
+	</h:form>
+		 
+    </h:body>
+</html>

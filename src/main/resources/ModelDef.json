@@ -1,0 +1,1344 @@
+{
+	"models": 
+	[
+		{
+			"modelID": "OLIA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/olia.html",
+			"niceName": "OLiA",
+			"namespaces": 
+			[
+				"http://purl.org/olia/system.owl",
+				"http://purl.org/olia/olia"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/core/olia.owl",
+					"modelUsage": "SYSTEM",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/olia.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/core/olia-top.owl",
+					"modelUsage": "SYSTEM",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/olia-top.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/core/system.owl",
+					"modelUsage": "SYSTEM",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/olia_system.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "BLL",
+			"documentationUrl": "https://data.linguistik.de",
+			"niceName": "Bll",
+			"namespaces": 
+			[
+				"http://data.linguistik.de/bll/bll-ontology"
+			],
+
+			"files": 
+			[
+				{
+					"url": "http://purl.org/olia/bll-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://data.linguistik.de"
+				}
+			]
+		},
+
+		{
+			"modelID": "ALPINO",
+			"documentationUrl": "",
+			"niceName": "Alpino",
+			"namespaces": 
+			[
+				"http://purl.org/olia/alpino.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/alpino.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/alpino-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "ANCORRA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/ancorra.html",
+			"niceName": "Ancorra",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ancorra.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ancorra.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ancorra.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ancorra-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ancorra-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "BROWN",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/brown.html",
+			"niceName": "Brown",
+			"namespaces": 
+			[
+				"http://purl.org/olia/brown.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/brown.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/brown.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/brown-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/brown-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "CONNEXOR",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/connexor.html",
+			"niceName": "Connexor",
+			"namespaces": 
+			[
+				"http://purl.org/olia/connexor.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/connexor.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/connexor.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/connexor-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/connexor_link.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/connexor-phrase-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "DZONGKHA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/dzongkha.html",
+			"niceName": "Dzongkha",
+			"namespaces": 
+			[
+				"http://purl.org/olia/dzongkha.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/dzongkha.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/dzongkha.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/dzongkha-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/dzongkha-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "EAGLES",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/eagles.html",
+			"niceName": "Eagles",
+			"namespaces": 
+			[
+				"http://purl.org/olia/eagles.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/eagles.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/eagles.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/eagles-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/eagles-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "EMILLE",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/emille.html",
+			"niceName": "Emille",
+			"namespaces": 
+			[
+				"http://purl.org/olia/emille.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/emille.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/emille.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/emille-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/emille-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "GENIA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/genia.html",
+			"niceName": "Genia",
+			"namespaces": 
+			[
+				"http://purl.org/olia/genia.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/genia.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/genia.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/genia-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/genia-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "IIIT",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/iiit.html",
+			"niceName": "Iiit",
+			"namespaces": 
+			[
+				"http://purl.org/olia/iiit.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/iiit.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/iiit.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/iiit-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/iiit-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "ILPOSTS",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/ilposts.html",
+			"niceName": "Ilposts",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ilposts.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ilposts.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ilposts.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ilposts-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ilposts-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "LASSYSHORT",
+			"documentationUrl": "",
+			"niceName": "Lassyshort",
+			"namespaces": 
+			[
+				"http://purl.org/olia/lassy-short.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/lassy-short.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/lassy-short-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "LEXINFO",
+			"documentationUrl": "https://www.lexinfo.net/",
+			"niceName": "Lexinfo",
+			"namespaces": 
+			[
+				"http://www.lexinfo.net/ontology/2.0/lexinfo"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/lexinfo.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/lexinfo-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "MAMBA",
+			"documentationUrl": "",
+			"niceName": "Mamba",
+			"namespaces": 
+			[
+				"http://purl.org/olia/mamba.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/mamba.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/mamba-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "MAMBASYN",
+			"documentationUrl": "https://cl.lingfil.uu.se/~nivre/swedish_treebank/GF.html",
+			"niceName": "Mamba-Syntax",
+			"namespaces": 
+			[
+				"http://purl.org/olia/mamba-syntax.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/mamba-syntax.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/mamba-syntax-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "MORPHISTO",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/morphisto.html",
+			"niceName": "Morphisto",
+			"namespaces": 
+			[
+				"http://purl.org/olia/morphisto.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/morphisto.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/morphisto.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/morphisto-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/morphisto-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "MULTEAST",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/multext-east.html",
+			"niceName": "MULTEXT-East",
+			"namespaces": 
+			[
+				"http://nl.ijs.si/ME/owl/msd-pl.owl",
+				"http://purl.org/olia/mte/multext-east.owl",
+				"http://purl.org/olia/mte/"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext-east.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/all.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/multext-east.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-bg.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-cs.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-en.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-et.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-fa.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-hu.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-mk.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-pl.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-ro.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-ru.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-sk.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-sl-rozaj.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-sl.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-sr.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/multext_east/msd-uk.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/mte-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "ONTOLEX",
+			"documentationUrl": "https://www.w3.org/2016/05/ontolex/",
+			"niceName": "Ontolex",
+			"namespaces": 
+			[
+				"http://lemon-model.net/lemon",
+				"http://www.monnet-project.eu/lemon",
+				"http://www.w3.org/ns/lemon/"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/jmccrae/lemon-model.net/master/resources/lemon.rdf",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/ontolex/ontolex/master/Ontologies/ontolex.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/ontolex/ontolex/master/Ontologies/lime.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/ontolex/ontolex/master/Ontologies/synsem.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/ontolex/ontolex/master/Ontologies/decomp.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/ontolex/ontolex/master/Ontologies/vartrans.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "PENN",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/penn.html",
+			"niceName": "Penn",
+			"namespaces": 
+			[
+				"http://purl.org/olia/penn.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/penn.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/penn.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/penn-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/penn-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "PENNSYN",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/penn-syntax.html",
+			"niceName": "Penn-Syntax",
+			"namespaces": 
+			[
+				"http://purl.org/olia/penn-syntax.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/penn-syntax.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/penn-syntax.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/penn-syntax-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/penn-syntax-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "PPCME2",
+			"documentationUrl": "",
+			"niceName": "Ppcme2",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ppcme2"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ppcme2.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ppcme2-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "PROIEL",
+			"documentationUrl": "",
+			"niceName": "Proiel",
+			"namespaces": 
+			[
+				"http://purl.org/olia/proiel.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/proiel.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/proiel-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "QTAG",
+			"documentationUrl": "",
+			"niceName": "Qtag",
+			"namespaces": 
+			[
+				"http://purl.org/olia/qtag.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/qtag.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/qtag-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/qtag-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "RUSS",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/russ.html",
+			"niceName": "Russ",
+			"namespaces": 
+			[
+				"http://purl.org/olia/russ.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/russ.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/russ.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/russ-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/russ-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "RUSSLEEDS",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/russleeds.html",
+			"niceName": "Russleeds",
+			"namespaces": 
+			[
+				"http://purl.org/olia/russleeds.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/russleeds.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/russleeds.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/russleeds-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/russleeds-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "SFB632",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/sfb632.html",
+			"niceName": "Sfb632",
+			"namespaces": 
+			[
+				"http://purl.org/olia/sfb632.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/sfb632.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/sfb632.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/sfb632-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/sfb632-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "STANFORD",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/stanford.html",
+			"niceName": "UD-Dependencies",
+			"namespaces": 
+			[
+				"http://purl.org/olia/stanford.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/stanford.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/stanford.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/stanford-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/stanford-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "STTS",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/stts.html",
+			"niceName": "Stts",
+			"namespaces": 
+			[
+				"http://purl.org/olia/stts.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/stts.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/stts.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/stts-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/stts-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "SUC",
+			"documentationUrl": "https://cl.lingfil.uu.se/~nivre/swedish_treebank/pos.html",
+			"niceName": "Suc",
+			"namespaces": 
+			[
+				"http://purl.org/olia/suc.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/suc.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/suc-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "SUSA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/susa.html",
+			"niceName": "Susa",
+			"namespaces": 
+			[
+				"http://purl.org/olia/susa.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/susa.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/susa.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/susa-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/susa-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "TCODEX",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/tcodex.html",
+			"niceName": "Tcodex",
+			"namespaces": 
+			[
+				"http://purl.org/olia/tcodex.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tcodex.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tcodex.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tcodex-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tcodex-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "TIBET",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/tibet_old.html",
+			"niceName": "Tibet",
+			"namespaces": 
+			[
+				"http://purl.org/olia/tibet.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tibet.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tibet_old.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tibet-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tibet-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "TIGER",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/tiger.html",
+			"niceName": "Tiger",
+			"namespaces": 
+			[
+				"http://purl.org/olia/tiger.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tiger.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tiger.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tiger-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "TIGERSYN",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/tiger.html",
+			"niceName": "Tiger-Syntax",
+			"namespaces": 
+			[
+				"http://purl.org/olia/tiger-syntax.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tiger-syntax.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tiger-syntax.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tiger-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "TREETAGGER",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/treetagger-german.html",
+			"niceName": "Treetagger",
+			"namespaces": 
+			[
+				"http://purl.org/olia/treetagger-german.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/treetagger-german.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/treetagger-german.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/treetagger-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "TUEBA",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/tueba.html",
+			"niceName": "Tueba",
+			"namespaces": 
+			[
+				"http://purl.org/olia/tueba.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tueba.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tueba.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/tueba-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/tueba-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "URDU",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/urdu.html",
+			"niceName": "Urdu",
+			"namespaces": 
+			[
+				"http://purl.org/olia/urdu.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/urdu.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/urdu.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/urdu-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/urdu-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "YCOE",
+			"documentationUrl": "",
+			"niceName": "Ycoe",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ycoe.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ycoe.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ycoe-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "UBYCAT",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/ubyCat.html",
+			"niceName": "Ubycat",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ubyCat.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ubyCat.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ubyCat.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ubyCat-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ubyCat-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "UBYPOS",
+			"documentationUrl": "https://acoli-repo.github.io/olia/html/stable/ubyPos.html",
+			"niceName": "UBY-POS",
+			"namespaces": 
+			[
+				"http://purl.org/olia/ubyPos.owl"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ubyPos.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ubyPos.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/stable/ubyPos-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": "https://acoli-repo.github.io/olia/html/stable/ubyPos-link.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "UD1POS",
+			"documentationUrl": "https://universaldependencies.org/guidelines.html",
+			"niceName": "UD-POS",
+			"namespaces": 
+			[
+				"http://fginter.github.io/docs/u/pos/all.html"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/experimental/univ_dep/all_from_rdfa/ud-pos-all.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "http://fginter.github.io/docs/u/pos/all.html"
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/experimental/univ_dep/all_from_rdfa/ud-pos-all-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		},
+
+		{
+			"modelID": "UD1FEAT",
+			"documentationUrl": "https://universaldependencies.org/guidelines.html",
+			"niceName": "UD-Features",
+			"namespaces": 
+			[
+				"http://fginter.github.io/docs/u/feat/all.html"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/experimental/univ_dep/all_from_rdfa/ud-feat-all.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": "http://fginter.github.io/docs/u/feat/all.html"
+				}
+			]
+		},
+
+		{
+			"modelID": "UD1DEP",
+			"documentationUrl": "https://universaldependencies.org/guidelines.html",
+			"niceName": "UD-Dependencies",
+			"namespaces": 
+			[
+				"http://fginter.github.io/docs/u/dep/all.html"
+			],
+
+			"files": 
+			[
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/experimental/univ_dep/all_from_rdfa/ud-dep-all.owl",
+					"modelUsage": "ANNOTATION",
+					"active": true,
+					"documentationURL": ""
+				},
+
+				{
+					"url": "https://raw.githubusercontent.com/acoli-repo/olia/master/owl/experimental/univ_dep/all_from_rdfa/ud-dep-all-link.rdf",
+					"modelUsage": "LINK",
+					"active": true,
+					"documentationURL": ""
+				}
+			]
+		}
+	]
+}

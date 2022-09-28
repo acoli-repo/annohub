@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+   
+    <h:head>
+        <title>Annohub (Beta)</title>     
+    </h:head>
+    
+    <style>
+    
+    .ui-autocomplete input {
+    width:320px;
+	}
+	
+	  .ui-autocomplete-panel {
+    width: 450px;
+	}
+	
+	.ui-layout-unit {
+   	border: 0;
+	}
+    
+    </style>
+    
+    <h:body id="page">
+	    
+	<h:form id="form">
+    <p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+    <p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+    
+	<p:remoteCommand name="uploadResourceFile" action="#{login.uploadResourceFile}"/>
+
+		<p:outputPanel style="display:block; text-align: center;background-color: Orange;height: 50px;">
+		 <h3>Uploads</h3>
+	    </p:outputPanel>
+		
+	<p:outputPanel style="background-color: SteelBlue;color: White;">
+	        <h:outputText style="display: block;text-align: right;font-style: italic;font-size:small;padding-right: 20px" value="Logged in as #{login.userAccount.accountTypeAsString}  "/>	
+	</p:outputPanel>
+	
+		<p:toolbar id="toolbar">
+		
+		 <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            
+	            	<p:menuitem value="Upload" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" icon="ui-icon-arrowthick-1-n" update="a4811" oncomplete="PF('uploadData').show()" />
+	           		<p:menuitem value="Error Log" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" action="#{login.initRflError}" update="a4821" icon="ui-icon-clipboard" oncomplete="PF('showLog').show()"/>
+	           		<p:menuitem value="Parse Options" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" icon="ui-icon-wrench" update="parseOptions" oncomplete="PF('parseOptionsDialog').show()" />
+	           		<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+	            
+	            </p:menuButton>
+	            <p:commandButton value="EXIT" icon="ui-icon-closethick" action="#{login.closeUploadManager}" style="width:100px;background:none;" styleClass="customStyleButton" />
+	     </f:facet>
+	         
+    	</p:toolbar>
+    	
+    	
+   	   <p:dialog header="Analyze RDF, CoNLL or XML Data" id="a4811" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="uploadData" resizeable="false">
+   	 
+   	 	<h:outputText  style="font: bold 20px arial, sans-serif;" value="Upload File"/>
+   	 	<br/>
+	    <p:fileUpload oncomplete="uploadResourceFile();" style="margin-top: 10px;height: 100px;font-size:85%;min-width:600px;" skinSimple="true" enctype="multipart/form-data"
+	    label="Select" cancelLabel="Cancel" fileUploadListener="#{fileUploadBean.fileUploadListener}" mode="advanced"
+	    update="messages fileName" auto="true" sizeLimit="20000000000"/>
+	    <p:growl id="messages" showDetail="true" />
+	    
+	    <h:outputText value="Upload URL" style="font: bold 20px arial, sans-serif;"/>    
+	    <br/>
+	    <p:panelGrid columnClasses="label,value" style="margin-top: 10px;width:100%;background-color:#c7d4de">
+	    <p:row style="width:100%">
+	    <p:column style="width:60px;text-align:center;">
+	    <p:commandButton action="#{login.uploadResourceUrl}" value="Upload" style="width:88px;font-size:15px;" update="uploadUrl"/>
+	    </p:column>
+	    <p:column style="text-align:center;">
+	    <h:inputText id="uploadUrl" value="#{login.uploadURL}" style="width:100%;" onkeydown="if (event.keyCode === 13) {return false;}"/>
+	    </p:column>
+	    </p:row>
+	    </p:panelGrid>
+	    <br/>
+	    <p:separator rendered="#{login.userAccount.accountTypeAsString == 'admin'}" style="width=400px;size=8;align=center"/> 
+	    <p:selectBooleanCheckbox id="importMD" style="padding-left: 12px" value="#{login.resourceUploadImportMetadata}" itemLabel="Import metadata"/> 
+	    <p:selectBooleanCheckbox id="autoAccept" style="padding-left: 12px" value="#{login.resourceUploadAutoAccept}" itemLabel="Auto accept"/> 
+	    
+	    <h:outputText id="fileName" style="font: 20px arial, sans-serif;" value="#{fileUploadBean.fileName}"/>
+   	 
+   	 </p:dialog>
+
+
+  <p:dialog id="parseOptions" position="center" widgetVar="parseOptionsDialog" modal="true" resizable="false" header="Parse options" closable="false"> 
+        <p:tooltip for="parseOptionTT" value="See documentation, chapter 5.2.2 'Sampling' !"/>	 			
+        <p:panelGrid id="pop1" columns="4">
+         	<h:outputText value=""/><h:outputText style="display: block;text-align:center" value="RDF"/><h:outputText style="display: block;text-align:center" value="XML"/><h:outputText style="display: block;text-align:center" value="CONLL"/>
+         	<h:outputText value="max sample files"/>
+         	<h:inputText readonly="true" value="#{login.rdfMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	<h:inputText readonly="true" value="#{login.xmlMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	<h:inputText readonly="true" value="#{login.conllMaxSamples}" style="display: block;text-align:center;max-width:40px;"/>
+         	
+         	
+            <h:outputText value="activationThreshold"/>
+            <h:inputText id="parseOptionTT" value="#{login.rdfActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllActivationThreshold}" style="display: block;text-align:center;max-width:40px;"/>
+                 
+                 
+            <h:outputText value="thresholdForGood"/>
+            <h:inputText value="#{login.rdfThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllThresholdForGood}" style="display: block;text-align:center;max-width:40px;"/>
+            
+            
+            <h:outputText value="thresholdForBad"/>
+            <h:inputText value="#{login.rdfThresholdForBad}" style="text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.xmlThresholdForBad}" style="text-align:center;max-width:40px;"/>
+            <h:inputText value="#{login.conllThresholdForBad}" style="text-align:center;max-width:40px;"/>                    
+                                
+        </p:panelGrid>
+       	<p:commandButton id="ocancel_" action="#{login.saveParseOptionsEdit}" value="CLOSE" style="width:100px;background:none;" styleClass="customStyleButton"  oncomplete="PF('parseOptionsDialog').hide()"/>	                              
+      
+    </p:dialog>
+    
+    
+     <p:confirmDialog message="The resource has already been processed - reprocess resource ?"
+		header="Confirm reprocessing" severity="alert"
+		widgetVar="reprocessResourceswv">
+		 <p:commandButton id="reprocessYes" action="#{login.reprocessResource}" value="YES" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('reprocessResourceswv').hide()"/>
+         <p:commandButton id="reprocessNo" action="#{login.notReprocessResource}" value="NO" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('reprocessResourceswv').hide()"/>
+	 </p:confirmDialog>
+	 
+	 
+	 
+	  <p:dialog header="Uploads with errors or no results" id="a4821" closable="true" modal="true" widgetVar="showLog" resizeable="false">
+   	   
+	  <p:dataTable 
+    			widgetVar="logList" 
+				id="a4831"
+    			value="#{login.rflError}" 
+    			var="rL"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="5"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{rL.fileInfo.processingEndDate}"
+                sortOrder="descending"
+                filteredValue="#{login.filteredRflError}"
+                rowKey="#{rL.resourceID}"
+                selection="#{login.selectedDummyResource}" selectionMode="single"
+                first="#{login.tableFirstPage}"
+                >
+                
+    			<p:column style="max-width: 120px;text-align:center" headerText="Data" sortBy="#{rL.dataURL}" resizable="true" filterMatchMode="contains" filterBy="#{rL.dataURL}">
+                <h:outputText value="#{rL.dataURL}" style="word-wrap:break-word;"/>
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="File" resizable="true" sortBy="#{rL.fileInfo.fileName}" filterMatchMode="contains" filterBy="#{rL.fileInfo.fileName}">
+    			<h:outputText value="#{rL.fileInfo.fileName}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Format" resizable="true" sortBy="#{rL.fileInfo.processingFormat}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingFormat}">
+    			<h:outputText value="#{rL.fileInfo.processingFormat}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Processed" resizable="true" sortBy="#{rL.fileInfo.processingStartDate}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingStartDate}">
+    			<h:outputText value="#{rL.fileInfo.processingStartDate}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Processing time" resizable="true" sortBy="#{rL.fileInfo.processingDuration.seconds}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingDuration}">
+    			<h:outputText value="#{rL.fileInfo.processingDuration}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Result" resizable="true" sortBy="#{rL.fileInfo.parseResult}" filterMatchMode="contains" filterBy="#{rL.fileInfo.parseResult}">
+    			<f:facet name="filter">
+                <h:selectOneMenu onchange="PF('logList').filter()">
+                   <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{login.parseResultStates}" />
+                </h:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{rL.fileInfo.parseResult}"/>
+            	</p:column>
+    			
+   				<p:column style="text-align:center" headerText="Error" resizable="true" sortBy="#{rL.fileInfo.errorMsg}" filterMatchMode="contains" filterBy="#{rL.fileInfo.errorMsg}">
+    			<h:outputText value="#{rL.fileInfo.errorMsg}" />
+    			</p:column>
+    			
+                </p:dataTable>
+                <p:commandButton action="#{login.clearLog}" update="a4831" value="CLEAR" style="width:130px;background:none;font-size:12px" styleClass="customStyleButton"/>	                              
+		
+	</p:dialog>
+    
+    </h:form>
+    </h:body>
+</html>

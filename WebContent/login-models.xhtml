@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+   
+
+    <h:head>
+    </h:head>
+    
+    <style>
+	.ui-picklist .ui-picklist-list{
+	height:250px;
+	width: 320px
+	}
+	a:link {text-decoration: none;}
+	
+	.menu .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+    font-weight: bold
+	}
+	
+	.menu2 .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+    text-align: left;
+    font-weight: bold
+	}
+	
+	.panel .ui-selectonemenu-list { 
+    font-size: 13px;
+    font-weight: bold
+    }
+    
+	</style>
+	
+    <h:body id="page">
+		<!--  css table parameter : https://www.w3schools.com/Css/css_table.asp , https://datatables.net/examples/advanced_init/html5-data-attributes.html -->
+    	 <!-- h1 align="center">Annohub - Editor</h1 --> 
+ 		
+		<h:form id="form">
+		
+		<p:outputPanel style="color: white; text-align: center;background-color: Purple;width:100%;height: 55px;">
+		 <h3>Ontology Manager</h3>
+	    </p:outputPanel>
+	    <p:outputPanel style="background-color:  Purple;">
+	        <h:outputText style="font-style: italic;color: white;display: block;text-align: center" value=""/>	
+		</p:outputPanel>
+		
+		<p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+		<p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+		
+		<p:toolbar id="toolbar">
+	       
+	        <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            	
+	            	<p:menuitem id="checkMI" value="Check Online" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkModelsOnline}" icon=" ui-icon-check" update="modelInfo" />
+	           		<p:menuitem value="Add Model" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.addModel}" icon="ui-icon-plusthick" oncomplete="PF('addOrEditModel').show()" />
+	            	<p:menuitem id="updateOlia" value="Update" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkUpdateOliaModels}" icon="ui-icon-arrowrefresh-1-e"/>
+	            	<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+					
+	            </p:menuButton>
+	            
+	            <p:commandButton value="Exit" icon="ui-icon-closethick" action="#{obean.exit(0)}" />
+	
+	          </f:facet>
+ 
+    	</p:toolbar>
+    	
+    	
+    	<p:blockUI block="form" trigger="checkMI updateOlia">
+    	<h:outputText value="Verifying changes ..."/>
+    			<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
+		</p:blockUI>
+		
+		
+		<p:blockUI block="form" trigger="confirmUpdate">
+    	<h:outputText value="Updating models ..."/>
+    			<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
+		</p:blockUI>
+    	
+    	
+		<p:dataTable 
+    			widgetVar="modelList" 
+				id="modelInfo"
+    			value="#{obean.modelList}"
+    			var="m"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{m.modelType}"
+                sortOrder="ascending"
+                rowKey="#{m.ID}"
+                filteredValue="#{obean.filteredModelList}"
+                selection="#{obean.selectedDummyModel}" selectionMode="single"
+                first="#{obean.tableFirstPage}"
+                >
+                
+                <p:ajax event="contextMenu" listener="#{obean.onContextMenu}" oncomplete=""/>
+               
+    			<p:column width="30" style="text-align:center" headerText="Status" resizable="true" sortBy="#{m.dataLinkState}" filterMatchMode="contains" filterBy="#{m.dataLinkState}">
+    			<h:outputText value="#{m.dataLinkState}" />
+    			</p:column>
+    			
+    			<p:column width="350" style="text-align:center" headerText="URL" resizable="true" sortBy="#{m.url.path}" filterMatchMode="contains" filterBy="#{m.url.path}">
+    			 <h:outputLink value="#{m.url}" target="_blank">
+                <h:outputText  value="#{m.url}" style="word-wrap:break-word;"/>
+                </h:outputLink>
+    			</p:column>
+    			
+    			<p:column width="100" style="text-align:center" headerText="Type" resizable="true" sortBy="#{m.modelType}" filterMatchMode="contains" filterBy="#{m.modelType}">
+    			<h:outputText value="#{m.modelType}" />
+    			</p:column>
+    			
+    			<p:column width="80" style="text-align:center" headerText="Content" resizable="true" sortBy="#{m.usage}" filterMatchMode="contains" filterBy="#{m.usage}">
+    			<h:outputText value="#{m.usage}" />
+    			</p:column>
+    			
+    			<p:column width="80" style="text-align:center" headerText="Documentation" resizable="true" sortBy="#{m.documentationUrl}" filterMatchMode="contains" filterBy="#{m.documentationUrl}">
+    			 <h:outputLink value="#{m.documentationUrl}" target="_blank">
+    			 <h:outputText value="#{m.documentationUrl}" />
+                </h:outputLink>
+    			
+    			</p:column>
+    			
+    			<p:column visible="false" width="80" style="text-align:center" headerText="Active" resizable="true" sortBy="#{m.active}" filterMatchMode="contains" filterBy="#{m.active}">
+    			<h:outputText value="#{m.active}" />
+    			</p:column>
+  	
+                </p:dataTable>
+               
+      
+    	 <p:contextMenu widgetVar="modelFunctions_wv" for="modelInfo">
+    	 <p:menuitem value="Edit" icon="ui-icon-pencil" action="#{obean.editModel}" oncomplete="PF('addOrEditModel').show()"/>
+		 <p:menuitem value="Delete" icon="ui-icon-trash" action="#{obean.deleteModel}">
+		 <p:confirm header="Confirm delete" message="#{obean.deleteMessage}" icon="ui-icon-alert"/>
+		 </p:menuitem>
+	  	 </p:contextMenu>
+	  	 
+	  	 
+ 	<p:dialog header="#{obean.addOrEditModelDialogHeader}" id="modelEditDialog" closable="false" modal="true" widgetVar="addOrEditModel" resizeable="false">
+    	 
+    	 <p:panelGrid id="editModelData" style="margin-bottom:10px;with:100%" columnClasses="label,value">		
+			
+			<p:row style="width:100%">
+			<p:column style="width:auto;text-align:left;">
+				<h:outputText style="font-style: italic" value="URL" />
+			</p:column>
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column>
+				<h:inputText value="#{obean.selectedModelUrl}" style="width:775px"/>
+			</p:column>
+			
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column style="width:auto;text-align:left;">
+				<h:outputText style="font-style: italic" value="Documentation" />
+			</p:column>
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column>
+				<h:inputText value="#{obean.selectedModelDocumentationUrl}" style="width:775px"/>
+			</p:column>
+			
+			</p:row>
+		
+		</p:panelGrid>
+		
+		<p:separator style="width=250px;size=8;align=center" />
+		
+		
+		<p:panelGrid style="margin-bottom:10px;with:100%" columns="6">		
+		
+		<h:outputText style="font-style: italic" value="Model ID" />
+		<p:selectOneMenu id="avModels" disabled="#{obean.editModel}" value="#{obean.selectedModelID}">
+		        	<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{obean.modelIDs}" />
+        </p:selectOneMenu>
+        
+        
+        <p:commandButton disabled="#{obean.editModel}" value="ADD" action="#{obean.addNewModelGroup}" update="avModels" />
+        
+        <h:inputText disabled="#{obean.editModel}" value="#{obean.newModelID}" style="width:100px"/>
+        
+        <h:outputText style="font-style: italic" value="Type" />
+        <p:selectOneMenu disabled="#{obean.editModel}" value="#{obean.selectedModelUsage}">
+                    <f:selectItems value="#{obean.modelUsages}" />
+        </p:selectOneMenu>
+		</p:panelGrid>
+		
+		
+    	    <p:commandButton value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton" oncomplete="PF('addOrEditModel').hide()"/>
+            <p:commandButton style="width:100px;background:none;" styleClass="customStyleButton" action="#{obean.saveModel}" value="SAVE" update="form" oncomplete="PF('yesNoDialogW').hide();"/>
+           
+    	 </p:dialog>
+	  
+	 
+	 <p:confirmDialog global="true">
+		<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+		icon="ui-icon-check"/>
+		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+		icon="ui-icon-close"/>
+	  </p:confirmDialog>  
+	  
+	  
+	  <p:confirmDialog id="yesNoDialog" message="#{obean.confirmMessage}"
+		header="Confirm Model Update" severity="alert" widgetVar="yesNoDialogW" responsive="true">
+		<p:commandButton id="confirmUpdate" value="Yes" action="#{obean.updateOliaModels}"
+		oncomplete="PF('yesNoDialogW').hide()" styleClass="ui-confirmdialog-yes"/>
+		<p:commandButton value="No" onclick="PF('yesNoDialogW').hide();" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+	  </p:confirmDialog>
+	  
+	  
+	<p:dialog header="Models have been edited, confirm update of model database ?" id="a6000a" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="confirmDBupdate" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder">
+        <p:row>
+		<p:column>
+		<p:commandButton value="Yes" action="#{obean.updateDatabase()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		</p:column>
+		<p:column>
+		<p:commandButton value="No" action="#{obean.exit(1)}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		</p:column>
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+	
+	
+	<p:dialog widgetVar="checkModels" header="Checking models" id="a7000a" closable="false" modal="true" showEffect="" hideEffect="" resizeable="false">
+      
+      	<p:progressBar widgetVar="progressbar" ajax="true" value="#{obean.progress}" interval="500"
+                        labelTemplate="{value}%"
+                        global="false"
+                        style="width:500px">
+           <p:ajax event="complete" listener="#{obean.modelCheckComplete}" oncomplete="PF('checkModels').hide()"/>
+           
+        </p:progressBar>
+      
+	</p:dialog>
+	
+	   
+ 
+	</h:form>
+		 
+    </h:body>
+</html>

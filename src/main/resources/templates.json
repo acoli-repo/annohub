@@ -1,0 +1,475 @@
+[{
+	"id" : "1",
+	"description" : "pseudo template, never seen",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"columns" : ["id","lemma","FEATS","token","pos"],
+	"feats" : ["pos", "lem"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lemma" : "@lem",
+		"FEATS" : "",
+		"token" : "text()",
+		"pos" : "@pos"
+	},
+	"featurePaths" : {
+		"pos" : "@pos",
+		"lemma" : "@lem"
+	}
+},{
+	"id" : "2",
+	"description" : "Pseudo Template, never seen",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//nt",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lemma","FEATS","token","pos"], 
+	"feats" : ["pos", "lem"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lemma" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos"
+	},
+	"featurePaths" : {
+		"pos" : "@pos",
+		"lemma" : "@foo",
+		"bar" : "head"
+	}
+},{
+	"id" : "3",
+	"description" : "id,lem,hun,pos,tree,type,designed for Europarl Corpus v7",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","hun","pos","tree","type"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"hun" : "@hun",
+		"tree" : "@tree",
+		"type" : "@type"
+	},
+	"featurePaths" : {
+	}
+},{
+	"id" : "4",
+	"description" : "minimal useful to conll; e.g. OfisPublik",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id", "token"],
+	"columnPaths" : {
+		"id" : "@id",
+		"token" : "text()"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "5",
+	"description" : "id,lem,pos,tree,type,EMEA?",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","tree","type"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"tree" : "@tree",
+		"type" : "@type"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "6",
+	"description" : "id,lem,pos,tree,type,hun,deprel; e.g. hrenwac",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","tree","type", "hun","deprel"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"tree" : "@tree",
+		"type" : "@type",
+		"hun" : "@hun",
+		"deprel" : "@deprel"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "7",
+	"description" : "id,lem,tnt,type,grok,tree",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","tnt","type", "grok", "tree"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"grok" : "@grok",
+		"tree" : "@tree",
+		"type" : "@type",
+		"tnt" : "@tnt"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "8",
+	"description" : "id,lem,pos,tree,type,hun; e.g. GlobalVoices",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","type", "tree","hun"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"hun" : "@hun",
+		"tree" : "@tree",
+		"type" : "@type"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "9",
+	"description" : "id,lem,tree",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"columns" : ["id","lem","tree"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"tree" : "@tree"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "10",
+	"description" : "id, lem, melt, pos; e.g. MBS",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","melt"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"hun" : "@hun",
+		"tree" : "@tree",
+		"melt" : "@melt"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "11",
+	"description" : "id, head, hun, tree, lem, pos, deprel, type, e.g. SETIMES2",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","tree","head","type","hun","deprel"], 
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"tree" : "@tree",
+		"type" : "@type",
+		"hun" : "@hun",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},
+	{
+		"id": "12",
+		"description": "id, lemma, xpos, upos, head, feats, deprel, misc e.g. updated Books",
+		"hasID": false,
+		"sentencePath": "s",
+		"wordPath": "//w",
+		"chunkPath": "chunk",
+		"columns": [
+			"id",
+			"lemma",
+			"token",
+			"upos",
+			"xpos",
+			"feats",
+			"deprel",
+			"head",
+			"misc"
+		],
+		"columnPaths": {
+			"id": "@id",
+			"lemma": "@lemma",
+			"token": "text()",
+			"upos": "@upos",
+			"xpos": "@xpos",
+			"feats": "@feats",
+			"deprel": "@deprel",
+			"head": "@head",
+			"misc": "@misc"
+		},
+		"featurePaths": {
+		}
+	},
+	{
+		"id" : "13",
+		"description" : "Initial for spraakbanken",
+		"hasID" : false,
+		"sentencePath" : "sentence",
+		"wordPath" : "//w",
+		"columns" : ["id", "lemma", "token","pos", "msd", "lex", "saldo", "prefix", "suffix", "ref", "dephead", "deprel", "linkref", "wordlink-de"],
+		"columnPaths" : {
+			"id" : "@id",
+			"lemma" : "@lemma",
+			"token" : "text()",
+			"pos" : "@pos",
+			"msd" : "@msd",
+			"lex" : "@lex",
+			"saldo": "@saldo",
+			"prefix": "@prefix",
+			"suffix": "@suffix",
+			"ref": "@ref",
+			"dephead": "@dephead",
+			"deprel": "@deprel",
+			"linkref": "@linkref",
+			"wordlink-lang": "@wordlink-hr"
+		}
+	},	{
+	"id" : "14",
+	"description" : "for spraakbanken e.g. aspacsvla-la",
+	"hasID" : false,
+	"sentencePath" : "sentence",
+	"wordPath" : "//w",
+	"columns" : ["id", "lemma", "token","pos", "msd", "linkref", "wordlink-sv"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lemma" : "@lemma",
+		"token" : "text()",
+		"pos" : "@pos",
+		"msd" : "@msd",
+		"linkref": "@linkref",
+		"wordlink-sv": "@wordlink-sv"
+	}
+},{	"id" : "15",
+	"description" : "id, head, hun, tree, lem, deprel, new opus",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","token","tree","head","hun","deprel"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"tree" : "@tree",
+		"hun" : "@hun",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "16",
+	"description" : "id, token, hun new opus russian",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","token","hun"],
+	"columnPaths" : {
+		"id" : "@id",
+		"token" : "text()",
+		"hun" : "@hun"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "17",
+	"description" : "id, token, lem, tree, head, svmtool, deprel",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","token","lem", "tree", "head", "svmtool", "deprel"],
+	"columnPaths" : {
+		"id" : "@id",
+		"token" : "text()",
+		"tree" : "@tree",
+		"lem" : "@lem",
+		"svmtool" : "@svmtool",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "17",
+	"description" : "id, token, lem, tree, head, svmtool, deprel",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","token","lem", "tree", "head", "svmtool", "deprel"],
+	"columnPaths" : {
+		"id" : "@id",
+		"token" : "text()",
+		"tree" : "@tree",
+		"lem" : "@lem",
+		"svmtool" : "@svmtool",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "18",
+	"description" : "id, head, pos, melt, lem, deprel, new opus",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","token","pos","head","melt","deprel"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"melt" : "@melt",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "18",
+	"description" : "id, head, pos, melt, lem, deprel, new opus",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","token","pos","head","melt","deprel"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"pos" : "@pos",
+		"melt" : "@melt",
+		"deprel" : "@deprel",
+		"head" : "@head"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "19",
+	"description" : "id,lem,pos,tree,type,hun; e.g. GlobalVoices",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","lem","pos","type", "tree","hun"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"hun" : "@hun",
+		"tree" : "@tree",
+		"type" : "@type"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "20",
+	"description" : "id,hun,tree,lem,token Europarl ",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","hun","lem", "tree","token"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"hun" : "@hun",
+		"tree" : "@tree"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "21",
+	"description" : "id,token,lem,svmtool,tree Europarl ",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","svmtool","lem", "tree","token"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"svmtool" : "@svmtool",
+		"tree" : "@tree"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "22",
+	"description" : "id,token,lem,melt,pos Europarl ",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","melt","lem", "pos","token"],
+	"columnPaths" : {
+		"id" : "@id",
+		"lem" : "@lem",
+		"token" : "text()",
+		"melt" : "@melt",
+		"pos" : "@pos"
+	},
+	"featurePaths" : {
+	}
+},{	"id" : "23",
+	"description" : "id,token,pos Europarl ",
+	"hasID" : false,
+	"sentencePath" : "s",
+	"wordPath" : "//w",
+	"chunkPath" : "chunk",
+	"columns" : ["id","pos","token"],
+	"columnPaths" : {
+		"id" : "@id",
+		"token" : "text()",
+		"pos" : "@pos"
+	},
+	"featurePaths" : {
+	}
+},
+	{
+		"id": "24",
+		"description": "for spraakbanken e.g. aspacsvbg-bg",
+		"hasID": false,
+		"sentencePath": "sentence",
+		"wordPath": "//w",
+		"columns": [
+			"lemma",
+			"token",
+			"pos",
+			"msd",
+			"linkref",
+			"wordlink-sv"
+		],
+		"columnPaths": {
+			"lemma": "@lemma",
+			"token": "text()",
+			"pos": "@pos",
+			"msd": "@msd",
+			"linkref": "@linkref",
+			"wordlink-sv": "@wordlink-sv"
+		},
+		"featurePaths": {
+		}
+	}
+]

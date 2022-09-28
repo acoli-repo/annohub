@@ -1,0 +1,29 @@
+#!/bin/bash
+# arg 1 : input file
+# (arg 2) : input encoding of file in format string (given below)
+# Input format argument
+# -i FORMAT, --input FORMAT   Set the input format/parser to one of:
+#    rdfxml          RDF/XML (default)
+#    ntriples        N-Triples
+#    turtle          Turtle Terse RDF Triple Language
+#    trig            TriG - Turtle with Named Graphs
+#    rss-tag-soup    RSS Tag Soup
+#    grddl           Gleaning Resource Descriptions from Dialects of Languages
+#    guess           Pick the parser to use using content type and URI
+#    rdfa            RDF/A via librdfa
+#    json            RDF/JSON (either Triples or Resource-Centric)
+#    nquads          N-Quads
+
+
+# Default input encoding
+inputEnc=guess
+
+# Use cmdline inputEnc
+if [ $# -eq 2 ]; then
+inputEnc=$2
+fi
+
+# Convert file to rdfxml format
+rapper -i $inputEnc -o rdfxml $1 >$1.rdf
+
+

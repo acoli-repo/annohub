@@ -1,0 +1,50 @@
+#!/bin/bash
+# arg 1 : input file
+# arg 2 : $JAVA_HOME
+# arg 3 : $JENA_HOME
+# (arg 4) : input encoding of file in format string (given below)
+# Input format argument
+# -i FORMAT, --input FORMAT   Set the input format/parser to one of:
+#    rdfxml          RDF/XML (default)
+#    ntriples        N-Triples
+#    turtle          Turtle Terse RDF Triple Language
+#    trig            TriG - Turtle with Named Graphs
+#    rss-tag-soup    RSS Tag Soup
+#    grddl           Gleaning Resource Descriptions from Dialects of Languages
+#    guess           Pick the parser to use using content type and URI
+#    rdfa            RDF/A via librdfa
+#    json            RDF/JSON (either Triples or Resource-Centric)
+#    nquads          N-Quads
+
+# TODO set env from java
+export PATH=/u03/backup/bin:/usr/local/bin:/usr/bin:/bin:$2/bin:$3/bin
+
+# validate RDF file
+error=$(riot --validate $1 2>&1 | grep -E "ERROR|UNWISE_CHARACTER in PATH" | wc -l)
+
+# on ERROR
+if [ $error -gt 0 ]; then
+
+# Default
+inputEnc=guess
+
+# Use cmdline inputEnc
+if [ $# -eq 4 ]; then
+inputEnc=$4
+fi
+
+# Convert file to rdfxml format
+rapper -i $inputEnc -o rdfxml $1 >$1.rdf
+fi
+
+#echo $error
+
+# No validation error -> exit 0
+if [ $error -eq 0 ]; then
+exit 0
+fi
+
+# Validation error -> exit 1
+exit 1
+
+

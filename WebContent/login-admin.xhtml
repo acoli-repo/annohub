@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+   
+    <h:head>
+        <title>Annohub (Beta)</title>     
+    </h:head>
+    
+    <style>
+    
+    .ui-autocomplete input {
+    width:320px;
+	}
+	
+	  .ui-autocomplete-panel {
+    width: 450px;
+	}
+	
+	.ui-layout-unit {
+   	border: 0;
+	}
+    
+    </style>
+    
+    <h:body id="page">
+	    
+	<h:form id="form">
+    <p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+    <p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+    
+
+		<p:outputPanel style="display:block; text-align: center;background-color: Orange;height: 50px;">
+		 <h3>Administration</h3>
+	    </p:outputPanel>
+		
+	<p:outputPanel style="background-color: SteelBlue;color: White;">
+	        <h:outputText style="display: block;text-align: right;font-style: italic;font-size:small;padding-right: 20px" value="Logged in as #{login.userAccount.accountTypeAsString}  "/>	
+	</p:outputPanel>
+	
+		<p:toolbar id="toolbar">
+		
+		 <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            
+	            
+	            <p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" id="adminFunctions" value="Configuration" icon="ui-icon-gear" oncomplete="PF('adminFunctionsDialog').show()"/>
+				<p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" id="userManagement" value="User Management" action="#{login.initUserManagement}" update="userManagementGrid userManagement3Grid userManagement2Grid" icon="ui-icon-cart" oncomplete="PF('userManagementDialog').show()"/>
+	            <p:menuitem value="Language Profiles" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showLanguageManager}" icon="ui-icon-flag"/>
+				<p:menuitem value="Ontology Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showOntologyManager}" icon="ui-icon-script"/>
+				<p:menuitem value="Backup Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showBackupManager}" icon="ui-icon-newwin" />
+	           	<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+	            <p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" value="Shutdown" action="#{login.shutdown}" icon="ui-icon-power" />
+	            
+	            </p:menuButton>
+	            <p:commandButton value="EXIT" icon="ui-icon-closethick" action="#{login.closeAdminManager}" style="width:100px;background:none;" styleClass="customStyleButton" />
+	     </f:facet>
+	         
+    	</p:toolbar>
+    	
+    	
+    	 <p:dialog id="adminDialog" position="center" widgetVar="adminFunctionsDialog" modal="true" resizable="false" header="Configuration" closable="false"> 
+
+        	<h:panelGrid id="adminDialogGrid" columns="3" cellpadding="5">
+        
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Check broken data links"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Check interval [in days]"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="2" min="0" max="60" value="#{login.checkBrokenLinksInterval}" />         
+    		<p:commandButton style="width:150px" action="#{login.startBrokenLinkCheck}" id="checkBrokenLinkBtn" value="Check now" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       
+        	<h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+       
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Default Quotas (for member account)"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="100" value="#{login.maxResourceUploads}" />
+ 			<h:outputText value=""></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max total resource files"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="100" value="#{login.maxResourceFiles}" />
+ 			<h:outputText value=""></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="3" min="1" max="5000" value="#{login.maxResourceUploadSize}" />
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Publishing"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Publishing interval [in days]"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="2" min="0" max="60" value="#{login.publishRDFExportInterval}" />         
+    		<p:commandButton style="width:150px" action="#{login.publish}" id="publishRDFBtn" value="Publish now" oncomplete="PF('adminFunctionsDialog').hide()"/>
+   
+                           
+	        </h:panelGrid>
+	        
+	        <p:separator style="width=250px;size=8;align=center"/>
+	        
+	       <p:commandButton action="#{login.saveAdminOptions}" value="SAVE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       	   <p:commandButton id="closeAdminOptions" value="CANCEL" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('adminFunctionsDialog').hide()"/>
+       
+	 </p:dialog>
+    	
+    	 <p:dialog id="userManagermentDialog" position="center" widgetVar="userManagementDialog" modal="true" resizable="false" header="User Management" closable="false"> 
+
+        	<h:panelGrid id="userManagementGrid" columns="13" cellpadding="5">
+        	
+        	<h:outputText style="font: bold 18px arial, sans-serif;" value="Users :"></h:outputText>
+  
+            <h:outputText value="Admins :"></h:outputText>
+            <h:outputText value="#{login.adminUserCount}"></h:outputText>
+            
+            <h:outputText value="Members :"></h:outputText>
+            <h:outputText value="#{login.memberUserCount}"></h:outputText>
+            
+            <h:outputText value="Guests :"></h:outputText>
+            <h:outputText value="#{login.guestUserCount}"></h:outputText>
+            
+            <h:outputText value="Total : "></h:outputText>
+            <h:outputText value="#{login.allUserCount}"></h:outputText>
+            
+            <h:outputText value="Retired : "></h:outputText>
+            <h:outputText value="#{login.retiredUserCount}"></h:outputText>
+            
+            <h:outputText value="Online : "></h:outputText>
+            <h:outputText value="#{login.onlineUserCount}"></h:outputText>
+            
+            </h:panelGrid>
+            
+            <p:separator style="width=250px;size=8;align=center"/>
+            
+            
+            <h:panelGrid id="userManagement3Grid"  columns="5" cellpadding="5">
+    	  
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Selected User"></h:outputText>
+            <p:selectOneMenu value="#{login.selectedUser}" styleClass="menu" panelStyleClass="panel">
+                   <f:selectItems value="#{login.userLoginsList}" />
+                   <p:ajax event="itemSelect" listener="#{login.selectUser}" update="userManagement2Grid selectedUserAccountType userManagement3Grid"/>
+            </p:selectOneMenu>
+            <p:commandButton action="#{login.saveUserAccount}" value="Save User" update="userManagementGrid userManagement2Grid userManagement3Grid" />
+            <p:commandButton action="#{login.newUserAccount}" value="New User" update="userManagement2Grid" />
+    	    <p:commandButton action="#{login.deleteUserAccount}" value="Delete User" update="userManagementGrid userManagement2Grid userManagement3Grid">
+     	 	<p:confirm disabled="#{login.selectedUserAccount.accountTypeAsString == 'admin'}" header="#{login.deleteUserMsg}" message="This will delete the user account as well as all metadata that was generated from uploaded data by that user. If you are uncertain you can disable the 
+     	 	account by selecting the account type Retired instead, thereby keeping the generated metadata !" icon="ui-icon-alert"/>
+		    </p:commandButton>
+ 
+            </h:panelGrid>
+            
+         	<p:separator style="width=250px;size=8;align=center"/>
+            
+             
+            <h:panelGrid id="userManagement2Grid" style="width: 100%;" columns="4" cellpadding="5">
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="User data"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Quota"></h:outputText>
+            <h:outputText value=""></h:outputText>
+
+            
+            <h:outputText style="width:100px;" value="Login :"></h:outputText>
+            <h:inputText readonly="#{not login.userLoginWritable}" value="#{login.selectedUserAccount.userID}" style="width:225px;"/>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+            <p:spinner id="mru" onkeypress="return false" size="2" maxlength="3" min="0" max="100" value="#{login.selectedUserAccount.quotas.maxResourceUploads}" />
+ 			
+            <h:outputText style="width:100px;" value="New Password :"></h:outputText>
+            <p:password value="#{login.cPasswd_1}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="" value="Max total resource files"></h:outputText>
+            <p:spinner id="mrf" onkeypress="return false" size="2" maxlength="3" min="0" max="100" value="#{login.selectedUserAccount.quotas.maxResourceFiles}" />
+ 			
+            <h:outputText style="width:100px;" value="Repeat Password :"></h:outputText>
+            <p:password value="#{login.cPasswd_2}" required="false" style="width:225px;"/>
+            
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+            <p:spinner id="mus" onkeypress="return false" size="2" maxlength="3" min="0" max="5000" value="#{login.selectedUserAccount.quotas.maxResourceUploadSize}" />
+            
+            <h:outputText style="width:100px;" value="Account Type :"></h:outputText>
+            <p:selectOneMenu disabled="#{login.selectedUserAccount.accountTypeAsString == 'admin'}" id="selectedUserAccountType" value="#{login.selectedUserAccountType}">
+                   <f:selectItems value="#{login.accountTypes}" />
+                  <p:ajax event="itemSelect" listener="#{login.setUserDefaultQuotas}" update="mru mrf mus selectedUserAccountType"/> 
+            </p:selectOneMenu>
+	        </h:panelGrid>
+	        
+	        <p:separator style="width=250px;size=8;align=center"/>
+	        
+       	   <p:commandButton id="closeUserManagement" action="#{login.closeUserManagement}" value="CLOSE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('userManagementDialog').hide()"/>
+       
+	 </p:dialog>	
+    
+    </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+   
+    <h:head>
+        <title>Annohub (Beta)</title>     
+    </h:head>
+    
+    <style>
+    
+    .ui-autocomplete input {
+    width:320px;
+	}
+	
+	  .ui-autocomplete-panel {
+    width: 450px;
+	}
+	
+	.ui-layout-unit {
+   	border: 0;
+	}
+    
+    </style>
+    
+    <h:body id="page">
+	    
+	<h:form id="form">
+    <p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+    <p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+    
+	<p:remoteCommand name="uploadResourceFile" action="#{login.uploadResourceFile}"/>
+
+		<p:outputPanel style="display:block; text-align: center;background-color: Orange;height: 50px;">
+		 <h3>My Account</h3>
+	    </p:outputPanel>
+		
+	<p:outputPanel style="background-color: SteelBlue;color: White;">
+	        <h:outputText style="display: block;text-align: right;font-style: italic;font-size:small;padding-right: 20px" value="Logged in as #{login.userAccount.accountTypeAsString}  "/>	
+	</p:outputPanel>
+	
+		<p:toolbar id="toolbar">
+		
+		 <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            	<p:menuitem value="Settings" rendered="#{login.userAccount.accountTypeAsString != 'guest'}" update="myAccountData" oncomplete="PF('myAccount').show()" />	            
+	            </p:menuButton>
+	            <p:commandButton value="EXIT" icon="ui-icon-closethick" action="#{login.closeMyAccount}" style="width:100px;background:none;" styleClass="customStyleButton" />
+	     </f:facet>
+    	</p:toolbar>
+ 
+ 
+ 
+   <p:dialog id="myAcc" position="center" widgetVar="myAccount" modal="true" resizable="false" header="My Account" closable="false"> 
+
+        	<h:panelGrid id="myAccountData" columns="2" cellpadding="5">
+        
+             <h:outputText style="font: bold 18px arial, sans-serif;" value="Account data"></h:outputText>
+             <h:outputText></h:outputText>
+        
+            <h:outputText style="width:100px;" value="Login :"></h:outputText>
+            <h:inputText readonly="true" value="#{login.userAccount.userID}" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="Email :"></h:outputText>
+            <h:inputText value="#{login.cEmail}" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="New Password :"></h:outputText>
+            <p:password disabled="#{not login.cPasswdActive}" value="#{login.cPasswd_1a}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="width:100px;" value="Repeat Password :"></h:outputText>
+            <p:password disabled="#{not login.cPasswdActive}" value="#{login.cPasswd_2a}" required="false" style="width:225px;"/>
+            
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Quota"></h:outputText>
+            <h:outputText value=""></h:outputText>
+            
+            <h:outputText style="" value="Max resource uploads"></h:outputText>
+ 			<h:outputText value="#{login.userAccount.quotas.maxResourceUploads}"></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max total resource files"></h:outputText>
+ 			<h:outputText value="#{login.userAccount.quotas.maxResourceFiles}"></h:outputText>
+ 			
+ 			<h:outputText style="" value="Max upload filesize [in MB] "></h:outputText>
+ 			<h:outputText value="#{login.userAccount.quotas.maxResourceUploadSize}"></h:outputText>
+                              
+	        </h:panelGrid>
+	        
+	       <p:separator style="width=250px;size=8;align=center"/>
+	        
+	       <p:commandButton action="#{login.saveMyAccount}" value="SAVE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('myAccount').hide()"/>
+       	   <p:commandButton update="myAccountData" action="#{login.changeUserPassword}" value="CHANGE PASSWORD" style="width:270px;background:none;margin-left:3px" styleClass="customStyleButton" />
+       
+	 
+	 </p:dialog>   	
+   
+    </h:form>
+    </h:body>
+</html>

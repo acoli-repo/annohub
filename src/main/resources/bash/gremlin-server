@@ -1,0 +1,6 @@
+#!/bin/bash
+# args1: GREMLIN_HOME (must contain gremlin-server.sh)
+# args2: start | stop | status | restart
+
+cd $1
+./gremlin-server.sh $2

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+   
+
+    <h:head>
+    </h:head>
+    
+    <style>
+	.ui-picklist .ui-picklist-list{
+	height:250px;
+	width: 320px
+	}
+	a:link {text-decoration: none;}
+	
+	.menu .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+	}
+	
+	.menu2 .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+    text-align: left;
+	}
+	
+	.panel .ui-selectonemenu-list { 
+    font-size: 13px;
+    }
+    
+	</style>
+	
+    <h:body id="page">
+		<!--  css table parameter : https://www.w3schools.com/Css/css_table.asp , https://datatables.net/examples/advanced_init/html5-data-attributes.html -->
+    	 <!-- h1 align="center">Annohub - Editor</h1 --> 
+ 		
+		<h:form id="form">
+		
+		<p:outputPanel style="color: white; text-align: center;background-color: Blue;width:100%;height: 55px;">
+		 <h3>Backup Manager</h3>
+	    </p:outputPanel>
+	    <p:outputPanel style="background-color:  Blue;">
+	        <h:outputText style="font-style: italic;color: white;display: block;text-align: center" value=""/>	
+		</p:outputPanel>
+		
+		<p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+		<p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+		
+		<p:remoteCommand name="uploadFile" actionListener="#{login.uploadFile}"/>
+		
+		
+		<p:toolbar id="toolbar">
+		
+		 <f:facet name="left">
+	            <p:menuButton value="" icon="ui-icon-wrench">
+	            	
+	            	<p:menuitem value="Configuration" icon="ui-icon-gear" oncomplete="PF('backupOptionsDialog').show()" />
+	           		<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+	            
+	            </p:menuButton>
+	            
+	            <p:commandButton value="EXIT" icon="ui-icon-closethick" action="#{login.closeBackupManager}" style="width:100px;background:none;" styleClass="customStyleButton" />	                  
+	     
+	        </f:facet>
+    	</p:toolbar>
+    	
+    	
+   		<script type="text/javascript">
+	    //<![CDATA[
+		function start() {
+		    PF('statusDialog').show();
+		}
+		 
+		function stop() {
+		    PF('statusDialog').hide();
+		}
+		    //]]>
+		</script>
+		
+		<p:dialog id="progressbar" modal="true" widgetVar="statusDialog" header="#{backupbean.statusDialogMessage}" draggable="false" closable="false" resizable="false" style="text-align:center;">
+    		<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
+		</p:dialog>
+		
+		
+		<p:blockUI id="block-1" block="form" trigger="backupBT">
+		Backup in progress ... <br />
+		</p:blockUI>
+   
+   	 
+		<p:dataTable 
+   			widgetVar="backupList" 
+			id="a7831"
+   			value="#{backupbean.backupList}"
+   			var="backup"
+   			editable="false"
+   			tableStyle="table-layout:auto"
+   			reflow="false"
+   		 	paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            paginator="true"
+            rows="10"
+            style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+            sortBy="#{backup.date.time}"
+            sortOrder="descending"
+            rowKey="#{backup.name}"
+            filteredValue="#{backupbean.filteredBackupList}"
+            selection="#{backupbean.selectedDummyBackup}" selectionMode="single"
+            first="#{backupbean.tableFirstPage}"
+            >
+              
+            <p:ajax event="contextMenu" listener="#{backupbean.onContextMenu}" /> 
+              
+   			<p:column width="200" style="text-align:center" headerText="Name" resizable="true" sortBy="#{backup.name}" filterMatchMode="startsWith" filterBy="#{backup.name}">
+   			<h:outputText value="#{backup.name}" />
+   			</p:column>
+   			
+   			<p:column width="200" style="text-align:center" headerText="Date" resizable="true" sortBy="backup.date.time" filterMatchMode="contains" filterBy="#{backup.date}">
+   			<h:outputText value="#{backup.date}" />
+   			</p:column>
+   			
+   			<p:column width="100" style="text-align:center" headerText="Gremlin version" resizable="true" sortBy="#{backup.versionGremlin}" filterMatchMode="contains" filterBy="#{backup.versionGremlin}">
+   			<h:outputText value="#{backup.versionGremlin}" />
+   			</p:column>
+   			
+   			<p:column width="100" style="text-align:center" headerText="Reg-DB version" resizable="true" sortBy="#{backup.versionDBReg}" filterMatchMode="contains" filterBy="#{backup.versionDBReg}">
+   			<h:outputText value="#{backup.versionDBReg}" />
+   			</p:column>
+   			
+   			<p:column width="100" style="text-align:center" headerText="Data-DB version" resizable="true" sortBy="#{backup.versionDBData}" filterMatchMode="contains" filterBy="#{backup.versionDBData}">
+   			<h:outputText value="#{backup.versionDBData}" />
+   			</p:column>
+   		
+            </p:dataTable>
+
+		 
+		 
+		 <p:contextMenu id="backupFunctions" widgetVar="backupFunctions_wv" for="a7831">
+    	 <p:menuitem update="progressbar" value="New" action="#{backupbean.initCreateBackup}" icon="ui-icon-plus" oncomplete="PF('createBackup').show()" />
+		 <p:menuitem value="Delete" icon="ui-icon-trash" action="#{backupbean.deleteBackup}" update="a7831">
+		 <p:confirm header="Confirm backup delete" message="#{backupbean.deleteMessage}" icon="ui-icon-alert"/>
+		 </p:menuitem>
+		 <p:menuitem  value="Restore" icon="ui-icon-play" action="#{backupbean.restoreBackup}"
+		 ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);">
+		 <p:confirm update="progressbar" header="Confirm backup restore" message="#{backupbean.restoreMessage}" icon="ui-icon-alert"/>
+		 </p:menuitem>
+	     </p:contextMenu>
+	     
+	     
+	   <p:dialog header="Create New Backup" id="b9092" closable="false" modal="true" widgetVar="createBackup" resizeable="false">
+       
+       	 
+       	 <p:panelGrid columns="2" style="margin-bottom: 5px" columnClasses="label,value">
+         	<h:outputText value="Backup name " />
+            <h:inputText value="#{backupbean.newBackupName}" style="min-width:277px;"/>
+            <h:outputText value="Gremlin version " />
+            <h:inputText value="#{backupbean.newBackupGremlinVersion}" style="min-width:277px;"/>
+            <h:outputText value="Registry DB version " />
+            <h:inputText value="#{backupbean.newBackupRegDBVersion}" style="min-width:277px;"/>
+            <h:outputText value="Data DB version " />
+            <h:inputText value="#{backupbean.newBackupDataDBVersion}" style="min-width:277px;"/>
+    
+         <h:outputText value="Backup Comment" />
+         <p:inputTextarea rows="2" style="min-width:277px;" value="#{backupbean.newBackupComment}"/>
+         </p:panelGrid> 
+
+	       <p:commandButton value="CANCEL" style="margin-right: 3px;width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('createBackup').hide()"/> 
+	       <p:commandButton id="backupBT" action="#{backupbean.createNewBackup}" update="a7831" value="START BACKUP" style="width:180px;background:none;" styleClass="customStyleButton" onsuccess="PF('createBackup').hide()"
+	       ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"/>
+  		 </p:dialog>
+  		 
+  		 
+  		 <p:dialog id="backupOptions" position="center" widgetVar="backupOptionsDialog" modal="true" resizable="false" header="Backup Options" closable="false"> 
+
+        	<h:panelGrid  columns="2" cellpadding="5">
+        
+            <h:outputText style="font: bold 18px arial, sans-serif;" value="Backup Folder"></h:outputText>
+            <h:outputText value="#{backupbean.backupDirectory}"></h:outputText>
+            
+            <h:outputText style="" value="Auto backup interval [in days]"></h:outputText>
+            <p:spinner onkeypress="return false" size="2" maxlength="2" min="0" max="60" value="#{backupbean.autobackupInterval}" />         
+                      
+	        </h:panelGrid>
+	        
+	        <p:separator style="width=250px;size=8;align=center"/>
+	        
+	       <p:commandButton action="#{backupBean.saveBackupOptions}" value="SAVE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('backupOptionsDialog').hide()"/>
+       	   <p:commandButton value="CANCEL" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('backupOptionsDialog').hide()"/>
+       
+	 </p:dialog>
+  		  
+	 <p:confirmDialog global="true">
+		<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+		icon="ui-icon-check"/>
+		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+		icon="ui-icon-close"/>
+	  </p:confirmDialog>  
+    		
+ 
+	</h:form>
+		 
+    </h:body>
+</html>

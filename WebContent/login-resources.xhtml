@@ -1,0 +1,1230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+     <!-- https://stackoverflow.com/questions/28427450/how-to-get-filtered-value-on-primefaces-lazy-datatable -->
+     <!-- tableStyle="width:auto" resizableColumns="true" -->
+     <!-- https://www.w3.org/RDF/icons/ -->
+     <!-- https://json-ld.org/images/ -->
+     <!-- style="display: block; margin: 5px auto;margin-right:20px" -->
+     <!-- https://www.primefaces.org/showcase-ext/sections/exporter/customExporter.jsf -->
+     <!-- https://github.com/primefaces-extensions/showcase/blob/master/src/main/java/org/primefaces/extensions/showcase/util/PDFCustomExporter.java -->
+     <!-- https://stackoverflow.com/questions/33989546/wheres-the-implementation-of-exportercontroller-customexporter-in-peexport -->
+     <!-- http://jj-blogger.blogspot.de/2014/05/developing-data-export-utility-with.html -->
+     <!-- https://stackoverflow.com/questions/7822758/export-to-excel-jsf-and-primefaces -->
+     <!-- old <p:dataExporter type="json-ld" target="a4711" fileName="json"/> -->
+     <!-- old <p:dataExporter type="rdf" target="a4711" fileName="rdf"/> -->
+     
+     <!-- https://primefaces.org/showcase/ui/data/datatable/expansion.xhtml -->
+     <!-- https://primefaces.org/showcase/ui/data/datatable/filter.xhtml -->
+	 <!-- f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Cache-Control', 'no-cache, no-store')}" /-->
+	 <!-- icons http://jqueryui.com/themeroller/ -->
+	 <!-- http://incepttechnologies.blogspot.com/2014/08/how-to-call-method-during-various-jsf.html -->
+	 <!-- old <p:dialog focus="save_" closable="false" header="Edit Resource" widgetVar="editResource" modal="true" showEffect="slide" hideEffect="drop" resizable="false"-->
+	 <!-- https://stackoverflow.com/questions/10796203/applying-styles-to-header-in-pdatatable -->
+ 	 
+ 	 <!-- p:menuitem value="Download" icon="ui-icon-circle-arrow-s" ajax="" -->
+	 <!-- p:fileDownload value="#{loginrinfo.file}" /-->
+	 <!-- /p:menuitem-->
+	 <!-- p:menuitem value="Restore" icon="ui-icon-extlink" onclick="jsfileUpload();"/-->
+
+    <h:head>
+    </h:head>
+    
+    <style>
+	.ui-picklist .ui-picklist-list{
+	height:250px;
+	width: 320px
+	}
+	a:link {text-decoration: none;}
+	
+	.menu .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+	}
+	
+	.menu2 .ui-selectonemenu-label { 
+    background: white;
+    font-size: 13px;
+    text-align: left;
+	}
+	
+	.panel .ui-selectonemenu-list { 
+    font-size: 13px;
+    }
+    
+	</style>
+	
+    <h:body id="page">
+		<!--  css table parameter : https://www.w3schools.com/Css/css_table.asp , https://datatables.net/examples/advanced_init/html5-data-attributes.html -->
+    	 <!-- h1 align="center">Annohub - Editor</h1 --> 
+ 		
+		<h:form id="form">
+		
+		<p:outputPanel style="color: white; text-align: center;background-color: SteelBlue;width:100%;height: 55px;">
+		 <h3>Annohub - Editor</h3>
+	    </p:outputPanel>
+	    <p:outputPanel style="background-color:  Orange;">
+	        <h:outputText style="font-style: italic;color: black;display: block;text-align: center" value="Resource files"/>	
+		</p:outputPanel>
+		
+		<p:growl id="msgs" showDetail="true" autoupdate="true" globalOnly="true"/>
+		<p:growl id="msgsSticky" showDetail="true" autoupdate="true" globalOnly="true" sticky="true"/>
+		<p:remoteCommand name="onTreeNodeSelect"/>
+		<p:remoteCommand name="contextMenu"/>
+		<p:remoteCommand name="uploadFile" actionListener="#{loginrinfo.uploadFile}"/>
+		<p:remoteCommand name="changeLanguageColumn"/>
+		<p:remoteCommand name="uploadResourceFile" action="#{loginrinfo.uploadResourceFile}"/>
+		<p:remoteCommand name="addManualISO" action="#{loginrinfo.addManualISO}" update="a4727a a4715"/>
+		<p:remoteCommand name="addManualISORdf" action="#{loginrinfo.addManualISORdf}" update="a4727 a4715"/>
+		
+		<p:remoteCommand name="updateFilteredValue" update="a4711"/>		
+		
+		<h:outputScript library="js" name="fileUpload.js" />
+
+		
+		
+		<p:toolbar id="toolbar">
+	       
+	        <f:facet name="left">
+	        
+	        <p:menuButton value="" icon="ui-icon-wrench">
+	            <p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>	
+	         </p:menuButton>	        
+	         <p:commandButton value="Exit" icon="ui-icon-closethick" action="#{login.closeEdit}" />
+	        
+	        </f:facet>
+	         <f:facet name="right">
+	         <p:commandButton id="toggler" type="button" value="Columns" icon="pi pi-align-justify" />
+        	<p:columnToggler datasource="a4711" trigger="toggler">
+        	<p:ajax event="toggle" listener="#{loginrinfo.onToggle}" />
+        	</p:columnToggler>
+	          </f:facet>
+ 
+    	</p:toolbar>
+		
+		
+		
+	
+    		<p:dataTable 
+    			widgetVar="resourceList" 
+				id="a4711"
+    			value="#{loginrinfo.resourceInfoList}" 
+    			var="r"
+    			editable="false"
+    			editMode="cell"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{r.fileInfo.processingEndDate}"
+                sortOrder="descending"
+                filteredValue="#{loginrinfo.filteredResourceInfoList}"
+                rowKey="#{r.resourceID}"
+ 				selection="#{loginrinfo.selectedDummyResource}" selectionMode="single"
+ 				first="#{loginrinfo.tableFirstPage}"
+                >
+                
+                
+                <!-- not used ! -->
+                <!-- comments within elements (e.g. column) may break features such as filtering !!! -->
+                <!-- <f:selectItems value="#{loginrinfo.models}" var="man" itemLabel="#{man}" itemValue="#{man}" /> -->
+                <!-- rowEdit, rowEditCancel, rowSelect -->
+  
+       		   <p:ajax event="contextMenu" listener="#{loginrinfo.onContextMenu}"/>
+       		   
+       		   <p:ajax event="rowDblselect" listener="#{loginrinfo.onContextMenu}" oncomplete="PF('editResource').show()"/>
+       		   
+       		   <p:ajax event="filter" oncomplete="updateFilteredValue();" />
+       		   
+       		  
+	            <!-- old rdf & json-ld button was here ! -->
+	    		
+	    		<p:column style="width:16px" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[0]}">
+            		<p:rowToggler />
+        		</p:column>
+        		
+        		<p:column headerText="Status" style="max-width:80px" sortBy="#{r.fileInfo.processState}" filterMatchMode="exact" filterBy="#{r.fileInfo.processState}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[1]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu  onchange="PF('resourceList').filter()" styleClass="menu2" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.processingStates}" />
+                </p:selectOneMenu>
+            	</f:facet>
+				  <h:outputText value="#{r.fileInfo.processState}" style="word-wrap:break-word;"/>	
+				</p:column>
+	    		
+	    		<p:column style="min-width: 200px;text-align:center" headerText="Metadata URL" resizable="true" sortBy="#{r.metaDataURL}" filterMatchMode="contains" filterBy="#{r.metaDataURL}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[2]}">
+    			 <h:outputLink value="#{r.metaDataURL}" target="_blank">
+                <h:outputText value="#{r.metaDataURL}" style="word-wrap:break-word;"/>
+                </h:outputLink>
+    			</p:column>
+	           
+    			<p:column style="max-width: 120px;text-align:center" headerText="Download URL" sortBy="#{r.dataURL}" resizable="true" filterMatchMode="contains" filterBy="#{r.dataURL}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[3]}">
+    			  <h:outputLink value="#{r.dataURL}" target="_blank">
+                <h:outputText value="#{r.dataURL}" style="word-wrap:break-word;"/>
+                </h:outputLink>
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="File" resizable="true" sortBy="#{r.fileInfo.relFilePath}" filterMatchMode="contains" filterBy="#{r.fileInfo.relFilePath}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[4]}">
+    			<h:outputText value="#{r.fileInfo.relFilePath}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Process Format" resizable="true" sortBy="#{r.fileInfo.processingFormat}" filterMatchMode="contains" filterBy="#{r.fileInfo.processingFormat}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[5]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItem itemLabel="RDF" itemValue="RDF"/>
+                    <f:selectItem itemLabel="CONLL" itemValue="CONLL"/>
+                    <f:selectItem itemLabel="XML" itemValue="XML"/>
+                </p:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{r.fileInfo.processingFormat}"/>
+            	</p:column>
+				
+    			<p:column style="max-width:150px;text-align:center" headerText="ISO-639-3" resizable="true" sortBy="#{r.fileInfo.languageMatchingsAsString}" filterMatchMode="contains" filterBy="#{r.fileInfo.languageMatchingsAsString}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[6]}">
+    			  <h:outputText value="#{r.fileInfo.languageMatchingsAsStringShort}" style="word-wrap:break-word;"/>
+    			</p:column>
+    			
+				<p:column style="text-align:center" headerText="Annotation Models" resizable="true" sortBy="#{r.fileInfo.modelMatchingsAsString}" filterMatchMode="contains" filterBy="#{r.fileInfo.modelMatchingsAsString}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[7]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.models}" var="model" itemLabel="#{model.id}" itemValue="#{model}"/>
+                </p:selectOneMenu>
+            	</f:facet>
+            	
+                <h:outputText value="#{r.fileInfo.modelMatchingsAsString}"/>
+    		    </p:column>
+            	
+            	
+            	<p:column style="text-align:center" headerText="Vocabulary" resizable="true" sortBy="#{r.fileInfo.vocabularyMatchingsAsString}" filterMatchMode="contains" filterBy="#{r.fileInfo.vocabularyMatchingsAsString}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[8]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.vocabularies}" />
+                </p:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{r.fileInfo.vocabularyMatchingsAsString}" />
+            	</p:column>
+            	
+            	<p:column style="text-align:center" headerText="Metadata Source" resizable="true" sortBy="#{r.resourceMetadata.metadataSource}" filterMatchMode="exact" filterBy="#{r.resourceMetadata.metadataSource}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[9]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.metadataSources}" />
+                </p:selectOneMenu>
+            	</f:facet>
+    			<h:outputText value="#{r.resourceMetadata.metadataSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Metadata State" resizable="true" sortBy="#{r.resourceMetadata.metadataState}" filterMatchMode="exact" filterBy="#{r.resourceMetadata.metadataState}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[10]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.metadataStates}" />
+                </p:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{r.resourceMetadata.metadataState}" />
+            	</p:column>
+            	
+    			<p:column style="text-align:center;max-width:60px;" headerText="Megabytes" resizable="true" sortBy="#{r.httpContentLength}" filterMatchMode="contains" filterBy="#{r.httpContentLengthAsMBytes}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[11]}">
+    			<h:outputText value="#{r.fileInfo.fileSizeAsMBytes}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Type" resizable="true" sortBy="#{r.fileInfo.resourceType}" filterMatchMode="contains" filterBy="#{r.fileInfo.resourceType}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[12]}">
+    			<f:facet name="filter">
+                <p:selectOneMenu onchange="PF('resourceList').filter()" styleClass="menu" panelStyleClass="panel">
+                    <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.resourceTypes}" />
+                </p:selectOneMenu>
+                </f:facet>
+    			<h:outputText value="#{r.fileInfo.resourceType}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Comment" resizable="true" sortBy="#{r.fileInfo.comment}" filterMatchMode="contains" filterBy="#{r.fileInfo.comment}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[13]}">
+    			<h:outputText value="#{r.fileInfo.comment}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;" headerText="Processed" resizable="true" sortBy="#{r.fileInfo.processingStartDate.time}" filterMatchMode="contains" filterBy="#{r.fileInfo.processingStartDate}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[14]}">
+    			<h:outputText value="#{r.fileInfo.processingStartDate}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Processing Time" resizable="true" sortBy="#{r.fileInfo.processingDuration.seconds}" filterMatchMode="contains" filterBy="#{r.fileInfo.processingDuration}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[15]}">
+    			<h:outputText value="#{r.fileInfo.processingDuration}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Accepted" resizable="true" sortBy="#{r.fileInfo.acceptedDate.time}" filterMatchMode="contains" filterBy="#{r.fileInfo.acceptedDate}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[16]}">
+    			<h:outputText value="#{r.fileInfo.acceptedDate}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Last Updated" resizable="true" sortBy="#{r.fileInfo.lastUpdated.time}" filterMatchMode="contains" filterBy="#{r.fileInfo.lastUpdated}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[17]}">
+    			<h:outputText value="#{r.fileInfo.lastUpdated}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Update text" resizable="true" sortBy="#{r.fileInfo.lastUpdated.time}" filterMatchMode="contains" filterBy="#{r.fileInfo.lastUpdatedText}" visible="#{loginrinfo.guiConfiguration.visibleColumnsMain[18]}">
+    			<h:outputText value="#{r.fileInfo.lastUpdatedText}" />
+    			</p:column>
+    			
+    			<p:rowExpansion>
+    			
+    			<p:dataTable rendered="#{not empty r.fileInfo.languageMatchingURLs}" value="#{r.fileInfo.languageMatchingURLs}" var="language">
+		        <f:facet name="header">
+		            Languages
+		        </f:facet>
+		        <p:column headerText="">
+		        <h:outputLink value="#{language.substring(0,32)}" target="_blank">
+                <h:outputText value="#{language}" />
+                </h:outputLink>
+		        </p:column>
+		 
+		    	</p:dataTable>
+    			
+		    	
+		    	<p:treeTable value="#{r.fileInfo.selectedModelMatchingsAsTree}" 
+		    	var="fileResult" resizableColumns="true" liveResize="true">
+		        <f:facet name="header">
+		            Annotations
+		        </f:facet>
+		        
+		        <p:column headerText="Found Tag/Class">
+		            <h:outputText value="#{fileResult.foundTagOrClass}" />
+		        </p:column>
+		        <p:column headerText="Matching Tag/Class">
+		        	<h:outputLink value="#{fileResult.matchingTagOrClass}" target="_blank">
+                		<h:outputText value="#{fileResult.matchingTagOrClass}" />
+                	</h:outputLink>
+		        </p:column>
+		        
+		    	<p:column headerText="Closest Olia Class" style="width: 160px">
+		        <h:outputLink value="#{fileResult.bestMatchingOliaClass}" target="_blank">
+		            <h:outputText value="#{fileResult.bestMatchingOliaClassAsString}" style="word-wrap:break-word;"/>
+                	</h:outputLink>
+		        </p:column>
+
+		        
+		        <p:column headerText="Count" style="width: 30px">
+		            <h:outputText value="#{fileResult.matchCount}" />
+		        </p:column>
+		 
+		    	</p:treeTable>
+    			
+    			
+    			</p:rowExpansion>
+
+    		</p:dataTable>
+    		
+    		<p:contextMenu for="a4711">
+    			<p:menuitem value="Edit" update="a4715" icon="ui-icon-pencil" oncomplete="PF('editResource').show()"/>
+    			<p:menuitem value="Sample" update="a4830" icon="ui-icon-comment" oncomplete="PF('showSample').show()"/>
+    			<p:menuitem rendered="#{loginrinfo.canEdit}" value="Accept" update="a4711" icon="ui-icon-check" action="#{loginrinfo.acceptResource}"/>
+		        <p:menuitem rendered="#{loginrinfo.canEdit}" value="Disable" update="a4711" icon="ui-icon-closethick" action="#{loginrinfo.disableResource}"/>
+		        <p:menuitem rendered="#{loginrinfo.canEdit}" value="Function" update="a5000" icon="ui-icon-copy" oncomplete="PF('multiACDDialog').show()"/>
+		         <p:menuitem rendered="#{loginrinfo.canEdit}" value="Delete File" update="a4711" icon="ui-icon-trash" action="#{loginrinfo.deleteResourceFile}" oncomplete="PF('resourceList').filter();">
+		        <p:confirm header="Delete File ?" message="Sure?" icon="ui-icon-alert"/>
+		        </p:menuitem>
+		    </p:contextMenu>
+
+			<p:dialog focus="save_" closable="false" header="Edit Resource" widgetVar="editResource" modal="true" showEffect="" hideEffect="" resizable="false">
+			        <p:outputPanel id="a4715" style="text-align:left">
+			            <p:panelGrid rendered="#{not empty loginrinfo.selectedResource}" columnClasses="label,value" style="background-color:#c7d4de">
+				
+							<p:row>
+							<p:column>
+			                <h:outputText value="Metadata URL" style="text-align:left;width:100px;"/>
+							</p:column>	           
+			                <p:column>
+			                <h:inputText disabled="true" value="#{loginrinfo.metaDataURLGui}" style="min-width:600px;width:100%;"/>
+			           		</p:column>
+			           		<p:column>
+			                <h:outputText value="" style="width:30px;background:none;"/>
+			           		</p:column>
+			                </p:row>
+			                
+			                <p:row>
+			                <p:column>
+			              	<h:outputText value="Download URL" style="text-align:left;width:100px;"/>
+			              	</p:column>
+			              	 <p:column>
+			                <h:inputText disabled="true" value="#{loginrinfo.dataURLGui}" style="min-width:600px;width:100%;"/>
+			                </p:column>
+			              
+			                <p:column>
+			                	<h:outputText value="" style="width:30px;background:none;"/>
+			 				</p:column>
+			               
+			              	</p:row>
+			              	
+			              	<p:row>
+			                <p:column>
+			 				<h:outputText value="Languages" style="text-align:left;width:100px;"/>
+			 				</p:column>
+			 				<p:column>
+			 				<h:outputText value="#{loginrinfo.selectedResource.fileInfo.languageMatchingsAsStringShort}" style="width:600px;"/>
+			 				</p:column>
+			 				<p:column>
+			 				<p:commandButton style="width:30px;background:none;" styleClass="customStyleButton" icon="ui-icon-pencil" update="a4727 a4787a" 
+			 				oncomplete="if (#{loginrinfo.selectedResource.fileInfo.isConllFile}) {PF('editConllColumnsDialog2').show()} else {PF('editResourceLanguages').show()}"/>
+			 				 </p:column>
+			                </p:row>
+			                
+			 				<p:row>
+			                <p:column> 
+			                <h:outputText value="Models" style="text-align:left;width:100px;"/>
+			                </p:column>
+			                <p:column>
+			                <h:outputText id="models_" value="#{loginrinfo.selectedResource.fileInfo.modelMatchingsAsString}" style="width:600px;"/>
+			                </p:column>
+			                <p:column>
+			                <p:commandButton action="#{loginrinfo.setSelectedModels}" style="width:30px;background:none;" styleClass="customStyleButton" icon="ui-icon-pencil" update="a4787 a4787r" 
+			           		oncomplete="if (#{loginrinfo.selectedResource.fileInfo.isConllFile}) {PF('editConllColumnsDialog').show()} else {PF('editRdfModelsDialog').show()}"/>
+			                 </p:column>
+			                </p:row>
+			                
+			                <p:row>
+			                <p:column>
+			              	<h:outputText value="Comments" style="text-align:left;width:100px;"/>
+			              	</p:column>
+			              	 <p:column>
+			                <h:inputText disabled="false" value="#{loginrinfo.commentGui}" style="min-width:600px;width:100%;"/>
+			                </p:column>
+			              
+			                <p:column>
+			                <h:outputText value="" style="width:30px;background:none;"/>
+			           		</p:column>
+			              	</p:row>
+			 			   
+			            </p:panelGrid>
+			             <p:commandButton id="cancel_" action="#{loginrinfo.cancelResourceEdit}" update="a4715" value="CANCEL" style="width:100px;background:none;" styleClass="customStyleButton"  oncomplete="PF('editResource').hide()"/>	                              
+			 			 <p:commandButton disabled="#{not loginrinfo.canEdit}" id="save_" update="a4711 a4715 msgs" value="SAVE" style="width:100px;background:none;" styleClass="customStyleButton" action="#{loginrinfo.saveResourceEdit}" oncomplete="PF('editResource').hide()"/>	                              
+			 			 <p:commandButton disabled="#{not loginrinfo.canEdit}" id="save_a" update="a4711 a4715 msgs" value="SAVE To ALL" style="width:200px;background:none;" styleClass="customStyleButton" oncomplete="PF('save2AllFiles').show()"/>
+			        </p:outputPanel>
+			 </p:dialog>
+
+ <p:dialog header="Edit RDF Languages" modal="true" showEffect="" hideEffect="" widgetVar="editResourceLanguages" resizeable="false"> 
+ <p:panelGrid id="a4786a" style="margin-bottom:10px;with:100%" columnClasses="label,value">		
+		<p:row style="width:100%">
+		<p:column style="width:auto;text-align:center;">
+		<h:outputText value="ISO" />
+		</p:column>
+		<p:column>
+		<h:inputText id="manualISOInput1" value="#{loginrinfo.manualISOInput}" style="width:30px">
+		<p:ajax event="keyup" update="isoLanguageRdf" listener="#{loginrinfo.computeISOLanguage}"/>
+		</h:inputText>
+		</p:column>
+		<p:column style="width:100%;min-width:400px;text-align:center;">
+		<h:outputText id="isoLanguageRdf" value="#{loginrinfo.isoLanguageLabel}"/>
+		</p:column>
+		
+		<p:column style="width:auto;text-align:center;">
+		<p:commandButton value="Add" action="#{loginrinfo.addManualISO}" style="width:auto" update="a911 a4715 manualISOInput1"/>
+		</p:column>
+		
+		
+		</p:row>
+		</p:panelGrid>
+		
+	   	<p:outputPanel id="a4727" style="text-align:left;">
+	   	
+	   		<p:dataTable 
+    			widgetVar="rdfResourceLanguages" 
+				id="a911"
+    			value="#{loginrinfo.selectedResource.fileInfo.languageMatchings}" 
+    			var="lm"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+    			editMode="cell"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+                rows="5"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal;"
+                rowKey="#{lm.tableID}"
+ 				selection="#{loginrinfo.selectedDummyLanguage}" selectionMode="single"
+                >
+                
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectResourceLanguage}"/>
+                
+                <p:column style="text-align:center;max-width:60px;" headerText="ISO639-3">
+    			<h:outputText value="#{lm.languageISO639Identifier}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:180px;" headerText="Language">
+    			<h:outputText value="#{lm.languageNameEn}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:60px;" headerText="Detected by">
+    			<h:outputText value="#{lm.detectionMethod}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:80px;" headerText="From">
+    			<h:outputText value="#{lm.detectionSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:130px;" headerText="Property">
+    			<h:outputText value="#{lm.rdfProperty}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:80px;" headerText="Probability">
+    			<h:outputText value="#{lm.averageProb}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:80px;" headerText="Count">
+    			<h:outputText value="#{lm.hitCount}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:60px;" headerText="Selected">
+    			<h:outputText value="#{lm.selected}" />
+    			</p:column>
+    			
+    			<p:column style="width:60px;text-align:center;" headerText="Date">
+				<h:outputText value="#{lm.localDate}"/>
+				</p:column>
+				
+				<p:column style="width:80px;text-align:center;" headerText="Update text">
+				<h:outputText value="#{lm.updateText}"/>
+				</p:column>
+    			
+                </p:dataTable>
+	   	
+	    </p:outputPanel>
+ </p:dialog>
+ 
+ 
+ <p:contextMenu for="a911">
+        	<p:menuitem value="Select" actionListener="#{loginrinfo.setResourceLanguage}" icon="ui-icon-check" update="a911 a4715 msgs"/>
+        	<p:menuitem value="Unselect" actionListener="#{loginrinfo.unsetResourceLanguage}" icon="ui-icon-closethick" update="a911 a4715 msgs"/>
+        	<p:menuitem value="Delete" actionListener="#{loginrinfo.deleteResourceLanguage}" icon="ui-icon-trash" update="a911 a4715 msgs"/>
+ </p:contextMenu>
+ 
+ 
+ <p:dialog header="Edit CONLL Languages" id="a4787a" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="editConllColumnsDialog2" resizeable="false">	
+ <p:panelGrid id="a4786" rendered="#{(not empty loginrinfo.selectedResource) and (loginrinfo.selectedResource.fileInfo.isConllFile == true)}" style="width:100%;margin-bottom:10px" columnClasses="label,value">		
+		<p:row style="width:100%">
+		<p:column style="width:50px;background-color:#cacae3;text-align:left;">
+		<h:outputText value="Column" style="font-size:18px;font-weight:bold;text-align:center;"/>
+		</p:column>
+		<p:column style="width:25px;text-align:left;">
+		<p:selectOneMenu id="console2" value="#{loginrinfo.selectedLangCol}" style="width:25px"
+		validator="#{loginrinfo.skipValidator}" >
+		<f:selectItems value="#{loginrinfo.conllColumnsWithText}"
+		       var="col" itemLabel="#{col}" itemValue="#{col}"/> 
+				<p:ajax listener="#{loginrinfo.changeLanguageColumn}" update="a4786 a4727a"/>
+		</p:selectOneMenu>
+		</p:column>
+		<p:column style="text-align:center;">
+		<p:menuButton value="Options" style="text-align:center;width:128px;font-size:15px">
+        <p:menuitem value="Add Column" update="a4900" icon="ui-icon-plus" oncomplete="PF('enterConllColumnDialogL').show()"/>
+        <p:menuitem value="Delete Column" action="#{loginrinfo.deleteConllLangColumn}" update="a4786" icon="ui-icon-trash">
+    	<p:confirm header="Delete column" message="Sure?" icon="ui-icon-alert"/>
+    	</p:menuitem>
+    	</p:menuButton>
+		</p:column>
+		<p:column style="width:auto;text-align:center;">
+		<p:commandButton value="Add" action="#{loginrinfo.addManualISO}" style="width:auto" update="a911c a4715 manualISOInput2"/>	                              
+		</p:column>
+		<p:column style="width:auto;text-align:center;">
+		<h:outputText value="ISO" />
+		</p:column>
+		<p:column>
+		<h:inputText id="manualISOInput2" value="#{loginrinfo.manualISOInput}" style="width:30px;text-align:center" validator="#{loginrinfo.skipValidator}">
+		<p:ajax event="keyup" update="isoLanguage" listener="#{loginrinfo.computeISOLanguage}"/>
+		</h:inputText>
+		</p:column>
+		<p:column style="width:100%;min-width:160px;text-align:center;">
+		<h:outputText id="isoLanguage" value="#{loginrinfo.isoLanguageLabel}"/>
+		</p:column>
+		</p:row>
+		</p:panelGrid>
+			<p:outputPanel id="a4727a" style="text-align:left;">
+	   		<p:dataTable 
+    			widgetVar="conllResourceLanguages" 
+				id="a911c"
+    			value="#{loginrinfo.selectedResource.fileInfo.getLanguageMatchingsForColumn(loginrinfo.selectedLangCol)}" 
+    			var="lm"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+    			editMode="cell"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+                rows="5"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal;"
+                rowKey="#{lm.tableID}"
+ 				selection="#{loginrinfo.selectedDummyLanguage}" selectionMode="single"
+                >
+                
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectResourceLanguage}" />
+                
+                <p:column style="text-align:center;max-width:60px;" headerText="ISO639-3">
+    			<h:outputText value="#{lm.languageISO639Identifier}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:180px;" headerText="Language">
+    			<h:outputText value="#{lm.languageNameEn}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:60px;" headerText="Detected by">
+    			<h:outputText value="#{lm.detectionMethod}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:100px;" headerText="From">
+    			<h:outputText value="#{lm.detectionSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:80px;" headerText="Probability">
+    			<h:outputText value="#{lm.averageProb}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:60px;" headerText="Selected">
+    			<h:outputText value="#{lm.selected}" />
+    			</p:column>
+    			
+    			<p:column style="width:60px;text-align:center;" headerText="Date">
+				<h:outputText value="#{lm.localDate}"/>
+				</p:column>
+				
+				<p:column style="width:80px;text-align:center;" headerText="Update text">
+				<h:outputText value="#{lm.updateText}"/>
+				</p:column>
+    			
+                </p:dataTable>
+	   	
+	    </p:outputPanel>
+ 
+ </p:dialog>  
+ 
+ <p:contextMenu for="a911c">
+        	<p:menuitem value="Select" actionListener="#{loginrinfo.setResourceLanguage}" icon="ui-icon-check" update="a911c a4715 msgs"/>
+        	<p:menuitem value="Unselect" actionListener="#{loginrinfo.unsetResourceLanguage}" icon="ui-icon-closethick" update="a911c a4715 msgs"/>
+        	<p:menuitem value="Delete" actionListener="#{loginrinfo.deleteResourceLanguage}" icon="ui-icon-trash" update="a911c a4715 msgs"/>
+ </p:contextMenu>
+	
+    		  
+ <p:dialog header="Add text column" id="a4900" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="enterConllColumnDialogL" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder" rendered="#{loginrinfo.selectedResource.fileInfo.isConllFile == true}">
+        <p:row>
+        <p:column>
+		<p:selectOneMenu value="#{loginrinfo.newLangConllColumn}" style="width:25px" validator="#{loginrinfo.skipValidator}">
+		<f:selectItems value="#{loginrinfo.freeConllColumns}"
+		       var="col" itemLabel="#{col}" itemValue="#{col}"/> 
+		</p:selectOneMenu>
+		</p:column>
+		<p:column>
+		<p:commandButton value="CANCEL" style="width:100px" oncomplete="PF('enterConllColumnDialogL').hide()"/>	                              
+		</p:column>		
+		<p:column>
+		<p:commandButton action="#{loginrinfo.addConllLangColumn}" update="a4900 a4900mc a4786" value="OK" style="width:100px" oncomplete="PF('enterConllColumnDialogL').hide()"/>	                              
+		</p:column>
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+  
+  
+  
+  <p:dialog header="Add model" id="a4900m" closable="false" modal="true" widgetVar="enterRdfModelDialog" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder">
+        <p:row>
+        <p:column>
+		<p:selectOneMenu value="#{loginrinfo.newModel}" style="width:100px">
+		<f:selectItem itemLabel="Select model" itemValue="#{null}" noSelectionOption="true" />
+		<f:selectItems value="#{loginrinfo.models}" var="model" itemLabel="#{model.id}" itemValue="#{model}"/>
+		</p:selectOneMenu>
+		</p:column>
+		<p:column>
+		<p:commandButton value="CANCEL" style="width:100px" oncomplete="PF('enterRdfModelDialog').hide()"/>	                              
+		</p:column>		
+		<p:column>
+		<p:commandButton action="#{loginrinfo.addResourceModel}" update="a792 a892 a4715 a4788" value="OK" style="width:100px" oncomplete="PF('enterRdfModelDialog').hide()"/>	                              
+		</p:column>
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+	
+  		  
+	 <p:confirmDialog global="true">
+		<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+		icon="ui-icon-check"/>
+		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+		icon="ui-icon-close"/>
+	</p:confirmDialog>
+    		
+    
+      <p:dialog header="Edit CONLL Models" id="a4787" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="editConllColumnsDialog" resizeable="false">
+   
+   		<p:panelGrid id="a4788" rendered="#{loginrinfo.selectedResource.fileInfo.isConllFile == true}" style="width:100%;margin-bottom:10px" columnClasses="label,value">
+		
+		<p:row style="width:100%">
+		<p:column style="width:125px;background-color:#cacae3;text-align:center;">
+		<h:outputText value="Column" style="font-size:20px;font-weight:bold;text-align:center;"/>
+		</p:column>
+		
+		<p:column style="width:125px;text-align:center;">
+		<p:selectOneMenu id="console" value="#{loginrinfo.selectedCol}" style="width:40px">
+		<f:selectItems value="#{loginrinfo.conllColumnsWithModels}"
+		       var="col" itemLabel="#{col}" itemValue="#{col}"/> 
+		<p:ajax event="change" listener="#{loginrinfo.setSelectedModels}" update="a4788 a792"/>
+		</p:selectOneMenu>
+		</p:column>
+		
+		<p:column style="text-align:center;">
+		<p:menuButton value="Options" style="text-align:center;width:128px;font-size:15px">
+        <p:menuitem value="Add Column" update="a4900mc" icon="ui-icon-plus" oncomplete="PF('enterConllColumnDialogM').show()"/>
+        <p:menuitem value="Delete Column" action="#{loginrinfo.deleteConllModelColumn}" update="a4788" icon="ui-icon-trash">
+    	<p:confirm header="Delete column" message="Sure?" icon="ui-icon-alert"/>
+    	</p:menuitem>
+    	</p:menuButton>
+		</p:column>
+		
+		<p:column style="width:125px;background-color:#cacae3;text-align:center;">
+		<h:outputText value="Selected Model" style="font-size:20px;font-weight:bold;"/>
+		</p:column>
+		
+		<p:column style="width:100%;min-width:104px;text-align:center;">
+		<h:outputText value="#{loginrinfo.selectedResource.fileInfo.getSelectedModelForColumn(loginrinfo.selectedCol).modelType}" style="font-size:20px;"/>
+		</p:column>
+		
+		<p:column style="width:104px;background-color:#cacae3;text-align:center;">
+		<h:outputText value="Coverage" style="font-size:20px;font-weight:bold;"/>
+		</p:column>
+		
+		<p:column style="width:104px;text-align:center;">
+		<h:outputText value="#{loginrinfo.selectedResource.fileInfo.getSelectedModelForColumn(loginrinfo.selectedCol).coverage}" style="font-size:20px;"/>
+		</p:column>
+		
+		<p:column style="width:104px;background-color:#cacae3;text-align:center;">
+		<h:outputText value="Detected by" style="font-size:20px;font-weight:bold;"/>
+		</p:column>
+		
+		<p:column style="width:104px;text-align:center;">
+		<h:outputText value="#{loginrinfo.selectedResource.fileInfo.getSelectedModelForColumn(loginrinfo.selectedCol).detectionMethod}" style="font-size:20px;"/>
+		</p:column>
+		
+		</p:row>
+		
+		</p:panelGrid>
+
+			<p:dataTable 
+    			widgetVar="conllModels" 
+				id="a792"
+    			value="#{loginrinfo.selectedModels}" 
+    			var="mm"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+    			tableStyle="table-layout:auto"
+    			reflow="false"
+                rows="10"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal"
+                rowKey="#{mm.tableID}"
+                sortBy="#{mm.coverage}"
+      			sortOrder="descending"
+ 				selection="#{loginrinfo.selectedDummyModel}" selectionMode="single"
+                >
+ 
+                <p:ajax event="rowToggle" listener="#{loginrinfo.selectResourceModel}"/>
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectResourceModel}"/>
+                
+                
+                <p:column style="width:16px">
+            		<p:rowToggler />
+        		</p:column>
+                
+                <p:column style="text-align:center;min-width:140px;" headerText="Model" sortBy="#{mm.modelType}">
+    			<h:outputText value="#{mm.modelType}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:75px;" headerText="Coverage" sortBy="#{mm.coverage}">
+    			<h:outputText value="#{mm.coverage}" />
+    			</p:column>
+    			
+    			
+    			<p:column style="text-align:center;min-width:60px;" headerText="Hit types" sortBy="#{mm.differentHitTypes}">
+    			<h:outputText value="#{mm.differentHitTypes}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:120px;" headerText="Sum" sortBy="#{mm.hitCountTotal}">
+    			<h:outputText value="#{mm.hitCountTotal}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:60px;" headerText="Excl. hit types" sortBy="#{mm.exclusiveHitTypes}">
+    			<h:outputText value="#{mm.exclusiveHitTypes}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:120px;" headerText="Sum" sortBy="#{mm.exclusiveHitCountTotal}">
+    			<h:outputText value="#{mm.exclusiveHitCountTotal}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:130px;" headerText="Detected-by" sortBy="#{mm.detectionMethod}">
+    			<h:outputText value="#{mm.detectionMethod}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:130px;" headerText="From" sortBy="#{mm.detectionSource}">
+    			<h:outputText value="#{mm.detectionSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:60px;" headerText="Selected" sortBy="#{mm.selected}">
+    			<h:outputText value="#{mm.selected}" />
+    			</p:column>
+    			
+    			<p:column style="width:60px;text-align:center;" headerText="Date" sortBy="#{mm.localDate}">
+				<h:outputText value="#{mm.localDate}"/>
+				</p:column>
+				
+				<p:column style="width:60px;text-align:center;" headerText="Update text" sortBy="#{mm.updateText}">
+				<h:outputText value="#{mm.updateText}"/>
+				</p:column>
+    			
+  
+  				<p:rowExpansion>
+    			<p:dataTable 
+    			widgetVar="fileResults" 
+				id="a792f"
+    			value="#{loginrinfo.selectedResource.fileInfo.fileResults.get(mm)}" 
+    			var="rf"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="false"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+                rows="1000"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal"
+                scrollable="true" scrollHeight="250"
+                sortBy="#{rf.foundTagOrClass}"
+                selection="#{loginrinfo.selectedDummyFileResult}" selectionMode="single"
+                rowKey="#{rf.tableID}"
+                >
+                         
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectFileResult}"/>
+         
+                <p:columnGroup type="header">
+			      <p:column headerText="Found Tag/Class" style="text-align:center;min-width:350px" />
+			      <p:column headerText="Matching Tag/Class" style="text-align:center;min-width:350px"/>
+			      <p:column headerText="Match count" style="text-align:center;max-width:80px"/>
+   				 </p:columnGroup>
+		    	
+		    	<p:column style="text-align:left">
+    			<h:outputText value="#{rf.foundTagOrClass}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:left">
+    			<h:outputText value="#{rf.matchingTagOrClass}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center">
+    			<h:outputText value="#{rf.matchCount}" />
+    			</p:column>
+    			
+		    	</p:dataTable> 
+		    	
+		    	<!-- a792f -->
+		    	
+    	 		<p:dialog header="BLL Info" id="a792d" closable="true" modal="false" widgetVar="showBllInfo2" resizeable="false">
+		 		<h:inputTextarea rows="30" cols="100" readonly="true" value="#{loginrinfo.bllInfoConll}"/>            
+		 		</p:dialog>
+    	 		
+    			</p:rowExpansion>
+                </p:dataTable>
+            
+		 </p:dialog>
+
+    	  <p:contextMenu for="a792">
+        	<p:menuitem value="Select" actionListener="#{loginrinfo.setResourceModel}" icon="ui-icon-check" update="a792 a4715 a4788 msgs"/>
+        	<p:menuitem value="Unselect" actionListener="#{loginrinfo.unsetResourceModel}" icon="ui-icon-closethick" update="a792 a4715 a4788 msgs"/>
+    	 	<p:menuitem value="Add model" update="a4900m" icon="ui-icon-plus" oncomplete="PF('enterRdfModelDialog').show()"/>
+    	    <p:menuitem value="Delete model" actionListener="#{loginrinfo.deleteResourceModel}" icon="ui-icon-trash" update="a792 a4715 a4788 msgs">
+    	    <p:confirm header="Delete mode" message="Sure?" icon="ui-icon-alert"/>
+    	    </p:menuitem>
+    	 </p:contextMenu>
+		
+    	 
+    	 
+    	 
+    	<p:dialog header="Add model column" id="a4900mc" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="enterConllColumnDialogM" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder" rendered="#{loginrinfo.selectedResource.fileInfo.isConllFile == true}">
+        <p:row>
+        <p:column>
+		<p:selectOneMenu value="#{loginrinfo.newModelConllColumn}" style="width:25px" validator="#{loginrinfo.skipValidator}">
+		<f:selectItems value="#{loginrinfo.freeConllColumns}"
+		       var="col" itemLabel="#{col}" itemValue="#{col}"/> 
+		</p:selectOneMenu>
+		</p:column>
+		<p:column>
+		<p:commandButton value="CANCEL" style="width:100px" oncomplete="PF('enterConllColumnDialogM').hide()"/>	                              
+		</p:column>		
+		<p:column>
+		<p:commandButton action="#{loginrinfo.addConllModelColumn}" update="a4900mc a4900 a4788" value="OK" style="width:100px" oncomplete="PF('enterConllColumnDialogM').hide()"/>	                              
+		</p:column>
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+		 
+		 
+	
+		<p:dialog header="Edit RDF Models" id="a4787r" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="editRdfModelsDialog" resizeable="false">
+			
+		<p:panelGrid id="a4787p" style="margin-bottom:10px;with:100%" columnClasses="label,value">		
+
+		</p:panelGrid>
+			<p:dataTable 
+    			widgetVar="rdfModels" 
+				id="a892"
+    			value="#{loginrinfo.selectedResource.fileInfo.modelMatchings}" 
+    			var="mm"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+                rows="11"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal"
+                rowKey="#{mm.tableID}"
+ 				selection="#{loginrinfo.selectedDummyModel}" selectionMode="single"
+                >
+ 
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectResourceModel}"/>
+                <p:ajax event="rowToggle" listener="#{loginrinfo.selectResourceModel}"/>
+                
+                
+                <p:column style="width:16px">
+            		<p:rowToggler />
+        		</p:column>
+                
+                <p:column style="text-align:center;max-width:120px;" headerText="Model">
+    			<h:outputText value="#{mm.modelType}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:120px;" headerText="Property">
+    			<h:outputText value="#{mm.rdfProperty}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:75px;" headerText="Coverage">
+    			<h:outputText value="#{mm.coverage}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:50px;" headerText="Hit types">
+    			<h:outputText value="#{mm.differentHitTypes}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:100px;" headerText="Sum">
+    			<h:outputText value="#{mm.hitCountTotal}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:50px;" headerText="Excl. hit types">
+    			<h:outputText value="#{mm.exclusiveHitTypes}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:100px;" headerText="Sum">
+    			<h:outputText value="#{mm.exclusiveHitCountTotal}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:100px;" headerText="Detected-by">
+    			<h:outputText value="#{mm.detectionMethod}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;max-width:100px;" headerText="From">
+    			<h:outputText value="#{mm.detectionSource}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center;min-width:60px;" headerText="Selected">
+    			<h:outputText value="#{mm.selected}" />
+    			</p:column>
+    			
+    			<p:column style="width:60px;text-align:center;" headerText="Date">
+				<h:outputText value="#{mm.localDate}"/>
+				</p:column>
+				
+				<p:column style="width:80px;text-align:center;" headerText="Update text">
+				<h:outputText value="#{mm.updateText}"/>
+				</p:column>
+  
+  
+  				<p:rowExpansion>
+    			<p:dataTable 
+    			widgetVar="fileResults" 
+				id="a892f"
+    			value="#{loginrinfo.selectedResource.fileInfo.fileResults.get(mm)}" 
+    			var="rf"
+    			editable="false"
+    			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+                rows="200"
+                style="margin-bottom:20px;font-size:16px;font-weight:normal"
+                scrollable="true" scrollHeight="250"
+                sortBy="#{rf.foundTagOrClass}"
+                selection="#{loginrinfo.selectedDummyFileResult}" selectionMode="single"
+                rowKey="#{rf.tableID}"
+                >
+                
+                <p:ajax event="contextMenu" listener="#{loginrinfo.selectFileResult}"/>
+                
+                
+                <p:columnGroup type="header">
+			      <p:column headerText="Found Tag/Class" style="text-align:center;min-width:350px" />
+			      <p:column headerText="Matching Tag/Class" style="text-align:center;min-width:350px"/>
+			      <p:column headerText="Match count" style="text-align:center;max-width:80px"/>
+   				 </p:columnGroup>
+		    	
+		    	
+		    	<p:column style="text-align:left">
+    			<h:outputText value="#{rf.foundTagOrClass}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:left">
+    			<h:outputText value="#{rf.matchingTagOrClass}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center">
+    			<h:outputText value="#{rf.matchCount}" />
+    			</p:column>
+    			
+		    	</p:dataTable> 
+		    	
+		    	<!-- a892f -->
+    	 		
+    	 		<p:dialog header="BLL Info" id="a892d" closable="true" modal="false" widgetVar="showBllInfo" resizeable="false">
+		 		<h:inputTextarea rows="30" cols="100" readonly="true" value="#{loginrinfo.bllInfoRdf}"/>            
+		 		</p:dialog>
+    			
+    			</p:rowExpansion>
+    			
+                </p:dataTable>
+		 </p:dialog>
+		 
+    	 <p:contextMenu for="a892">
+        	<p:menuitem value="Select" actionListener="#{loginrinfo.setResourceModel}" icon="ui-icon-check" update="a892 a4715 msgs"/>
+        	<p:menuitem value="Unselect" actionListener="#{loginrinfo.unsetResourceModel}" icon="ui-icon-closethick" update="a892 a4715 msgs"/>
+    	 	<p:menuitem value="Add model" update="a4900m" icon="ui-icon-plus" oncomplete="PF('enterRdfModelDialog').show()"/>
+    	    <p:menuitem value="Delete model" actionListener="#{loginrinfo.deleteResourceModel}" icon="ui-icon-trash" update="a892 a4715 msgs">
+    	    <p:confirm header="Delete model" message="Sure?" icon="ui-icon-alert"/>
+    	    </p:menuitem>
+    	    <p:menuitem value="Unselect ALL" actionListener="#{loginrinfo.unsetAllRDFResourceModels}" icon="ui-icon-closethick" update="a892 a4715 msgs"/>
+    	 </p:contextMenu>
+    	 
+
+    	 
+    	
+    	
+    	 <p:dialog header="Upload Data" id="a4811" closable="true" modal="true" showEffect="" hideEffect="" widgetVar="uploadData" resizeable="false">
+    	 
+    	 <h:outputText  style="font: bold 20px arial, sans-serif;" value="Upload File"/>
+    	 
+    	 	<br/>
+		    <p:fileUpload oncomplete="uploadResourceFile();" style="margin-top: 10px;height: 100px;font-size:85%;min-width:600px;" skinSimple="true" enctype="multipart/form-data"
+		    label="Select" cancelLabel="Cancel" fileUploadListener="#{fileUploadBean.fileUploadListener}" mode="advanced"
+		    update="messages fileName" auto="true" sizeLimit="20000000000"/>
+		    <p:growl id="messages" showDetail="true" />
+		    
+		    <p:panelGrid columnClasses="label,value" style="width:100%;background-color:#c7d4de">
+		   
+		    <p:row>
+		    <p:column colspan="3">
+		    <h:outputText value="Upload URL" style="width:100%;font-size:20px;font-weight:bold;"/>
+		    </p:column>
+		    </p:row>
+		    <p:row style="width:100%">
+		    <p:column style="width:60px;text-align:center;">
+		    <p:commandButton action="#{loginrinfo.uploadResourceUrl}" value="Upload" style="width:88px;font-size:15px;" update="uploadUrl"/>
+		    </p:column>
+		    <p:column style="text-align:center;">
+		    <h:inputText id="uploadUrl" value="#{loginrinfo.uploadURL}" style="width:100%;"/>
+		    </p:column>
+		    </p:row>
+		    </p:panelGrid>
+		    <br/>
+		    <h:outputText id="fileName" style="font: 20px arial, sans-serif;" value="#{fileUploadBean.fileName}"/>
+    	 
+    	 </p:dialog>
+    	 
+    	 <p:dialog header="Error Log" id="a4821" closable="true" modal="true" showEffect="fade" hideEffect="fade" widgetVar="showLog" resizeable="false">
+   	    <p:outputPanel>
+		<p:dataTable 
+    			widgetVar="logList" 
+				id="a4831"
+    			value="#{loginrinfo.rflError}" 
+    			var="rL"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{rL.dataURL}"
+                filteredValue="#{loginrinfo.filteredRflError}"
+                rowKey="#{rL.resourceID}"
+                selection="#{loginrinfo.selectedDummyResource}" selectionMode="single"
+                >
+                
+    			<p:column style="max-width: 120px;text-align:center" headerText="Data" sortBy="#{rL.dataURL}" resizable="true" filterMatchMode="contains" filterBy="#{rL.dataURL}">
+                <h:outputText value="#{rL.dataURL}" style="word-wrap:break-word;"/>
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="File" resizable="true" sortBy="#{rL.fileInfo.fileName}" filterMatchMode="contains" filterBy="#{rL.fileInfo.fileName}">
+    			<h:outputText value="#{rL.fileInfo.fileName}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Format" resizable="true" sortBy="#{rL.fileInfo.processingFormat}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingFormat}">
+    			<h:outputText value="#{rL.fileInfo.processingFormat}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Start" resizable="true" sortBy="#{rL.fileInfo.processingStartDate}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingStartDate}">
+    			<h:outputText value="#{rL.fileInfo.processingStartDate}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Duration" resizable="true" sortBy="#{rL.fileInfo.processingDuration.seconds}" filterMatchMode="contains" filterBy="#{rL.fileInfo.processingDuration}">
+    			<h:outputText value="#{rL.fileInfo.processingDuration}" />
+    			</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Result" resizable="true" sortBy="#{rL.fileInfo.parseResult}" filterMatchMode="contains" filterBy="#{rL.fileInfo.parseResult}">
+    			<f:facet name="filter">
+                <h:selectOneMenu onchange="PF('logList').filter()">
+                   <f:selectItem itemLabel="ALL" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{loginrinfo.parseResultStates}" />
+                </h:selectOneMenu>
+            	</f:facet>
+            	<h:outputText value="#{rL.fileInfo.parseResult}"/>
+            	</p:column>
+    			
+    			<p:column style="text-align:center" headerText="Error" resizable="true" sortBy="#{rL.fileInfo.errorCode}" filterMatchMode="contains" filterBy="#{rL.fileInfo.errorCode}" >
+    			<h:outputText value="#{rL.fileInfo.errorCode}" />
+    			</p:column>   			
+    			
+   				<p:column style="text-align:center" headerText="ErrorMsg" resizable="true" sortBy="#{rL.fileInfo.errorMsg}" filterMatchMode="contains" filterBy="#{rL.fileInfo.errorMsg}">
+    			<h:outputText value="#{rL.fileInfo.errorMsg}" />
+    			</p:column>
+    			
+                </p:dataTable>
+                <p:commandButton action="#{loginrinfo.clearLog}" update="a4831" value="CLEAR LOG" style="width:130px;background:none;font-size:12px" styleClass="customStyleButton"/>	                              
+		 </p:outputPanel>
+		 </p:dialog>
+		 
+		 
+		 
+  	 <p:dialog header="Process Queue" id="a4871" closable="true" modal="false" showEffect="fade" hideEffect="fade" widgetVar="showQueue" resizeable="false">
+   	    <p:outputPanel>
+		<p:dataTable 
+    			widgetVar="queueList" 
+				id="a4872"
+    			value="#{loginrinfo.resourceQueue}" 
+    			var="q"
+    			editable="false"
+    			tableStyle="table-layout:auto"
+    			reflow="true"
+    		 	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                paginator="true"
+                rows="10"
+                style="margin-bottom:20px;font-size:12px;font-weight:normal;"
+                sortBy="#{q.dataURL}"
+                rowKey="#{q.resourceID}"
+                selection="#{loginrinfo.selectedDummyResource}" selectionMode="single"
+                >
+                
+                <p:column rendered="false" style="min-width: 300px;text-align:center" headerText="Linghub Resource" resizable="true" sortBy="#{q.metaDataURL}">
+    			<h:outputLink value="#{q.metaDataURL}" target="_blank">
+                <h:outputText value="#{q.metaDataURL}" style="word-wrap:break-word;"/>
+                </h:outputLink>
+    			</p:column>
+                
+    			<p:column style="min-width:300px;text-align:center" headerText="Data" sortBy="#{q.dataURL}" resizable="true">
+                <h:outputText value="#{q.dataURL}" style="word-wrap:break-word;"/>
+    			</p:column>
+    			
+    			<p:column style="min-width:300px;text-align:center" headerText="Started" resizable="true" sortBy="#{q.fileInfo.processingStartDate}">
+    			<h:outputText value="#{q.fileInfo.processingStartDate}" />
+    			</p:column>
+    				
+               </p:dataTable>
+               <p:commandButton action="#{loginrinfo.skipJob}" update="a4872" value="CANCEL JOB" style="width:130px;background:none;font-size:12px" styleClass="customStyleButton">
+               <p:confirm header="Cancel Job" message="#{loginrinfo.confirmMessage}" icon="ui-icon-closethick" disabled="#{loginrinfo.resourceQueueIsEmpty}"/>
+               </p:commandButton>	                              
+               <p:commandButton action="#{loginrinfo.stopQueue}" update="a4872" value="CANCEL ALL" style="width:130px;background:none;font-size:12px" styleClass="customStyleButton">	                              
+               <p:confirm header="Cancel all Jobs" message="Sure?" icon="ui-icon-alert" disabled="#{loginrinfo.resourceQueueIsEmpty}"/>
+               </p:commandButton>
+                
+                
+		 </p:outputPanel>
+		 </p:dialog>
+		 
+		 
+		<p:dialog header="Sample" id="a4830" closable="true" widgetVar="showSample" modal="true" showEffect="" hideEffect="" resizable="false">
+		 <h:inputTextarea autoResize="false" rows="12" cols="60" readonly="true" value="#{loginrinfo.selectedResource.fileInfo.sample}"/>
+		</p:dialog>
+		
+		<p:dialog header="Database Statistics" id="a4531" closable="true" modal="true" showEffect="fade" hideEffect="fade" widgetVar="showStats" resizeable="false">
+		 <h:inputTextarea rows="28" cols="50" readonly="true" value="#{loginrinfo.dbStats}"/>            
+		</p:dialog>
+		
+	
+		<p:dialog header="Edit multiple files" id="a5000" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="multiACDDialog" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder">
+        <p:row>
+        <p:column>
+		<p:selectOneMenu value="#{loginrinfo.selectedMultiAcdState}" style="width:170px" validator="#{loginrinfo.skipValidator}">
+		<f:selectItems value="#{loginrinfo.multiProcessActions}"
+		       var="state" itemLabel="#{state}" itemValue="#{state}"/> 
+		</p:selectOneMenu>
+		</p:column>
+		<p:column>
+		 <h:inputText id="selectedMultiAcdURL" value="#{loginrinfo.selectedMultiAcdURL}" style="min-width:500px;word-wrap:break-word;"/>
+		</p:column>	
+		<p:column>
+		<p:commandButton value="CANCEL" style="width:100px" oncomplete="PF('multiACDDialog').hide()"/>	                              
+		</p:column>	
+		<p:column>
+		<p:commandButton value="OK" style="width:100px" action="#{loginrinfo.testMultiACD}" update="a4631" oncomplete="PF('multiACDInfo').show()"/>	                              
+		</p:column>
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+	 
+	    <p:dialog header="Multi-Edit - affected files by operation" id="a4631" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="multiACDInfo" resizeable="false">
+		 <p:outputPanel>
+		 <h:inputTextarea rows="20" cols="80" readonly="true" value="#{loginrinfo.multiACDInfo}"/>
+		 </p:outputPanel>
+		 <p:panelGrid>
+		 <p:commandButton value="CANCEL" style="width:120px" oncomplete="PF('multiACDInfo').hide()"/>	                              
+		 <p:commandButton action="#{loginrinfo.multiACD}" update="a5000 a4711" value="EXECUTE" style="width:120px" oncomplete="PF('multiACDInfo').hide();PF('resourceList').filter();"/>	                              		
+		 </p:panelGrid>
+		</p:dialog>
+		
+		
+    
+    
+    <p:dialog header="Save changes to all files of resource" id="a5000a" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="save2AllFiles" resizeable="false">
+        <p:panelGrid styleClass="ui-noborder">
+        <p:row>
+		<p:column>
+		<p:commandButton update="a4711 messages" value="Save Languages" style="width:200px" action="#{loginrinfo.saveResourceEditForAll('lang')}" oncomplete="PF('editResource').hide();PF('save2AllFiles').hide()"/>	                              
+		</p:column>
+		<p:column>
+		<p:commandButton update="a4711 messages" value="Save Models" style="width:200px" action="#{loginrinfo.saveResourceEditForAll('model')}" oncomplete="PF('editResource').hide();PF('save2AllFiles').hide()"/>	                              	
+		</p:column>
+		<p:column>
+		<p:commandButton update="a4711 messages" value="Save Both" style="width:200px" action="#{loginrinfo.saveResourceEditForAll('both')}" oncomplete="PF('editResource').hide();PF('save2AllFiles').hide()"/>	                              
+		</p:column>
+		<p:column>
+		<p:commandButton value="CANCEL" style="width:100px" oncomplete="PF('save2AllFiles').hide()"/>	                              
+		</p:column>	
+		</p:row>
+		 </p:panelGrid>
+	</p:dialog>
+	
+    	 
+    	<p:poll id="poll" interval="60" listener="#{loginrinfo.showMessages}" update="a4711 a4872" autoStart="false" stop="#{loginrinfo.noPolling}"/>
+    	 
+		 </h:form>
+		 
+    </h:body>
+</html>

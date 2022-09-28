@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# args1: archive file dir
+# args2: archive name
+# args3: target dir
+
+# change to archive file dir
+cd $1
+
+# make archive
+tar xf $2 -C $3

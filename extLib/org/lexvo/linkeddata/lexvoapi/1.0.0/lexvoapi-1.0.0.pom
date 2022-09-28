@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.lexvo.linkeddata</groupId>
+  <artifactId>lexvoapi</artifactId>
+  <version>1.0.0</version>
+  <name>LexvoApi</name>
+  <url>http://unkonwn.org</url>
+  <description>
+  Lexvo functions
+  </description>
+  <organization>
+    <name>Lexvo.org</name>
+    <url>http://www.lexvo.org</url>
+  </organization>
+  <dependencies>
+  </dependencies>
+</project>
