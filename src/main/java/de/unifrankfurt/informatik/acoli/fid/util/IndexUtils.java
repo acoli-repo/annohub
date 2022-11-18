@@ -229,6 +229,7 @@ public class IndexUtils {
 				put("RunParameter.publishRDFExportInterval", 0);
 				put("RunParameter.JavaHome", null);
 				put("RunParameter.QueueBackupFile", null);
+				put("RunParameter.LogFile", null);
 
 				
 				// (only for member account)
@@ -249,6 +250,7 @@ public class IndexUtils {
 				put("Backup.autobackupInterval", 0); // 0 means no autobackup, otherwise days between backup
 				
 				//put("OWL.BLL.ModelDefinitionsFile", "");
+				// TODO can use modelDef.json BLL model instead ?
 				put("OWL.BLL.BllOntology","https://valian.uni-frankfurt.de/svn/repository/intern/Virtuelle_Fachbibliothek/UB/OWL/BLLThesaurus/bll-ontology.rdf");
 				put("OWL.BLL.BllLink","https://valian.uni-frankfurt.de/svn/repository/intern/Virtuelle_Fachbibliothek/UB/OWL/BLLThesaurus/bll-link.rdf");
 				put("OWL.BLL.BllLanguageLink","https://valian.uni-frankfurt.de/svn/repository/intern/Virtuelle_Fachbibliothek/UB/OWL/BLLThesaurus/bll-language-link.ttl");
@@ -292,6 +294,18 @@ public class IndexUtils {
 				
 				put("Processing.XMLAttributeEvaluator.processDuplicates",false);
 				put("Processing.ModelEvaluator.autoDeleteConllModelsWithTrivialResults",false);
+				put("Processing.RDFParser.languageInfoProperties",
+						  "http://purl.org/dc/terms/language,"
+						+ "http://purl.org/dc/elements/1.1/language,"
+						+ "http://lexvo.org/ontology#iso639P3PCode,"
+						+ "http://lexvo.org/ontology#iso6392BCode,"
+						+ "http://lexvo.org/ontology#iso6392TCode,"
+						+ "http://lexvo.org/ontology#iso639P1Code,"
+						+ "http://lexvo.org/ontology#iso639P5Code,"
+						+ "http://lemon-model.net/lemon#language,"
+						+ "http://www.w3.org/ns/lemon/lime#language,"
+						+ "http://lexvo.org/ontology#language,"
+						+ "http://mlode.nlp2rdf.org/resource/ids/vocabulary/hasIsoCode");
 				
 				/*put("AccountProperties.uploadResourceCountLimit.GUEST",20);
 				put("AccountProperties.uploadResourceCountLimit.MEMBER",50);
@@ -306,74 +320,74 @@ public class IndexUtils {
 				put("Clarin.clarinQueries","SELECT title, description, resource_type, date, author, licence, publisher, language from metadata where link = 'ACCESSURL';");
 				
 				// legacy options
-				put("SearchEngine.SERVICE_URI","http://localhost:3030/ds/data");
-				put("SearchEngine.PATH-SearchTerms","/home/vifa/VifaRun/searchEngine/searchTerms.ttl");
-				put("SearchEngine.PATH-SearchTermsConcise","/home/vifa/VifaRun/searchEngine/searchterms_concise.ttl");
-				put("SearchEngine.PATH-OLiA-TDB","/home/vifa/olia-tdb/");
-				put("SearchEngine.PATH-SearchEngine-TDB","/home/vifa/se-tdb/");
-				put("SearchEngine.PATH-CONLL","/home/vifa/conll/");
-				put("SearchEngine.resultFile","/home/vifa/VifaRun/searchEngine/searchEngineResults.ttl");
-				put("SearchEngine.xmlExportFile","/home/vifa/VifaRun/searchEngine/ub-export.xml");
-				put("SearchEngine.xmlExportBase","/home/vifa/VifaRun/searchEngine/llod-mods-base.xml");
-				put("SearchEngine.conciseSearchTerms",true);
-				
-				put("OliaSVN.path","/home/vifa/svn/vifa-owl/BLLThesaurus/bll-ontology.ttl");
-				//put("Clarin.path","/home/vifa/svn/vifa-owl/BLLThesaurus/bll-link.rdf");
-				//put("Clarin.path","/home/vifa/svn/olia-sf/trunk/owl/stable/bll-link.rdf");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/stable/");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/core/");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/univ_dep/");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/lexinfo/");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/gold/");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/dcr/6.owl");
-				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/dcr/dcr-link.rdf");
-				//put("OliaSVN.exception","multext_east");
-				put("OliaSVN.exception","");
-				put("OliaSVN.clarinQueries","old");
-				put("OliaSVN.oliaregex","((http://purl.org/olia/(olia)|(system)).*)");
-				put("OliaSVN.bllregex","((http://data.linguistik.de/bll).*)");
-				
-				put("CONLL.col",3);
-				put("CONLL.col",4);
-				put("CONLL.col",5);
-				put("CONLL.col",8);
-				put("CONLL.tag","conll:POS");
-				put("CONLL.tag","conll:UPOS");
-				put("CONLL.tag","conll:XPOS");
-				put("CONLL.tag","conll:CPOS");
-				put("CONLL.tag","conll:POSTAG");
-				put("CONLL.tag","conll:UPOSTAG");
-				put("CONLL.tag","conll:XPOSTAG");
-				put("CONLL.tag","conll:CPOSTAG");
-				put("CONLL.tag","conll:FEAT");
-				put("CONLL.tag","conll:FEATS");
-				put("CONLL.tag","conll:EDGE");
-				put("CONLL.tag","conll:DEP<");
-				put("CONLL.tag","conll:DEPS");
-				put("CONLL.tag","conll:DEPREL");
-				put("CONLL.tag","conll:DEPRELS");
-				put("CONLL.tag","conll:PDEPREL");
-				put("CONLL.tag","conll:PDEPRELS");
-				put("CONLL.amURL","http://ud-pos-all.owl</amURL");
-				put("CONLL.amURL","http://ud-dep-all.owl");
-				
-				put("PrefixURIs.bll-skos","http://data.linguistik.de/bll/bll-thesaurus#");
-				put("PrefixURIs.bll-owl","http://data.linguistik.de/bll/bll-ontology#");
-				put("PrefixURIs.bll-link","http://purl.org/olia/bll-link.rdf#");
-				put("PrefixURIs.bll-tit","http://data.linguistik.de/records/bll/");
-				put("PrefixURIs.bll-tit-link","http://data.linguistik.de/bll/bll-index#");
-				put("PrefixURIs.olia","http://purl.org/olia/olia.owl#");
-				put("PrefixURIs.olia-top","http://purl.org/olia/olia-top.owl#");
-				put("PrefixURIs.olia-system","http://purl.org/olia/system.owl#");
-				put("PrefixURIs.rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-				put("PrefixURIs.rdfs","http://www.w3.org/2000/01/rdf-schema#");
-				put("PrefixURIs.skos","http://www.w3.org/2004/02/skos/core#");
-				put("PrefixURIs.owl","http://www.w3.org/2002/07/owl#");
-				put("PrefixURIs.conll","http://ufal.mff.cuni.cz/conll2009-st/task-description.html#");
-				put("PrefixURIs.dcr","http://www.isocat.org/ns/dcr.rdf#");
-				put("PrefixURIs.void","http://rdfs.org/ns/void#");
-				put("PrefixURIs.xsd","http://www.w3.org/2001/XMLSchema#");
-				put("PrefixURIs.afn","http://jena.hpl.hp.com/ARQ/function#");
+//				put("SearchEngine.SERVICE_URI","http://localhost:3030/ds/data");
+//				put("SearchEngine.PATH-SearchTerms","/home/vifa/VifaRun/searchEngine/searchTerms.ttl");
+//				put("SearchEngine.PATH-SearchTermsConcise","/home/vifa/VifaRun/searchEngine/searchterms_concise.ttl");
+//				put("SearchEngine.PATH-OLiA-TDB","/home/vifa/olia-tdb/");
+//				put("SearchEngine.PATH-SearchEngine-TDB","/home/vifa/se-tdb/");
+//				put("SearchEngine.PATH-CONLL","/home/vifa/conll/");
+//				put("SearchEngine.resultFile","/home/vifa/VifaRun/searchEngine/searchEngineResults.ttl");
+//				put("SearchEngine.xmlExportFile","/home/vifa/VifaRun/searchEngine/ub-export.xml");
+//				put("SearchEngine.xmlExportBase","/home/vifa/VifaRun/searchEngine/llod-mods-base.xml");
+//				put("SearchEngine.conciseSearchTerms",true);
+//				
+//				put("OliaSVN.path","/home/vifa/svn/vifa-owl/BLLThesaurus/bll-ontology.ttl");
+//				//put("Clarin.path","/home/vifa/svn/vifa-owl/BLLThesaurus/bll-link.rdf");
+//				//put("Clarin.path","/home/vifa/svn/olia-sf/trunk/owl/stable/bll-link.rdf");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/stable/");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/core/");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/univ_dep/");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/lexinfo/");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/gold/");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/dcr/6.owl");
+//				put("OliaSVN.path","/home/vifa/svn/olia-sf/trunk/owl/experimental/dcr/dcr-link.rdf");
+//				//put("OliaSVN.exception","multext_east");
+//				put("OliaSVN.exception","");
+//				put("OliaSVN.clarinQueries","old");
+//				put("OliaSVN.oliaregex","((http://purl.org/olia/(olia)|(system)).*)");
+//				put("OliaSVN.bllregex","((http://data.linguistik.de/bll).*)");
+//				
+//				put("CONLL.col",3);
+//				put("CONLL.col",4);
+//				put("CONLL.col",5);
+//				put("CONLL.col",8);
+//				put("CONLL.tag","conll:POS");
+//				put("CONLL.tag","conll:UPOS");
+//				put("CONLL.tag","conll:XPOS");
+//				put("CONLL.tag","conll:CPOS");
+//				put("CONLL.tag","conll:POSTAG");
+//				put("CONLL.tag","conll:UPOSTAG");
+//				put("CONLL.tag","conll:XPOSTAG");
+//				put("CONLL.tag","conll:CPOSTAG");
+//				put("CONLL.tag","conll:FEAT");
+//				put("CONLL.tag","conll:FEATS");
+//				put("CONLL.tag","conll:EDGE");
+//				put("CONLL.tag","conll:DEP<");
+//				put("CONLL.tag","conll:DEPS");
+//				put("CONLL.tag","conll:DEPREL");
+//				put("CONLL.tag","conll:DEPRELS");
+//				put("CONLL.tag","conll:PDEPREL");
+//				put("CONLL.tag","conll:PDEPRELS");
+//				put("CONLL.amURL","http://ud-pos-all.owl</amURL");
+//				put("CONLL.amURL","http://ud-dep-all.owl");
+//				
+//				put("PrefixURIs.bll-skos","http://data.linguistik.de/bll/bll-thesaurus#");
+//				put("PrefixURIs.bll-owl","http://data.linguistik.de/bll/bll-ontology#");
+//				put("PrefixURIs.bll-link","http://purl.org/olia/bll-link.rdf#");
+//				put("PrefixURIs.bll-tit","http://data.linguistik.de/records/bll/");
+//				put("PrefixURIs.bll-tit-link","http://data.linguistik.de/bll/bll-index#");
+//				put("PrefixURIs.olia","http://purl.org/olia/olia.owl#");
+//				put("PrefixURIs.olia-top","http://purl.org/olia/olia-top.owl#");
+//				put("PrefixURIs.olia-system","http://purl.org/olia/system.owl#");
+//				put("PrefixURIs.rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+//				put("PrefixURIs.rdfs","http://www.w3.org/2000/01/rdf-schema#");
+//				put("PrefixURIs.skos","http://www.w3.org/2004/02/skos/core#");
+//				put("PrefixURIs.owl","http://www.w3.org/2002/07/owl#");
+//				put("PrefixURIs.conll","http://ufal.mff.cuni.cz/conll2009-st/task-description.html#");
+//				put("PrefixURIs.dcr","http://www.isocat.org/ns/dcr.rdf#");
+//				put("PrefixURIs.void","http://rdfs.org/ns/void#");
+//				put("PrefixURIs.xsd","http://www.w3.org/2001/XMLSchema#");
+//				put("PrefixURIs.afn","http://jena.hpl.hp.com/ARQ/function#");
 	}};
 	
 	

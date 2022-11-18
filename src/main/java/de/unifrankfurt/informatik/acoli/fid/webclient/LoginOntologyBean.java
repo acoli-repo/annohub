@@ -458,7 +458,9 @@ public class LoginOntologyBean implements Serializable {
 		
 		// Start update
 		String updateError = ontologyManager.updateOliaModels(updatedModels);
-		ExecutionBean.initResourceCache();
+		
+		ExecutionBean.initApplication(true);
+		//ExecutionBean.initResourceCache();
 		
 		if (!updateError.isEmpty()) {
 			showMessageDialog(updateError, FacesMessage.SEVERITY_INFO);

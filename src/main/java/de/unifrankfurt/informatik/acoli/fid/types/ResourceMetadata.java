@@ -486,5 +486,4 @@ public class ResourceMetadata implements Serializable {
 
 	
 	
-	
 }

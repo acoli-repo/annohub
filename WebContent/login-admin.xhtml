@@ -53,7 +53,10 @@
 	            <p:menuitem value="Language Profiles" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showLanguageManager}" icon="ui-icon-flag"/>
 				<p:menuitem value="Ontology Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showOntologyManager}" icon="ui-icon-script"/>
 				<p:menuitem value="Backup Manager" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{login.showBackupManager}" icon="ui-icon-newwin" />
-	           	<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
+	            <p:menuitem value="Logging" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" icon="ui-icon-document" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);">
+	       			<p:fileDownload value="#{login.getFile('logging')}"/>
+				</p:menuitem>
+				<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
 	            <p:menuitem rendered="#{login.userAccount.accountTypeAsString == 'admin'}" value="Shutdown" action="#{login.shutdown}" icon="ui-icon-power" />
 	            
 	            </p:menuButton>
@@ -61,6 +64,24 @@
 	     </f:facet>
 	         
     	</p:toolbar>
+    	
+    	
+        <script type="text/javascript">
+		    //<![CDATA[
+		function start() {
+		    PF('statusDialog').show();
+		}
+		 
+		function stop() {
+		    PF('statusDialog').hide();
+		}
+		    //]]>
+		</script>
+		
+		
+		<p:dialog modal="true" widgetVar="statusDialog" header="File export in progress - please stand by  !" draggable="false" closable="false" resizable="false" style="text-align:center;">
+    		<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
+		</p:dialog>
     	
     	
     	 <p:dialog id="adminDialog" position="center" widgetVar="adminFunctionsDialog" modal="true" resizable="false" header="Configuration" closable="false"> 
@@ -203,6 +224,13 @@
        	   <p:commandButton id="closeUserManagement" action="#{login.closeUserManagement}" value="CLOSE" style="width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('userManagementDialog').hide()"/>
        
 	 </p:dialog>	
+	 
+	  <p:confirmDialog global="true">
+		<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+		icon="ui-icon-check"/>
+		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
+		icon="ui-icon-close"/>
+	  </p:confirmDialog>  
     
     </h:form>
     </h:body>

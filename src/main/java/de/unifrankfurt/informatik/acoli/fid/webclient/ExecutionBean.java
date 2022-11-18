@@ -64,7 +64,7 @@ private static UserLog userLog = new UserLog();
 
 @EJB
 ExecuterEjb executionEjb;
-private PostgresManager postgresManager=null;
+private static PostgresManager postgresManager=null;
 
 
 @PostConstruct
@@ -92,39 +92,12 @@ public void init() {
 		);
 	//resourceChecker = new ResourceChecker(publicExecuter.getOntologyManager().getDownloadManager());
 
-	
-	initMinimalOliaClasses();
-	
-	if(publicFidConfig.getBoolean("RunParameter.cached")) {
-		initResourceCache();
-	}
-	
-	// check broken links
-	if (publicFidConfig.getBoolean("RunParameter.checkBrokenLinksAtServerStart")) {
-			startBrokenLinksCheck(15);
-	}
-	
-	// add linghub metadata		(if no manual metadata exists)
-	if (publicFidConfig.getBoolean("Linghub.enabled")) {
-		publicExecuter.getUrlBroker().sparqlLinghubAttributes(true, resourceCache.getResourceMap().values());
-	}
-	
 	if (publicFidConfig.getBoolean("Databases.Postgres.usePostgres")) {
 		// add clarin metadata		(if no manual or linghub metadata exists)
 		postgresManager = new PostgresManager (publicFidConfig);
-		postgresManager.updateClarinMetadata(resourceCache.getResourceMap().values());
 	}
-
-	if (publicFidConfig.getBoolean("RunParameter.initRdfExporterAtServerStart")) {
-	// init rdf export
-	ArrayList<ResourceInfo> dummyList = new ArrayList<ResourceInfo>();
-	RDFSerializer.serializeResourceInfo2RDFModelIntern(
-			(ArrayList<ResourceInfo>) dummyList,
-			publicExecuter.getWriter().getBllTools(),
-			publicFidConfig,
-			publicExecuter.getModelDefinition()
-			);
-	}
+	
+	initApplication(false);
 	
 	userManagement = new UserManagement(publicExecuter.getResourceManager(), publicFidConfig);
 	
@@ -141,6 +114,8 @@ public void init() {
 
 
 public static void initResourceCache() {
+	
+	Utils.debug("initResourceCache");
 	
 	ResourceManager resourceManager = publicExecuter.createNewResourceManagerInstance();
 	//new RMServer(publicExecuter.getCluster(), UpdatePolicy.valueOf(publicFidConfig.getString("RunParameter.updatePolicy")));
@@ -176,13 +151,51 @@ public static void initResourceCache() {
 }
 
 
+/**
+ * Part of the init methode that is also invoked during restoring a backup or model update operations
+ */
+public static void initApplication(Boolean update) {
+	
+	initMinimalOliaClasses();
+	
+	if(publicFidConfig.getBoolean("RunParameter.cached")) {
+		initResourceCache();
+	}
+	
+	// check broken links
+	if (update || publicFidConfig.getBoolean("RunParameter.checkBrokenLinksAtServerStart")) {
+			startBrokenLinksCheck(15);
+	}
+	
+	// add linghub metadata		(if no manual metadata exists)
+	if (publicFidConfig.getBoolean("Linghub.enabled")) {
+		publicExecuter.getUrlBroker().sparqlLinghubAttributes(true, resourceCache.getResourceMap().values());
+	}
+	
+	if (publicFidConfig.getBoolean("Databases.Postgres.usePostgres")) {
+		// add clarin metadata		(if no manual or linghub metadata exists)
+		postgresManager.updateClarinMetadata(resourceCache.getResourceMap().values());
+	}
+
+	if (update || publicFidConfig.getBoolean("RunParameter.initRdfExporterAtServerStart")) {
+	// init rdf export
+	ArrayList<ResourceInfo> dummyList = new ArrayList<ResourceInfo>();
+	RDFSerializer.serializeResourceInfo2RDFModelIntern(
+			(ArrayList<ResourceInfo>) dummyList,
+			publicExecuter.getWriter().getBllTools(),
+			publicFidConfig,
+			publicExecuter.getModelDefinition()
+			);
+	}
+}
+
 
 /**
  * Start checking broken links
  * @param httpTimeout HTTP timeout in seconds
  * @return True if successfully started; else false
  */
-public boolean startBrokenLinksCheck(int httpTimeout) {
+public static boolean startBrokenLinksCheck(int httpTimeout) {
 	
 		boolean brokenLinksCheckStarted = resourceChecker.checkBrokenLinksThreaded(resourceCache.getResourceMap().values(), httpTimeout);
 		//resourceChecker.checkBrokenLinks(resourceCache.getResourceMap().values(), httpTimeout);
@@ -191,8 +204,9 @@ public boolean startBrokenLinksCheck(int httpTimeout) {
 
 
 
-private void initMinimalOliaClasses() {
+private static void initMinimalOliaClasses() {
 	
+	minimalOliaClasses.clear(); // for update
 	
 	/*minimalOliaClasses.put("http://purl.org/olia/olia.owl#Diminuitive", "http://purl.org/olia/mte/multext-east.owl#Diminuitive, in MTE v.4 originally modelled as an aspect of Degree, but this is a misplacement." 
 			+"There are languages where Degree and Diminuitivity are independent. In Latvian, for example, the diminutive suffix may be attached to an adjective,"
@@ -219,7 +233,7 @@ private void initMinimalOliaClasses() {
 }
 
 
-private HashMap<String, String> readOliaComments() {
+private static HashMap<String, String> readOliaComments() {
 	
 	
 	// olia.owl

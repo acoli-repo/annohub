@@ -2,6 +2,7 @@ package de.unifrankfurt.informatik.acoli.fid.spider;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,9 @@ public class GenericRdfFileHandler implements RdfFileHandlerI {
 	public GenericRdfFileHandler (GWriter writer, ResourceManager rm) {
 		this.writer = writer;
 		this.resourceManager = rm;
-		this.genericRdfStreamParser = new GenericStreamReaderSPO(Executer.conllNs, writer, 10);
+		HashSet<String> languageInfoProperties = new HashSet<String>(
+				Arrays.asList(writer.getConfiguration().getString("Processing.RDFParser.languageInfoProperties").split(",")));
+		this.genericRdfStreamParser = new GenericStreamReaderSPO(Executer.conllNs, writer, 10, languageInfoProperties);
 		this.resultUpdater = new ResultUpdater(rm, writer);
 	}
 	

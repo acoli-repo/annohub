@@ -49,21 +49,23 @@ public class GenericStreamReaderSPO implements StreamRDF {
 	private ResourceMetadata resourceMetadata;
 	
 	
-	private static HashSet <String> languageProperties = new HashSet <String> () {
-		private static final long serialVersionUID = 1L;
-	{
-				add("http://purl.org/dc/terms/language");
-				add("http://purl.org/dc/elements/1.1/language");
-				add("http://lexvo.org/ontology#iso639P3PCode");
-				add("http://lexvo.org/ontology#iso6392BCode");
-				add("http://lexvo.org/ontology#iso6392TCode");
-				add("http://lexvo.org/ontology#iso639P1Code");
-				add("http://lexvo.org/ontology#iso639P5Code");
-				add("http://lemon-model.net/lemon#language");
-				add("http://www.w3.org/ns/lemon/lime#language");
-				add("http://lexvo.org/ontology#language");
-				add("http://mlode.nlp2rdf.org/resource/ids/vocabulary/hasIsoCode");
-	}};
+	private static HashSet <String> languageInfoProperties = null;
+	
+//	new HashSet <String> () {
+//		private static final long serialVersionUID = 1L;
+//	{
+//				add("http://purl.org/dc/terms/language");
+//				add("http://purl.org/dc/elements/1.1/language");
+//				add("http://lexvo.org/ontology#iso639P3PCode");
+//				add("http://lexvo.org/ontology#iso6392BCode");
+//				add("http://lexvo.org/ontology#iso6392TCode");
+//				add("http://lexvo.org/ontology#iso639P1Code");
+//				add("http://lexvo.org/ontology#iso639P5Code");
+//				add("http://lemon-model.net/lemon#language");
+//				add("http://www.w3.org/ns/lemon/lime#language");
+//				add("http://lexvo.org/ontology#language");
+//				add("http://mlode.nlp2rdf.org/resource/ids/vocabulary/hasIsoCode");
+//	}};
 	
 	
 	private static HashSet <String> objectNameSpaceFilter = new HashSet <String> () {
@@ -77,11 +79,12 @@ public class GenericStreamReaderSPO implements StreamRDF {
 	}};
 	
 	
-	public GenericStreamReaderSPO (String conllNs, GWriter streamWriter, long maxSamples) {
+	public GenericStreamReaderSPO (String conllNs, GWriter streamWriter, long maxSamples,
+			HashSet<String> languageInfoProperties) {
 		this.conllNs = conllNs;
 		this.writer = streamWriter;
 		this.maxSamples = maxSamples;
-		this.parseMetadata = parseMetadata;
+		GenericStreamReaderSPO.languageInfoProperties = languageInfoProperties;
 	}
 	
 	@Override
@@ -199,7 +202,7 @@ public class GenericStreamReaderSPO implements StreamRDF {
 		}
 		
 		// get language with property
-		if (languageProperties.contains(pred) || 
+		if (languageInfoProperties.contains(pred) || 
 			StringUtils.substring(pred.toLowerCase(),pred.lastIndexOf("/")+1,pred.length()).contains("iso"))	
 				{addLanguage(obj.trim());return;}
 		

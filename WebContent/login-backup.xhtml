@@ -125,6 +125,10 @@
    			<h:outputText value="#{backup.date}" />
    			</p:column>
    			
+   			<p:column width="100" style="text-align:center" headerText="Comment" resizable="true" sortBy="#{backup.comment}" filterMatchMode="contains" filterBy="#{backup.comment}">
+   			<h:outputText value="#{backup.comment}" />
+   			</p:column>
+   			
    			<p:column width="100" style="text-align:center" headerText="Gremlin version" resizable="true" sortBy="#{backup.versionGremlin}" filterMatchMode="contains" filterBy="#{backup.versionGremlin}">
    			<h:outputText value="#{backup.versionGremlin}" />
    			</p:column>

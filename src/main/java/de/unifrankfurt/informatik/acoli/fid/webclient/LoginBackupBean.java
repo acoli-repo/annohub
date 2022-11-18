@@ -355,8 +355,18 @@ public class LoginBackupBean implements Serializable {
 			showError("Backup restore failed with error : "+error);
 			return "";
 		} else {
-			showMessageDialog("Backup '"+selectedBackup.getName()+"' sucessfully finished !", FacesMessage.SEVERITY_INFO);
+			
+			showMessage("Reloading Cache", FacesMessage.SEVERITY_INFO);
+			
+			// NEW NEW NEW
+			ExecutionBean.initApplication(true);
+			//ExecutionBean.initResourceCache();
+			// NEW NEW NEW
+			
+			showMessageDialog("Backup '"+selectedBackup.getName()+"' was sucessfully restored !", FacesMessage.SEVERITY_INFO);
 		}
+		
+		
 		refreshResourceManager();
 		
 		//return "login-backup?faces-redirect=true";

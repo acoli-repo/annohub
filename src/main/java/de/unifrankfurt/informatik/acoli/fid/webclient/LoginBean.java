@@ -4,6 +4,7 @@ package de.unifrankfurt.informatik.acoli.fid.webclient;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -2949,6 +2952,36 @@ public String searchByUser() {
 				return;
 		}
 		
+		// check changes
+		ResourceMetadata rmd = guiSelectedResource.getResourceMetadata();
+		if(rmd.getFormat().equals(metaFormat) &&
+		rmd.getRights().equals(metaRights) &&
+		rmd.getLicense().equals(metaLicense) &&
+		rmd.getDctIdentifier().equals(metaDctIdentifier) &&
+		rmd.getDctSource().equals(metaDctSource) &&
+		rmd.getPublisher().equals(metaPublisher) &&
+		rmd.getTitle().equals(metaTitle) &&
+		rmd.getUbTitle().equals(metaUbTitle) &&
+		rmd.getDescription().equals(metaDescription) &&
+		rmd.getCreator().equals(metaCreator) &&
+		rmd.getContributor().equals(metaContributor) &&
+		rmd.getLocation().equals(metaLocation) &&
+		rmd.getYear().equals(metaYear) &&
+		rmd.getEmailContact().equals(metaContact) &&
+		rmd.getWebpage().equals(metaWebpage) &&
+		rmd.getType().equals(metaType) &&
+		rmd.getDate().equals(metaDate) &&
+		rmd.getDcLanguageString().equals(metaDcLanguageString) &&
+		rmd.getDctLanguageString().equals(metaDctLanguageString) &&
+		rmd.getKeywords().equals(metaSubject) &&
+		guiSelectedResource.getMetaDataURL().equals(metaUrl)) {
+			
+			Utils.debug("metadata unchanged !");
+			return;
+		}
+		
+	
+		
 		// temporarily off until update URLs in Linghub and CLARIN are available
 //		if (!metaUrl.trim().isEmpty() && !metaUrl.trim().endsWith("/tbc")) {
 //			if (!ExecutionBean.getResourceChecker().urlIsOnline(metaUrl, 10)) {
@@ -2957,6 +2990,7 @@ public String searchByUser() {
 //			};
 //		}
 		
+		// write changes
 		guiSelectedResource.getResourceMetadata().setMetadataSource(MetadataSource.USER);
 		guiSelectedResource.getResourceMetadata().setFormat(metaFormat);
 		guiSelectedResource.getResourceMetadata().setRights(metaRights);
@@ -3107,6 +3141,7 @@ public String searchByUser() {
 	
 	public StreamedContent getFile(String mode) {
 		
+		
 		if(mode.equals("workspace")) {
 			exportRDF(RDFExportMode.WORKSPACE);
 		}
@@ -3120,6 +3155,39 @@ public String searchByUser() {
 			
 			exportRDFSingle();
 		}
+		
+		
+		if(mode.equals("logging")) {
+			
+			Utils.debug(userAccount.getAccountTypeAsString());
+			
+			if (!userAccount.getAccountTypeAsString().equals("admin")) {
+				showError("Not allowed !");
+				return null;
+			}
+			
+			try {
+
+				Utils.debug("download log");
+				
+				if (!new File(fidConfig.getString("RunParameter.LogFile")).exists()) {
+					showError("The logfile : "+fidConfig.getString("RunParameter.LogFile")+" does not exist. Please check "
+							+ "the configuration parameter RunParameter.LogFile");
+					return null;
+				}
+				
+				Utils.debug(fidConfig.getString("RunParameter.LogFile"));
+				FileInputStream stream = new FileInputStream(fidConfig.getString("RunParameter.LogFile"));
+				
+				//Stream<String> stream = Files.lines(Paths.get(fidConfig.getString("RunParameter.LogFile")));				
+				String fileName = "Annohub-Log_"+new Date().toString()+".txt";
+				file = new DefaultStreamedContent((InputStream) stream, "text/plain", fileName);
+    	
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    		}
+		}
+		
 		
         return file;
     }
@@ -4694,6 +4762,12 @@ public String searchByUser() {
 		} else {
 			Utils.debug("Queue empty : nothing to backup !");
 		}
+	}
+	
+	
+	
+	public void logging () {
+		
 	}
 		
 	
