@@ -1624,16 +1624,35 @@ public class Executer {
 			return error;
 		}
 		
+		try {
+			ExecutionBean.setProgressValue(25);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
 		File sourceDirectory=registryDbConfig.getDatabaseDirectory();
 		
 		// REG-DB
 		File targetDirectory=new File(backupRootDirectory,backup.getName());
 		ScriptUtils.tarDirectory(sourceDirectory, new File(targetDirectory, sourceDirectory.getName()));
 		
+		try {
+			ExecutionBean.setProgressValue(50);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
 		// DATA-DB
 		sourceDirectory=dataDbConfig.getDatabaseDirectory();
 		ScriptUtils.tarDirectory(sourceDirectory, new File(targetDirectory, sourceDirectory.getName()));
-
+		
+		try {
+			ExecutionBean.setProgressValue(75);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		// Backup ModelDef.json
 		File modelFile = modelDefinition.getModelFile();
 		try {
@@ -1650,6 +1669,12 @@ public class Executer {
 		if(!error.isEmpty()) {
 			resourceManager=createNewResourceManagerInstance();
 			return error;
+		}
+		
+		try {
+			ExecutionBean.setProgressValue(100);
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 		
 		backupInProgress=false;

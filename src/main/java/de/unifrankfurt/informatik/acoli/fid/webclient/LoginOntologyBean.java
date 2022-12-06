@@ -72,7 +72,7 @@ public class LoginOntologyBean implements Serializable {
 	private String deleteMessage="Delete model permanently ?";
 	private boolean loaded=false;
 	
-	private List<ModelInfo> modelList = new ArrayList<ModelInfo>();
+	private static List<ModelInfo> modelList = new ArrayList<ModelInfo>();
 	private List<ModelInfo> filteredModelList = null;
 	private ModelInfo selectedDummyModel = null;
 	private List<ModelInfo> modelListOld;
@@ -106,11 +106,15 @@ public class LoginOntologyBean implements Serializable {
 	private HashSet<ModelType> updatedModels;
 	private boolean modelConfigurationEdited = false;
 	
-	private AtomicInteger progressInteger = new AtomicInteger();
+	private static AtomicInteger progressInteger;
 	private AtomicReference<String> modelCheckUrl;
-	private HashMap<String, Boolean> urls;
-	
+	private static HashMap<String, Boolean> urls;
 
+	private static float progress;
+
+	private static boolean modelCheckActive = false;
+	
+	
 	
 	
 	//@EJB
@@ -137,22 +141,25 @@ public class LoginOntologyBean implements Serializable {
 //	    		System.out.println("using modelDefinition from Executer");
 //	    	} else {
 	    	
-	    		// read model definitions from file
-	    		modelDefinition = new ModelDefinition(fidConfig);
-	    		System.out.println("using modelDefinition from fidConfig");
-	    	//}
+	    	modelDefinition = new ModelDefinition(fidConfig);
 	    	
-			modelList = modelDefinition.getModelInfoList();
-	    	
-			
-			// modelDefinitionOld = SerializationUtils.clone(modelDefinition); does not work,
-			// because error in modelsNeedUpdateAfterEdit
-
-			modelListOld = new ArrayList<ModelInfo>();
-			for (ModelInfo mi : modelList) {
-				modelListOld.add(SerializationUtils.clone(mi));
-			}
-			
+	    	if(!modelCheckActive) {
+		    	// read model definitions from file
+		    	//modelDefinition = new ModelDefinition(fidConfig);
+		    	System.out.println("using modelDefinition from fidConfig");
+		    	//}
+		    	
+				modelList = modelDefinition.getModelInfoList();
+		    	
+				
+				// modelDefinitionOld = SerializationUtils.clone(modelDefinition); does not work,
+				// because error in modelsNeedUpdateAfterEdit
+	
+				modelListOld = new ArrayList<ModelInfo>();
+				for (ModelInfo mi : modelList) {
+					modelListOld.add(SerializationUtils.clone(mi));
+				}
+	    	}
 			//checkModelsOnline();
 	    
 	    } catch (InvalidModelDefinitionException e) {
@@ -735,6 +742,13 @@ public class LoginOntologyBean implements Serializable {
 		context.execute("PF('checkModels').show();");
 		context.execute("PF('progressbar').start();");
 		
+		if (modelCheckActive) {
+			return;
+		}
+		else { 
+			modelCheckActive = true;
+		}
+		
 		urls = new HashMap<String, Boolean>();
 		for (ModelInfo mi : modelList) {
 			urls.put(mi.getUrl().toString(), false);
@@ -757,6 +771,8 @@ public class LoginOntologyBean implements Serializable {
 	
 	public void modelCheckComplete() {
 		
+		Utils.debug("modelCheckComplete");
+				
 		OntologyManager ontologyManager = new OntologyManager(
 	    		executer,
 				new DownloadManager(
@@ -767,8 +783,9 @@ public class LoginOntologyBean implements Serializable {
 						10),
 						fidConfig,
 				modelDefinition);
-					
+		
 		updatedModels = ontologyManager.checkUpdatedModels();
+			
 		
 		for (ModelInfo mi : modelList) {
 			
@@ -795,6 +812,11 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
+//	public void updateCheckComplete() {
+//		
+//	}
+	
+	
 	public String getModelCheckUrl() {
 		
 		return modelCheckUrl.get();
@@ -803,16 +825,18 @@ public class LoginOntologyBean implements Serializable {
 	
 	private void startLongTask(HashMap<String, Boolean> urls) {
 				
+		progressInteger = new AtomicInteger();
 	    progressInteger.set(0);
 	    
 	    float stepSize = 100f / modelList.size();
-	    float progress = 1f; // 0 works, but add 1 to avoid the case where the progress bar stops at 99%
+	    progress  = 1f; // 0 works, but add 1 to avoid the case where the progress bar stops at 99%
 	                         // because of rounding errors while adding stepSize
 	    
 	    int count = 1;
 	    for (String mi : urls.keySet()) {
 	    	System.out.println(count+++"/"+modelList.size());
 	  		//progressText = mi.getUrl().toString();
+	  		progressText = mi;
 	    	
 	    	modelCheckUrl = new AtomicReference<String>(mi);
 	  		
@@ -855,6 +879,7 @@ public class LoginOntologyBean implements Serializable {
 //	      }
 //	      executorService.shutdownNow();
 //	      executorService = null;
+	    modelCheckActive=false;
 	}
 	
 	
@@ -919,6 +944,10 @@ public class LoginOntologyBean implements Serializable {
 
 	public void setProgressText(String progressText) {
 		this.progressText = progressText;
+	}
+	
+	public String getProgressText() {
+		return this.progressText;
 	}
 
 
@@ -1015,7 +1044,7 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
-	public void updateDatabase() {
+	public void updateModelDatabase() {
 		
 		System.out.println("update model database");
 		

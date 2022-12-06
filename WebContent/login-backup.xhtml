@@ -150,9 +150,9 @@
 		 <p:menuitem value="Delete" icon="ui-icon-trash" action="#{backupbean.deleteBackup}" update="a7831">
 		 <p:confirm header="Confirm backup delete" message="#{backupbean.deleteMessage}" icon="ui-icon-alert"/>
 		 </p:menuitem>
-		 <p:menuitem  value="Restore" icon="ui-icon-play" action="#{backupbean.restoreBackup}"
-		 ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);">
-		 <p:confirm update="progressbar" header="Confirm backup restore" message="#{backupbean.restoreMessage}" icon="ui-icon-alert"/>
+		 <p:menuitem  value="Restore" icon="ui-icon-play" action="#{backupbean.restoreBackup}" update="progressDialog progressbar"
+		 oncomplete="PF('backupProgress').show();PF('progressbarBackup').start()">
+		 <p:confirm update="progressDialog progressbar" header="Confirm backup restore" message="#{backupbean.restoreMessage}" icon="ui-icon-alert"/>
 		 </p:menuitem>
 	     </p:contextMenu>
 	     
@@ -175,8 +175,8 @@
          </p:panelGrid> 
 
 	       <p:commandButton value="CANCEL" style="margin-right: 3px;width:100px;background:none;margin-left:3px" styleClass="customStyleButton" oncomplete="PF('createBackup').hide()"/> 
-	       <p:commandButton id="backupBT" action="#{backupbean.createNewBackup}" update="a7831" value="START BACKUP" style="width:180px;background:none;" styleClass="customStyleButton" onsuccess="PF('createBackup').hide()"
-	       ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"/>
+	       <p:commandButton id="backupBT" action="#{backupbean.createNewBackup}" update="a7831 progressDialog" value="START BACKUP" style="width:180px;background:none;" styleClass="customStyleButton" onsuccess="PF('createBackup').hide()"
+	       oncomplete="PF('backupProgress').show();PF('progressbarBackup').start()" />
   		 </p:dialog>
   		 
   		 
@@ -205,6 +205,20 @@
 		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" 
 		icon="ui-icon-close"/>
 	  </p:confirmDialog>  
+	  
+	  
+	  
+	 <p:dialog id="progressDialog" widgetVar="backupProgress" header="#{backupbean.progressText}" closable="false" modal="true" showEffect="" hideEffect="" resizeable="false">
+      
+      	<p:progressBar widgetVar="progressbarBackup" ajax="true" value="#{execute.progressValue}" interval="1000"
+                        labelTemplate="{value}%"
+                        global="false"
+                        style="width:500px">
+           <p:ajax event="complete" listener="#{backupbean.progressBackupComplete}" oncomplete="PF('backupProgress').hide()"/>
+           
+      </p:progressBar>
+      
+	</p:dialog>
     		
  
 	</h:form>

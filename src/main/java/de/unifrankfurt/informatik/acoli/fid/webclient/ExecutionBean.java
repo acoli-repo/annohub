@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -18,6 +19,7 @@ import javax.jms.MessageListener;
 
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.jena.rdf.model.Model;
+import org.primefaces.context.RequestContext;
 
 import de.unifrankfurt.informatik.acoli.fid.activemq.Consumer;
 import de.unifrankfurt.informatik.acoli.fid.exec.Executer;
@@ -62,9 +64,13 @@ private static ResourceChecker resourceChecker;
 private static UserManagement userManagement;
 private static UserLog userLog = new UserLog();
 
+private static AtomicInteger progressValueInteger = new AtomicInteger();
+
+
 @EJB
 ExecuterEjb executionEjb;
 private static PostgresManager postgresManager=null;
+private static int progressRange;
 
 
 @PostConstruct
@@ -135,14 +141,32 @@ public static void initResourceCache() {
 		startBrokenLinksCheck(10);
 	}*/
 	
+	
 	int n = resourceCache.getResourceFileMap().keySet().size();
 	int i = 1;
-	for (String resourceIdentifier : resourceCache.getResourceFileMap().keySet()) {
-		System.out.println(i+"/"+n+" Getting file results for resource : "+resourceIdentifier);
-		publicExecuter.getWriter().getQueries().
-			getFileResults(resourceCache.getResourceFileMap().get(resourceIdentifier), resourceManager);
-		i++;
-	}
+
+//      old
+//		for (String resourceIdentifier : resourceCache.getResourceFileMap().keySet()) {
+//			System.out.println(i+"/"+n+" Getting file results for resource : "+resourceIdentifier);
+//			publicExecuter.getWriter().getQueries().
+//				getFileResults(resourceCache.getResourceFileMap().get(resourceIdentifier), resourceManager);
+//			i++;	
+//		}
+
+   	float stepSize = progressRange / n;
+   	float progress = progressValueInteger.get();
+   	i = 1;
+   	for (String resourceIdentifier : resourceCache.getResourceFileMap().keySet()) {
+   		System.out.println(i+"/"+n+" Getting file results for resource : "+resourceIdentifier);
+   		publicExecuter.getWriter().getQueries().
+   			getFileResults(resourceCache.getResourceFileMap().get(resourceIdentifier), resourceManager);
+   		i++;
+   			
+   		progress+=stepSize;
+   	  	int newValue = (int) progress;
+   	  	progressValueInteger.set(newValue);
+   	}
+	
 	// Save urls of all done resources in cache
 	resourceCache.setAllResources(new HashSet<String>(resourceManager.getDoneResourcesAsString()));
 	
@@ -177,7 +201,8 @@ public static void initApplication(Boolean update) {
 		postgresManager.updateClarinMetadata(resourceCache.getResourceMap().values());
 	}
 
-	if (update || publicFidConfig.getBoolean("RunParameter.initRdfExporterAtServerStart")) {
+
+	if ((update && false) || publicFidConfig.getBoolean("RunParameter.initRdfExporterAtServerStart")) {
 	// init rdf export
 	ArrayList<ResourceInfo> dummyList = new ArrayList<ResourceInfo>();
 	RDFSerializer.serializeResourceInfo2RDFModelIntern(
@@ -380,6 +405,26 @@ public void onMessage(Message message) {
 
 public PostgresManager getPostgresManager() {
 	return postgresManager;
+}
+
+
+public int getProgressValue() {
+    return progressValueInteger.get();
+}
+
+
+public static void setProgressValue(int value) {
+	progressValueInteger.set(value);
+}
+
+
+public void progressComplete() {
+	//RequestContext.getCurrentInstance().update("form");
+}
+
+
+public static void setProgressRange(int i) {
+	progressRange = i;
 }
 
 

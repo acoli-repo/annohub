@@ -231,7 +231,7 @@
         <p:panelGrid styleClass="ui-noborder">
         <p:row>
 		<p:column>
-		<p:commandButton value="Yes" action="#{obean.updateDatabase()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		<p:commandButton value="Yes" action="#{obean.updateModelDatabase()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
 		</p:column>
 		<p:column>
 		<p:commandButton value="No" action="#{obean.exit(1)}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
@@ -249,10 +249,9 @@
                         style="width:500px">
            <p:ajax event="complete" listener="#{obean.modelCheckComplete}" oncomplete="PF('checkModels').hide()"/>
            
-        </p:progressBar>
+     </p:progressBar>
       
 	</p:dialog>
-	
 	   
  
 	</h:form>
