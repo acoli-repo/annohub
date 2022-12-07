@@ -68,7 +68,14 @@ public class LoginBackupBean implements Serializable {
 
 	private String progressText = "";
 	private static String backupCompleteMessage = "";
-	private static int backupInProgress = 0; // 0 = no, 1 = create new, 2 = restore  
+	private static BackupProcess backupProcess = BackupProcess.IDLE;
+	enum BackupProcess {
+	    CREATE,
+	    RESTORE,
+	    IDLE,
+	    FAILED
+	  }
+	
 	
 	//@EJB
     //ExecuterEjb executionEjb;
@@ -76,6 +83,8 @@ public class LoginBackupBean implements Serializable {
 
 	@PostConstruct
     public void init() {
+		
+		Utils.debug("Backup init");
 		
 		if (loaded) return;
 		loaded = true;
@@ -280,9 +289,8 @@ public class LoginBackupBean implements Serializable {
 	public void createNewBackup() {
 		
 		Utils.debug("createNewBackup");
-		Utils.debug("backups in list : "+backupList.size());
 
-		setBackupInProgress(1);
+		setBackupProcess(BackupProcess.CREATE);
 		
 		if (newBackupName.trim().isEmpty()) return;
 		
@@ -292,22 +300,19 @@ public class LoginBackupBean implements Serializable {
 		boolean commentLengthOk = newBackupComment.length() < 100;
 		
 		if (newBackupName.length() < 5 || newBackupName.length() > 15 || !backupNameCharsOk) {
-			showError("Backup name should have 4 < length < 15, and should contain only alphanumeric characters"
-					+ "or '-_'");
-			backupFinished();
+			backupFailed("Error : Backup name must have 4 to 15 alphanumeric characters or -_");
 			return;
 		}
 		
-		if (backupNameExists) {showError("Error : backup with same name already exists !");backupFinished();return;}
-		
-		if (!commentLengthOk) {showError("Error : comment can contain at most 100 characters !");backupFinished();return;}
+		if (backupNameExists) {backupFailed("Error : Backup with same name already exists !");return;}
+		if (!commentLengthOk) {backupFailed("Error : Comment can contain at most 100 characters !");return;}
 	
 		
 		// hide dialog
 		//RequestContext.getCurrentInstance().execute("PF('createBackup').hide()");
 		//RequestContext.getCurrentInstance().execute("PF('statusDialog').show()");
 
-		setProgressText("Create new backup '"+selectedBackup.getName()+"'");
+		setProgressText("Creating new backup '"+newBackupName+"'");
 		
 		
 		class OneShotTask implements Runnable {
@@ -316,7 +321,7 @@ public class LoginBackupBean implements Serializable {
 	        	
 
 	    		// init progressbar parameter 
-	   		 	ExecutionBean.setProgressValue(0);
+	   		 	ExecutionBean.setProgressValue(1);
 	   		 	
 	   			Backup backup = new Backup(newBackupName);
 	   			backup.setVersionGremlin(newBackupGremlinVersion);
@@ -325,14 +330,10 @@ public class LoginBackupBean implements Serializable {
 	   			backup.setComment(newBackupComment);
 	   			
 	   			if (resourceManager.addBackup(backup) == null) {
-	   				Utils.debug("backup failed");
-	   				setBackupCompleteMessage("Backup failed !");
-	   				showError("Backup failed !");
-	   				backupFinished();
+	   				backupFailed("Backup failed !");
 	   				return;
 	   			} else {
 	   				Utils.debug("backup '"+newBackupName+"' success");
-	   				//showInfo("Successfully created backup '"+backup.getName()+"' !");
 	   			}
 	   			
 	   			String error = ExecutionBean.getPublicExecuter().makeBackup(backup);
@@ -341,13 +342,10 @@ public class LoginBackupBean implements Serializable {
 	   			
 	   			if (!error.isEmpty()) {
 	   				resourceManager.deleteBackup(backup);
-	   				//showError("Backup failed with error : "+error);
-	   				setBackupCompleteMessage("Backup failed with error : "+error);
-	   				backupFinished();
+	   				backupFailed("Backup failed with error : "+error);
 	   				return;
 	   			} else {
 	   				setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");
-	   				//showMessageDialog("Successfully created backup '"+backup.getName()+"' !", FacesMessage.SEVERITY_INFO);
 	   			}	
 	        }
 	    }
@@ -364,52 +362,44 @@ public class LoginBackupBean implements Serializable {
 	
 	public String restoreBackup() {
 		
-		setBackupInProgress(2);
-		ExecutionBean.setProgressValue(0);
-		setProgressText("Restore backup '"+selectedBackup.getName()+"'");
+		setBackupProcess(BackupProcess.RESTORE);
+		ExecutionBean.setProgressValue(1);
+		setProgressText("Restoring backup '"+selectedBackup.getName()+"'");
 		
 		Utils.debug("restoreBackup");
 				
 		if (selectedBackup == null) {
-			showError("restoreBackup null");
-			backupFinished();
+			backupFailed("Internal Error : restoreBackup=null");
 			return "";
 		}
 		
-			
-			class OneShotTask implements Runnable {
-		        OneShotTask() {}
-		        public void run() {
-		        	
-			        String error = ExecutionBean.getPublicExecuter().restoreBackup(selectedBackup);
-			
-			        // TODO
-		    		if (!error.isEmpty()) {
-		    			//showError("Backup restore failed with error : "+error);
-//		    			 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Backup restore failed with error : "+error);
-//		    		     FacesContext.getCurrentInstance().addMessage(null, msg);
-//		    		     RequestContext.getCurrentInstance().update(("form:msgs"));
-		    			backupFinished();
-		    			return;
-		    		}
-		        	
-		    		// init progressbar parameter 
-		   		 	ExecutionBean.setProgressValue(30);
-		   		 	ExecutionBean.setProgressRange(70);
+		setBackupCompleteMessage("Backup '"+selectedBackup.getName()+"' was sucessfully restored !");
 
-					ExecutionBean.initApplication(true);
-					setBackupCompleteMessage("Backup '"+selectedBackup.getName()+"' was sucessfully restored !");
-		    		refreshResourceManager();		    		
-		    		initBackupManager();
-		        }
-		    }
-			
-			Thread t = new Thread(new OneShotTask());
-			t.start();
+		class OneShotTask implements Runnable {
+	        OneShotTask() {}
+	        public void run() {
+	        	
+		        String error = ExecutionBean.getPublicExecuter().restoreBackup(selectedBackup);
+	    		if (!error.isEmpty()) {
+	    			backupFailed("Backup restore failed with error : "+error);
+	    			return;
+	    		}
+	        	
+	    		// set progressbar parameter 
+	   		 	ExecutionBean.setProgressValue(30);
+	   		 	ExecutionBean.setProgressRange(70);
+
+				ExecutionBean.initApplication(true);
+	    		refreshResourceManager();		    		
+	    		initBackupManager();
+	        }
+	    }
+		
+		Thread t = new Thread(new OneShotTask());
+		t.start();
 					
 		return "";
 		//return "login-backup?faces-redirect=true";
-
 	}
 	
 	
@@ -548,23 +538,34 @@ public class LoginBackupBean implements Serializable {
 	}
 
 	
-	public void progressBackupComplete() {
+	public String progressBackupComplete() {
 		
-		if (backupInProgress == 1) {
-			initBackupManager();
+		if (getBackupProcess() == BackupProcess.FAILED) return "";
+		
+		if (backupProcess == BackupProcess.CREATE) {
 			refreshResourceManager();
+			initBackupManager();
 		}
 
 		showMessageDialog(getBackupCompleteMessage(), FacesMessage.SEVERITY_INFO);
-		//showMessageDialog("Backup '"+selectedBackup.getName()+"' was sucessfully restored !", FacesMessage.SEVERITY_INFO);
-		backupInProgress=0;
-		Utils.debug("backups in list : "+backupList.size());
+		backupFinished();
+        RequestContext.getCurrentInstance().update(("form:msgs"));
+		return "";
 	}
 	
 	
 	public void backupFinished() {
-		backupInProgress=0;
+		backupProcess=BackupProcess.IDLE;
 	}
+	
+	public void backupFailed(String error) {
+		Utils.debug("backup failed");
+		setBackupProcess(BackupProcess.FAILED);
+		ExecutionBean.setProgressValue(100);
+		showError(error);
+		//showMessageDialog(error, FacesMessage.SEVERITY_ERROR);
+	}
+	
 	
 
 	public synchronized String getProgressText() {
@@ -591,14 +592,14 @@ public class LoginBackupBean implements Serializable {
 
 
 
-	public static synchronized int getBackupInProgress() {
-		return backupInProgress;
+	public static synchronized BackupProcess getBackupProcess() {
+		return backupProcess;
 	}
 
 
 
-	public static synchronized void setBackupInProgress(int backupInProgress) {
-		LoginBackupBean.backupInProgress = backupInProgress;
+	public static synchronized void setBackupProcess(BackupProcess type) {
+		LoginBackupBean.backupProcess = type;
 	}
 
 

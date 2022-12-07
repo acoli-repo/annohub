@@ -90,7 +90,7 @@
 		</p:dialog>
 		
 		
-		<p:blockUI id="block-1" block="form" trigger="backupBT">
+		<p:blockUI id="block-1" block="form" trigger="">
 		Backup in progress ... <br />
 		</p:blockUI>
    
@@ -210,7 +210,7 @@
 	  
 	 <p:dialog id="progressDialog" widgetVar="backupProgress" header="#{backupbean.progressText}" closable="false" modal="true" showEffect="" hideEffect="" resizeable="false">
       
-      	<p:progressBar widgetVar="progressbarBackup" ajax="true" value="#{execute.progressValue}" interval="1000"
+      	<p:progressBar  widgetVar="progressbarBackup" ajax="true" value="#{execute.progressValue}" interval="1000"
                         labelTemplate="{value}%"
                         global="false"
                         style="width:500px">
