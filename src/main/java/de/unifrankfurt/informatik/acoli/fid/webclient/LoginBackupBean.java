@@ -342,7 +342,7 @@ public class LoginBackupBean implements Serializable {
 	   			
 	   			if (!error.isEmpty()) {
 	   				resourceManager.deleteBackup(backup);
-	   				backupFailed("Backup failed with error : "+error);
+	   				backupFailed("Creating backup failed with error : "+error);
 	   				return;
 	   			} else {
 	   				setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");
@@ -364,7 +364,7 @@ public class LoginBackupBean implements Serializable {
 		
 		setBackupProcess(BackupProcess.RESTORE);
 		ExecutionBean.setProgressValue(1);
-		setProgressText("Restoring backup '"+selectedBackup.getName()+"'");
+		setProgressText("Restoring Backup '"+selectedBackup.getName()+"'");
 		
 		Utils.debug("restoreBackup");
 				
@@ -381,7 +381,7 @@ public class LoginBackupBean implements Serializable {
 	        	
 		        String error = ExecutionBean.getPublicExecuter().restoreBackup(selectedBackup);
 	    		if (!error.isEmpty()) {
-	    			backupFailed("Backup restore failed with error : "+error);
+	    			backupFailed("Restoring backup failed with error : "+error);
 	    			return;
 	    		}
 	        	
@@ -548,15 +548,12 @@ public class LoginBackupBean implements Serializable {
 		}
 
 		showMessageDialog(getBackupCompleteMessage(), FacesMessage.SEVERITY_INFO);
-		backupFinished();
+		backupProcess=BackupProcess.IDLE;
         RequestContext.getCurrentInstance().update(("form:msgs"));
 		return "";
 	}
 	
 	
-	public void backupFinished() {
-		backupProcess=BackupProcess.IDLE;
-	}
 	
 	public void backupFailed(String error) {
 		Utils.debug("backup failed");

@@ -1770,6 +1770,10 @@ public class Executer {
 		// restore backups and users from json file
 		List<Backup> backups = Backup.readBackups(new File(backupRootDirectory, "backups.json"));
 		for (Backup b : backups) {
+			
+			// TODO synchronize db entries in reg-DB with list of backups in backups.json
+			// delete backup from db if backup does not exist in backups.json 
+			
 			resourceManager.addBackup(b); // does nothing and returns null if backup already exists
 		}
 		List<UserAccount> users = UserAccount.readUsers(new File(backupRootDirectory, "users.json"));
