@@ -87,7 +87,9 @@ public class IndexUtils {
 	public static final String ERROR_UPLOAD_FILE_SIZE_LIMIT_EXECEEDED = "Size of uploaded file exeeds limit";
 	public static final String ERROR_UPLOAD_RESOURCE_COUNT_LIMIT_EXECEEDED = "Quota error : amount of allowed resources to be uploaded is execeeded";
 	public static final String ERROR_UPLOAD_RESOURCE_FILE_COUNT_LIMIT_EXECEEDED = "Quota error : amount of allowed resources files to be uploaded is execeeded";
-	public static final String ERROR_RESOURCE_IS_DUPLICATE = "Error : file is duplicate ";
+	public static final String ERROR_RESOURCE_IS_DUPLICATE = "Error : file is a duplicate ";
+	public static final String ERROR_BACKUP_MANIPULATTION = "Error : backup files are invalid";
+
 
 
 

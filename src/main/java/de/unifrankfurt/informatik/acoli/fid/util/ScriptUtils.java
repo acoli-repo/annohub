@@ -166,7 +166,7 @@ public class ScriptUtils {
 		
 		try {
 			
-			 String shellCommand = "md5sum "+filePath;			
+			 String shellCommand = "md5sum "+filePath;	
 			 System.out.println(shellCommand);
 			 
 			 Process p = Runtime.getRuntime().exec(shellCommand);

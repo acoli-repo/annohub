@@ -4624,68 +4624,69 @@ public class RMServer implements ResourceManager{
 	}
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#addBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Vertex addBackup(Backup backup) {
-		
-		if (backupExists(backup)) {
-			Utils.debug("skipping creation of existing backup '"+backup.getName()+"'");
-			return null;
-		} else {
-			Utils.debug("creating new backup '"+backup.getName()+"'");
-		}
-				
-		HashMap <String, Object> values = new HashMap <String, Object> ();
-		
-		String addVertexQuery = "g.addV('"+BackupVertex+"')"
-				+ ".property('"+ResourceManager.BackupName+"','"+backup.getName()+"')"
-				+ ".property('"+ResourceManager.BackupDate+"',"+backup.getDate().getTime()+")"
-				+ ".property('"+ResourceManager.BackupVersionGremlin+"','"+backup.getVersionGremlin()+"')"
-				+ ".property('"+ResourceManager.BackupVersionDBReg+"','"+backup.getVersionDBReg()+"')"
-				+ ".property('"+ResourceManager.BackupVersionDBData+"','"+backup.getVersionDBData()+"')"
-				+ ".property('"+ResourceManager.BackupComment+"','"+backup.getComment()+"')";
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#addBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Vertex addBackup(Backup backup) {
+//		
+//		if (backupExists(backup)) {
+//			Utils.debug("skipping creation of existing backup '"+backup.getName()+"'");
+//			return null;
+//		} else {
+//			Utils.debug("creating new backup '"+backup.getName()+"'");
+//		}
+//				
+//		HashMap <String, Object> values = new HashMap <String, Object> ();
+//		
+//		String addVertexQuery = "g.addV('"+BackupVertex+"')"
+//				+ ".property('"+ResourceManager.BackupName+"','"+backup.getName()+"')"
+//				+ ".property('"+ResourceManager.BackupDate+"',"+backup.getDate().getTime()+")"
+//				+ ".property('"+ResourceManager.BackupVersionGremlin+"','"+backup.getVersionGremlin()+"')"
+//				+ ".property('"+ResourceManager.BackupVersionDBReg+"','"+backup.getVersionDBReg()+"')"
+//				+ ".property('"+ResourceManager.BackupVersionDBData+"','"+backup.getVersionDBData()+"')"
+//				+ ".property('"+ResourceManager.BackupComment+"','"+backup.getComment()+"')";
+//
+//
+//		// add backup vertex
+//		Vertex resourceVertex = queries.addVertex(addVertexQuery, values);
+//					
+//		return resourceVertex;
+//	}
 
 
-		// add backup vertex
-		Vertex resourceVertex = queries.addVertex(addVertexQuery, values);
-					
-		return resourceVertex;
-	}
+//	/**
+//	 * @param backup
+//	 * @return
+//	 */
+//	@Override
+//	public boolean backupExists(Backup backup) {
+//		
+//		if (getBackup(backup) == null) return false;
+//		else 
+//			return true;
+//	}
 
 
-	/**
-	 * @param backup
-	 * @return
-	 */
-	@Override
-	public boolean backupExists(Backup backup) {
-		
-		if (getBackup(backup) == null) return false;
-		else 
-			return true;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#deleteBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Boolean deleteBackup(Backup backup) {
-				
-		if(getBackup(backup) == null) {
-			
-			Utils.debug("Error delete backup : the backup '"+backup.getName()+"' does not exist !");
-			return false; // backup does not exist
-		}
-		
-		// Delete user vertex
-		queries.genericDeleteQuery("g.V().hasLabel('"+BackupVertex+"').has('"+BackupName+"','"+backup.getName()+"')");
-		
-		Utils.debug("Successfully deleted backup '"+backup.getName()+"' !");
-		return true;
-	}
+// writing backup to registry database no longer supported
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#deleteBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Boolean deleteBackup(Backup backup) {
+//				
+//		if(getBackup(backup) == null) {
+//			
+//			Utils.debug("Error delete backup : the backup '"+backup.getName()+"' does not exist !");
+//			return false; // backup does not exist
+//		}
+//		
+//		// Delete user vertex
+//		queries.genericDeleteQuery("g.V().hasLabel('"+BackupVertex+"').has('"+BackupName+"','"+backup.getName()+"')");
+//		
+//		Utils.debug("Successfully deleted backup '"+backup.getName()+"' !");
+//		return true;
+//	}
 
 
 	/* (non-Javadoc)
@@ -4700,39 +4701,39 @@ public class RMServer implements ResourceManager{
 	}
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Vertex getBackup(Backup backup) {
-		
-		List<Vertex> backups = getBackupsV();
-		if (backups.isEmpty()) return null;
-		
-		// Match backup name
-		for (Vertex v : backups) {
-			if (((String) v.value(BackupName)).equals(backup.getName())) return v;
-		}
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Vertex getBackup(Backup backup) {
+//		
+//		List<Vertex> backups = getBackupsV();
+//		if (backups.isEmpty()) return null;
+//		
+//		// Match backup name
+//		for (Vertex v : backups) {
+//			if (((String) v.value(BackupName)).equals(backup.getName())) return v;
+//		}
+//		return null;
+//	}
 	
-	@Override
-	public List<Backup> getBackups() {
-		
-		ArrayList<Backup> result = new ArrayList<Backup>();
-		
-		for (Vertex v : getBackupsV()) {
-			Backup backup = new Backup((String) v.value(BackupName));
-			backup.setDate(new Date((Long) v.value(BackupDate)));
-			backup.setVersionGremlin((String) v.value(BackupVersionGremlin));
-			backup.setVersionDBReg((String) v.value(BackupVersionDBReg));
-			backup.setVersionDBData((String) v.value(BackupVersionDBData));
-			backup.setComment((String) v.value(BackupComment));
-			result.add(backup);
-		}
-		
-		return result;
-	}
+//	@Override
+//	public List<Backup> getBackups() {
+//		
+//		ArrayList<Backup> result = new ArrayList<Backup>();
+//		
+//		for (Vertex v : getBackupsV()) {
+//			Backup backup = new Backup((String) v.value(BackupName));
+//			backup.setDate(new Date((Long) v.value(BackupDate)));
+//			backup.setVersionGremlin((String) v.value(BackupVersionGremlin));
+//			backup.setVersionDBReg((String) v.value(BackupVersionDBReg));
+//			backup.setVersionDBData((String) v.value(BackupVersionDBData));
+//			backup.setComment((String) v.value(BackupComment));
+//			result.add(backup);
+//		}
+//		
+//		return result;
+//	}
 
 
 	@Override

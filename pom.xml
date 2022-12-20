@@ -557,8 +557,8 @@ updated jackson from above
             <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.3.0</version>
-				<!-- error with 3.4.1 -->
+				<version>3.2.4</version>
+				<!-- error on server with 3.3.0, local with 3.4.1 -->
 				<executions>
 					<execution>
 						<phase>package</phase>

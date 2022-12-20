@@ -2054,58 +2054,58 @@ public class RMEmbedded implements ResourceManager{
 
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#addBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Vertex addBackup(Backup backup) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#addBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Vertex addBackup(Backup backup) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#deleteBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Boolean deleteBackup(Backup backup) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#deleteBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Boolean deleteBackup(Backup backup) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public Vertex getBackup(Backup backup) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackup(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public Vertex getBackup(Backup backup) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackups()
-	 */
-	@Override
-	public List<Backup> getBackups() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#getBackups()
+//	 */
+//	@Override
+//	public List<Backup> getBackups() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 
-	/* (non-Javadoc)
-	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#backupExists(de.unifrankfurt.informatik.acoli.fid.types.Backup)
-	 */
-	@Override
-	public boolean backupExists(Backup backup) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+//	/* (non-Javadoc)
+//	 * @see de.unifrankfurt.informatik.acoli.fid.resourceDB.ResourceManager#backupExists(de.unifrankfurt.informatik.acoli.fid.types.Backup)
+//	 */
+//	@Override
+//	public boolean backupExists(Backup backup) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 
 

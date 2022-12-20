@@ -1610,12 +1610,12 @@ public class Executer {
 	 * @param backupInfo
 	 * @return err on success, otherwise empty
 	 */
-	public String makeBackup (Backup backup) {
+	public String makePhysicalBackup (Backup backup) {
 		
-		
+		Utils.debug("makeBackup");
 		File backupRootDirectory = new File(fidConfig.getString("Backup.directory"));
-		saveBackups2File(backupRootDirectory);
-		saveUsers2File(backupRootDirectory);
+//		saveBackups2File(backupRootDirectory);
+//		saveUsers2File(backupRootDirectory);
 		
 		backupInProgress=true;
 		String error = stopDB();
@@ -1677,6 +1677,10 @@ public class Executer {
 			e1.printStackTrace();
 		}
 		
+		// success : save backups and users to file
+		////saveBackups2File(backupRootDirectory);
+		saveUsers2File(backupRootDirectory);
+				
 		backupInProgress=false;
 		return "";
 	}
@@ -1692,11 +1696,14 @@ public class Executer {
 
 	}
 	
-	private void saveBackups2File(File backupRootDirectory) {
-
-		List<Backup> backupList = resourceManager.getBackups();
-		Backup.saveBackupsToFile(backupList, new File(backupRootDirectory, "backups.json"));
-	}
+//	private void saveBackups2File(File backupRootDirectory) {
+//
+//		List<Backup> backupList = resourceManager.getBackups();
+//		for (Backup backup : backupList) {
+//			backup.createChecksums(new File(backupRootDirectory,backup.getName()));
+//		}
+//		Backup.saveBackupsToFile(backupList, new File(backupRootDirectory, "backups.json"));
+//	}
 	
 	/**
 	 * Restore backup
@@ -1707,6 +1714,12 @@ public class Executer {
 		
 		File backupRootDirectory = new File(fidConfig.getString("Backup.directory"));
 		File archivDirectory = new File(backupRootDirectory, backup.getName());
+		
+		// validate backup integrity via checksums
+		String errorMsg = Backup.validateBackup(backup, archivDirectory);
+		if(!errorMsg.isEmpty()) {
+			return errorMsg;
+		}
 
 		saveUsers2File(backupRootDirectory); // save current users !
 		// backups are up2date
@@ -1769,13 +1782,13 @@ public class Executer {
 		
 		// restore backups and users from json file
 		List<Backup> backups = Backup.readBackups(new File(backupRootDirectory, "backups.json"));
-		for (Backup b : backups) {
-			
-			// TODO synchronize db entries in reg-DB with list of backups in backups.json
-			// delete backup from db if backup does not exist in backups.json 
-			
-			resourceManager.addBackup(b); // does nothing and returns null if backup already exists
-		}
+//		for (Backup b : backups) {
+//			
+//			// TODO synchronize db entries in reg-DB with list of backups in backups.json
+//			// delete backup from db if backup does not exist in backups.json 
+//			
+//			// resourceManager.addBackup(b); // does nothing and returns null if backup already exists
+//		}
 		List<UserAccount> users = UserAccount.readUsers(new File(backupRootDirectory, "users.json"));
 		for (UserAccount user : users) {
 			if (!resourceManager.userExists(user.getUserID())) {
@@ -1793,9 +1806,9 @@ public class Executer {
 	}
 	
 	
-	public String deleteBackup(Backup backup) {
+	public String deletePhysicalBackup(Backup backup) {
 		
-		Utils.debug("deleteBackup : "+backup.getName());
+		Utils.debug("deletePhysicalBackup : "+backup.getName());
 		
 		File backupRootDirectory = new File(fidConfig.getString("Backup.directory"));
 		File backupDirectory=new File(backupRootDirectory,backup.getName());

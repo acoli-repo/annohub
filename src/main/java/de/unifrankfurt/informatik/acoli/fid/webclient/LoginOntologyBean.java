@@ -421,7 +421,7 @@ public class LoginOntologyBean implements Serializable {
 	}
 		
 		
-	public void updateOliaModels() {
+	public String updateOliaModels() {
 		
 		Utils.debug("updateOliaModels");
 		ResourceManager rm = executer.createNewResourceManagerInstance();		
@@ -432,20 +432,29 @@ public class LoginOntologyBean implements Serializable {
 		String date = simpleDateFormat.format(backup.getDate());
 		backup.setName(name+date);		
 		
-		rm.addBackup(backup);
 		
+		// create physical backup
+		String err = ExecutionBean.getPublicExecuter().makePhysicalBackup(backup);
+		
+		if (err.isEmpty()) {
+			Utils.debug("creating backup before model update finished successfully !");
+		} else {
+			Utils.debug(err);
+			return err;
+		}
+		
+		// create backup record
+		if (!backup.addBackupRecord()) {
+			return "Error while creating backup record!";
+		};
+		
+		
+		//rm.addBackup(backup);
 		// force flag needs not to be set
 		//fidConfig.getString("OWL.modelUpdateMode") force
 		
-		String err = ExecutionBean.getPublicExecuter().makeBackup(backup);
-		
-		if (err.isEmpty()) {
-			Utils.debug("backup before model update finished !");
-		} else {
-			Utils.debug(err);
-			return;
-		}
-		
+	
+		// continue with model update
 		try {
 			Thread.sleep(fidConfig.getLong("Databases.restartTimeoutInMilliseconds"));
 		} catch (InterruptedException e) {
@@ -471,11 +480,15 @@ public class LoginOntologyBean implements Serializable {
 		
 		if (!updateError.isEmpty()) {
 			showMessageDialog(updateError, FacesMessage.SEVERITY_INFO);
-			executer.createNewResourceManagerInstance().deleteBackup(backup);
-			updateError = ExecutionBean.getPublicExecuter().deleteBackup(backup);
+			
+			// undo physical backup + backup record
+			updateError = ExecutionBean.getPublicExecuter().deletePhysicalBackup(backup);
+			backup.deleteBackupRecord();
+			//executer.createNewResourceManagerInstance().deleteBackup(backup);
+				
 			if (!updateError.isEmpty()) {
 				showMessageDialog(updateError, FacesMessage.SEVERITY_INFO);
-				return;
+				return updateError;
 			} else {
 				//showInfo("Backup '"+backup.getName()+"' sucessfully deleted !");
 			}
@@ -484,6 +497,7 @@ public class LoginOntologyBean implements Serializable {
 			
 			// save changed modelDefinition to file
 		}
+		return "";
 	}
 	
 

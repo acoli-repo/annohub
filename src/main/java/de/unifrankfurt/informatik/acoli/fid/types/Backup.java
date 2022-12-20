@@ -4,9 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.unifrankfurt.informatik.acoli.fid.exec.Executer;
+import de.unifrankfurt.informatik.acoli.fid.util.ScriptUtils;
+import de.unifrankfurt.informatik.acoli.fid.util.Utils;
 
 /**
  * @author frank
@@ -21,6 +27,9 @@ public class Backup {
 	private String versionDBReg="";
 	private String versionDBData="";
 	private String comment="";
+	private List<String> checksumList = new ArrayList<String>();
+	private String backupRootDirectory = Executer.getFidConfig().getString("Backup.directory");
+
 
 	
 	public Backup() {
@@ -120,10 +129,13 @@ public class Backup {
 	 */
 	public static Boolean saveBackupsToFile(List<Backup> backupList, File jsonFile) {
 		
+		Utils.debug("saveBackupsToFile");
+		
 		try {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.writeValue(jsonFile, backupList);
+			Utils.debug("Writing backups to file "+jsonFile.getAbsoluteFile());
 			return true;
 			//ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			//String json = ow.writeValueAsString(backupList);
@@ -134,6 +146,144 @@ public class Backup {
 			return false;
 		}
 	}
+	
+	
+	public Boolean addBackupRecord() {
+		
+		if (backupRecordExists()) return false;
+		
+		File jsonFile = new File(backupRootDirectory,"backups.json");
+		List<Backup> backups = new ArrayList<Backup>(readBackups(jsonFile));
+				
+		createChecksums(new File(backupRootDirectory, this.getName()));
+		backups.add(this);
+
+		saveBackupsToFile(backups, jsonFile);
+		return true;
+	}
+	
+	
+	public Boolean deleteBackupRecord() {
+		
+		Utils.debug("deleteBackup");
+		
+		if (!backupRecordExists()) {
+			Utils.debug("Backup delete Error : record for Backup does not exist !");
+			return false;
+		}
+		
+		File jsonFile = new File(backupRootDirectory,"backups.json");
+		List<Backup> backups = new ArrayList<Backup>(readBackups(jsonFile));
+	
+		Utils.debug("Delete backup record : "+this.name);
+		Iterator<Backup> iterator = backups.iterator();
+		System.out.println("searching ...");
+		boolean found = false;
+		while (iterator.hasNext()) {
+			Backup backup = iterator.next();
+			
+			if (backup.getName().equals(this.name)) {
+				Utils.debug("remove backup "+backup.name);
+				iterator.remove();
+				Utils.debug("success");
+				found=true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			System.out.println("Error : could not find record for backup "+this.name);
+			return false;
+		}
+		saveBackupsToFile(backups, jsonFile);
+		return true;
+	}
+	
+	
+	public Boolean backupRecordExists() {
+		
+		List<Backup> backups = readBackups(new File(backupRootDirectory,"backups.json"));
+		for (Backup b : backups) {
+			if (b.getName().equals(this.name)) return true;
+		}
+		
+		return false;
+	}
+	
+	
+	
+	
+	
+	public Boolean createChecksums(File backupDirectory) {
+		
+		Utils.debug("createChecksums");
+		List<String> fileChecksums = new ArrayList<String>();
+
+		for (String name : backupDirectory.list()) {
+			
+			File file = new File(backupDirectory, name); 
+			if (!file.isFile()) return false;						// subdirectories not allowed
+			
+			Map<String, String> hashes = ScriptUtils.computeMd5AndSha256(file.getAbsolutePath());
+			fileChecksums.add(hashes.get("sha256"));
+		}
+		
+		setChecksumList(fileChecksums);
+		return true;
+	}
+	
+	
+	
+	public static String validateBackup(Backup backup, File archivDirectory) {
+		
+		// backup directory does not exist
+		if (!archivDirectory.exists() || !archivDirectory.isDirectory()) return "Error : The Backup directory '"
+			+archivDirectory.getAbsolutePath()+"' does not exist !";
+		
+		// check sha256-checkums for all files in the archivDirectory
+		List<String> fileChecksums = new ArrayList<String>();
+		for (String name : archivDirectory.list()) {
+			
+			File file = new File(archivDirectory, name); 
+			if (!file.isFile()) {
+				Utils.debug("Error : subdirectories not allowed in Backup folder!");
+				return "Error : subdirectories not allowed in Backup folder!";	// subdirectories not allowed
+			}
+			
+			Map<String, String> hashes = ScriptUtils.computeMd5AndSha256(file.getAbsolutePath());
+			fileChecksums.add(hashes.get("sha256"));
+		}
+		
+		
+//		Utils.debug("fileChecksums");
+//		for (String x : fileChecksums) {
+//			System.out.println(x);
+//		}
+//
+//		Utils.debug(" backup.getChecksumList()");
+//		for (String x : backup.getChecksumList()) {
+//			System.out.println(x);
+//		}
+
+		if (fileChecksums.size() != backup.getChecksumList().size()) {
+			Utils.debug("Error : Backup folder was altered - file count does'nt match !");
+			return "Error : Backup folder was altered - file count does'nt match !";
+		}
+		
+		// verify the sha256 checksum for every file in the backup directory  
+		for (String fileChecksum : fileChecksums) {
+			boolean found = false;
+			for (String checksum : backup.getChecksumList()) {
+				if (fileChecksum.equals(checksum)) found = true;
+			}
+			if (!found) {
+				Utils.debug("Checksum Error in backup '"+backup.getName()+"'. The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !");
+				return "Checksum Error in backup '"+backup.getName()+"'. The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !";
+			}
+		}
+		return "";
+	}
+	
 	
 
 	public static void main (String[] args) {
@@ -169,6 +319,16 @@ public class Backup {
 			System.out.println(b.versionDBReg);
 			System.out.println();
 		}
+	}
+
+
+	public List<String> getChecksumList() {
+		return checksumList;
+	}
+
+
+	public void setChecksumList(List<String> checksumList) {
+		this.checksumList = checksumList;
 	}
 
 }

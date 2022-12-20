@@ -650,15 +650,15 @@ public interface ResourceManager {
 
 	Vertex updateUser(UserAccount userAccount);
 	
-	Vertex addBackup(Backup backup);
+	// Vertex addBackup(Backup backup);
 
-	Boolean deleteBackup(Backup backup);
+	// Boolean deleteBackup(Backup backup);
 	
-	Vertex getBackup(Backup backup);
+	// Vertex getBackup(Backup backup);
 
-	List<Backup> getBackups();
+	// List<Backup> getBackups();
 
-	boolean backupExists(Backup backup);
+	// boolean backupExists(Backup backup);
 
 	void setCluster(Cluster cluster);
 	

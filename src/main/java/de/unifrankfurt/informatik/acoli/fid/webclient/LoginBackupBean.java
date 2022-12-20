@@ -133,7 +133,8 @@ public class LoginBackupBean implements Serializable {
 	    b3.setVersionDBReg("Neo4j 3.2.5");
 	    backupList.add(b3);*/
 		
-		backupList=resourceManager.getBackups();
+		//backupList=resourceManager.getBackups();
+		backupList=Backup.readBackups(new File(backupDirectory, "backups.json"));
 		return "";
 	}
 
@@ -295,7 +296,8 @@ public class LoginBackupBean implements Serializable {
 		if (newBackupName.trim().isEmpty()) return;
 		
 		// check input fields
-		boolean backupNameExists = resourceManager.backupExists(new Backup(newBackupName));
+		boolean backupNameExists = new Backup(newBackupName).backupRecordExists();
+		//boolean backupNameExists = resourceManager.backupExists(new Backup(newBackupName));
 		boolean backupNameCharsOk = newBackupName.matches("[a-zA-Z0-9\\-_]+");
 		boolean commentLengthOk = newBackupComment.length() < 100;
 		
@@ -329,24 +331,29 @@ public class LoginBackupBean implements Serializable {
 	   			backup.setVersionDBData(newBackupDataDBVersion);
 	   			backup.setComment(newBackupComment);
 	   			
-	   			if (resourceManager.addBackup(backup) == null) {
+	   			// make physical backup
+	   			String backupCreationError = ExecutionBean.getPublicExecuter().makePhysicalBackup(backup);
+	   			
+	   			if (!backupCreationError.isEmpty()) {
+	   				//resourceManager.deleteBackup(backup);
+	   				backupFailed("Creating backup failed with error : "+backupCreationError);
+	   				return;
+	   			}
+	   			
+	   			// create backup record
+	   			if (!backup.addBackupRecord()) {
+	   				//if (resourceManager.addBackup(backup) == null) {
+	   				// TODO delete backup folder created in the previous step
 	   				backupFailed("Backup failed !");
 	   				return;
 	   			} else {
 	   				Utils.debug("backup '"+newBackupName+"' success");
 	   			}
 	   			
-	   			String error = ExecutionBean.getPublicExecuter().makeBackup(backup);
+	   			// String error = ExecutionBean.getPublicExecuter().makeBackup(backup);
 	   			
 	   			refreshResourceManager();
-	   			
-	   			if (!error.isEmpty()) {
-	   				resourceManager.deleteBackup(backup);
-	   				backupFailed("Creating backup failed with error : "+error);
-	   				return;
-	   			} else {
-	   				setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");
-	   			}	
+	   			setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");	
 	        }
 	    }
 		
@@ -415,8 +422,28 @@ public class LoginBackupBean implements Serializable {
 	}*/
 
 
-
+	
+	
 	public String deleteBackup() {
+		
+		Utils.debug("deleteBackup");
+				
+		String error = ExecutionBean.getPublicExecuter().deletePhysicalBackup(selectedBackup);
+		if (!error.isEmpty()) {
+			showError(error);
+			return "";
+		} else {
+			
+			selectedBackup.deleteBackupRecord();
+			showMessageDialog("Backup '"+selectedBackup.getName()+"' sucessfully deleted !", FacesMessage.SEVERITY_INFO);		
+		}
+		selectedBackup=null;
+		initBackupManager();
+		return "";
+	}
+	
+
+	/*public String deleteBackupFromDatabaseOld() {
 		
 		Utils.debug("deleteBackup");
 		
@@ -433,7 +460,7 @@ public class LoginBackupBean implements Serializable {
 		initBackupManager();
 		return "";
 		//return "login-backup?faces-redirect=true"; 
-	}
+	}*/
 	
 	
 	/**

@@ -157,7 +157,7 @@ public class Authenticate implements Serializable {
 		
 		Backup backup = new Backup("test-backup-1");
 		//ExecutionBean.getPublicExecuter().stopGremlinServer();//restoreBackup();
-		ExecutionBean.getPublicExecuter().makeBackup(backup);
+		ExecutionBean.getPublicExecuter().makePhysicalBackup(backup);
 		//ExecutionBean.getPublicExecuter().startGremlinServer();
 		
 		// show different page
