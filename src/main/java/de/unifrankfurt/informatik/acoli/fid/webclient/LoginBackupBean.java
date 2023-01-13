@@ -94,6 +94,7 @@ public class LoginBackupBean implements Serializable {
 	    fidConfig = Executer.getFidConfig();
 	    
 		initBackupManager();
+		
 	}
 	
 	
@@ -297,6 +298,7 @@ public class LoginBackupBean implements Serializable {
 		
 		// check input fields
 		boolean backupNameExists = new Backup(newBackupName).backupRecordExists();
+		boolean backupDirectoryExists = new Backup(newBackupName).backupDirectoryExists();
 		//boolean backupNameExists = resourceManager.backupExists(new Backup(newBackupName));
 		boolean backupNameCharsOk = newBackupName.matches("[a-zA-Z0-9\\-_]+");
 		boolean commentLengthOk = newBackupComment.length() < 100;
@@ -308,6 +310,9 @@ public class LoginBackupBean implements Serializable {
 		
 		if (backupNameExists) {backupFailed("Error : Backup with same name already exists !");return;}
 		if (!commentLengthOk) {backupFailed("Error : Comment can contain at most 100 characters !");return;}
+		if (backupDirectoryExists) {backupFailed("Error : A backup directory with the same name already exists - please check the file system !");return;}
+
+		
 	
 		
 		// hide dialog
@@ -399,6 +404,7 @@ public class LoginBackupBean implements Serializable {
 				ExecutionBean.initApplication(true);
 	    		refreshResourceManager();		    		
 	    		initBackupManager();
+	    		setBackupCompleteMessage("Backup '"+selectedBackup.getName()+"' was sucessfully restored !");
 	        }
 	    }
 		
@@ -586,7 +592,9 @@ public class LoginBackupBean implements Serializable {
 		Utils.debug("backup failed");
 		setBackupProcess(BackupProcess.FAILED);
 		ExecutionBean.setProgressValue(100);
-		showError(error);
+	
+		setBackupCompleteMessage("Backup '"+selectedBackup.getName()+"' failed !"); // ??
+		showError(error); // ??
 		//showMessageDialog(error, FacesMessage.SEVERITY_ERROR);
 	}
 	

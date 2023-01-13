@@ -719,6 +719,18 @@ public class Executer {
 			System.exit(0);
 		}
 		
+	
+		// validate backups
+		List<String> errors = 
+				Backup.validateBackups(new File(getFidConfig().getString("Backup.directory"),"backups.json"));
+		if (!errors.isEmpty()) {
+			Utils.debug("Errors have been found in backup data :");
+			for (String error : errors) {
+				Utils.debug(error);
+			}
+			Utils.debug("Please fix errors before restarting !");
+			System.exit(0);
+		}
 		
 		// Init blacklisted predicates
 		resourceManager.initPredicates();

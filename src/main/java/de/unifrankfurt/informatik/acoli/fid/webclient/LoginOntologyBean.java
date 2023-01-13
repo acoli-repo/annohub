@@ -49,6 +49,7 @@ import de.unifrankfurt.informatik.acoli.fid.types.ModelUsage;
 import de.unifrankfurt.informatik.acoli.fid.types.ResourceInfo;
 import de.unifrankfurt.informatik.acoli.fid.types.ResourceState;
 import de.unifrankfurt.informatik.acoli.fid.util.Utils;
+import de.unifrankfurt.informatik.acoli.fid.webclient.LoginBackupBean.BackupProcess;
 import edu.emory.mathcs.backport.java.util.Collections;
 import edu.stanford.nlp.util.StringUtils;
 
@@ -96,6 +97,9 @@ public class LoginOntologyBean implements Serializable {
 	private boolean selectedModelIsOnline = false;
 	private boolean selectedModelDocumentationIsOnline = false;
 	private boolean selectedModelIsActive = false;
+	private String selectedModelNiceName = "";
+	private String selectedModelNamespaces;
+
 	
 	private String progressText="";
 	private boolean editModel = false;
@@ -103,17 +107,31 @@ public class LoginOntologyBean implements Serializable {
 
 	private String confirmMessage="";
 
-	private HashSet<ModelType> updatedModels;
+	private HashSet<ModelType> newOrupdatedModels;
 	private boolean modelConfigurationEdited = false;
 	
 	private static AtomicInteger progressInteger;
 	private AtomicReference<String> modelCheckUrl;
+
 	private static HashMap<String, Boolean> urls;
 
-	private static float progress;
+	private static float progress=0.0f;
 
 	private static boolean modelCheckActive = false;
+
+	private static UpdateProcess updateProcess;
 	
+	enum UpdateProcess {
+	    IDLE,
+	    INPROGRESS,
+	    SUCCESS,
+	    FAILED
+	  }
+	
+	private static String updateCompleteMessage = "";
+	
+	private boolean debug = false;
+
 	
 	
 	
@@ -166,8 +184,9 @@ public class LoginOntologyBean implements Serializable {
 			e.printStackTrace();
 		}
 	    
-	    
-	    checkModels(1); // checkModels(0); check on server start ?
+	    if (!debug) {
+	    	checkModels(1); // checkModels(0); check on server start ?
+	    }
 	    //checkModelsOnline();
 	}
 	
@@ -193,6 +212,9 @@ public class LoginOntologyBean implements Serializable {
 		selectedModelUsage = selectedModel.getModelUsage();
 		selectedModelIsOnline = selectedModel.isOnline();
 		selectedModelIsActive = selectedModel.isActive();
+		selectedModelNiceName = modelDefinition.getModelDefinitions().get(selectedModel.getModelType()).getNiceName();
+		selectedModelNamespaces = modelDefinition.getModelDefinitions().get(selectedModel.getModelType()).getNameSpacesAsString();
+
 		
 		newModelID="";
 
@@ -295,18 +317,40 @@ public class LoginOntologyBean implements Serializable {
 			return;
 		}
 		
+		
+
 		if (editModel) {
+			
+			// check if model URL already used in existing model
+			for (ModelInfo m : modelList) {
+				
+				if (m.getModelType() == selectedModel.getModelType()) continue;
+				
+				if (m.getUrl().toString().equals(selectedModelUrl)) {
+					showError("Error : URL already used for other model ("+m.getModelType()+"@"+m.getModelUsage()+") !");
+					return;
+				}
+			}
+				
 			selectedModel.setDocumentationUrl(selectedModelDocumentationUrl);
 			try {
 				
+				// save model URL and update DataLinkState
 				selectedModel.setUrl(new URL(selectedModelUrl));
+				ArrayList<ModelInfo> ml = new ArrayList<ModelInfo>();
+				ml.add(selectedModel);
+				modelCheckCompleteImpl(ml);
+				
 				showInfo("Model URL for '"+selectedModelID+"' has successfully been updated!");
-				selectedModel.setDataLinkState(DataLinkState.OUTDATED);
-
+				
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-		} else {
+			// save model nice name & namespaces
+			modelDefinition.getModelDefinitions().get(selectedModel.getModelType()).setNiceName(selectedModelNiceName);
+			modelDefinition.getModelDefinitions().get(selectedModel.getModelType()).setNameSpaces(selectedModelNamespaces.split(","));
+
+		} else { // save new model
 			
 			// check if model already exists
 			for (ModelInfo m : modelList) {
@@ -369,6 +413,7 @@ public class LoginOntologyBean implements Serializable {
 	public void checkUpdateOliaModels() {
 		
 		
+		
 		// check conditions
 		HashSet<String> notOnline = new HashSet<String>();
 		for (ModelInfo mi : modelList) {
@@ -376,7 +421,7 @@ public class LoginOntologyBean implements Serializable {
 				notOnline.add(mi.getUrl().toString());
 			}
 		}
-		if (!notOnline.isEmpty()) {
+		if (!notOnline.isEmpty() && debug == false) {
 			String errorMsg ="Update stopped because some model URLs are not online : \n";
 			for (String url : notOnline) {
 				errorMsg+="\n"+url;
@@ -385,7 +430,7 @@ public class LoginOntologyBean implements Serializable {
 			return;
 		}
 		
-		if (true) {
+		if (debug) {
 			showInfo("Debug - not updating now");
 			return;
 		}
@@ -403,11 +448,11 @@ public class LoginOntologyBean implements Serializable {
 		
 		
 		String updateMessage = "All models are up to date !";  // default
-		updatedModels = ontologyManager.checkUpdatedModels();
+		newOrupdatedModels = ontologyManager.checkUpdatedModels();
 		
-		if (!updatedModels.isEmpty()) {
+		if (!newOrupdatedModels.isEmpty()) {
 			updateMessage = "The following models have been updated :";
-			for (ModelType mtc : updatedModels) {
+			for (ModelType mtc : newOrupdatedModels) {
 				updateMessage += mtc.getId()+" ";
 			}
 		}
@@ -423,7 +468,12 @@ public class LoginOntologyBean implements Serializable {
 		
 	public String updateOliaModels() {
 		
+		setUpdateProcess(UpdateProcess.INPROGRESS);
+		ExecutionBean.setProgressValue(1);
+		setProgressText("Update OLiA models started !");
+				
 		Utils.debug("updateOliaModels");
+		
 		ResourceManager rm = executer.createNewResourceManagerInstance();		
 		Backup backup = new Backup();
 		String name = "before_model_update_";
@@ -432,6 +482,12 @@ public class LoginOntologyBean implements Serializable {
 		String date = simpleDateFormat.format(backup.getDate());
 		backup.setName(name+date);		
 		
+		setUpdateCompleteMessage("Updating of OLiA models finished sucessfully !");		    
+
+		// thread starts here
+		class OneShotTask implements Runnable {
+	        OneShotTask() {}
+	        public void run() {
 		
 		// create physical backup
 		String err = ExecutionBean.getPublicExecuter().makePhysicalBackup(backup);
@@ -440,12 +496,16 @@ public class LoginOntologyBean implements Serializable {
 			Utils.debug("creating backup before model update finished successfully !");
 		} else {
 			Utils.debug(err);
-			return err;
+			oliaUpdateFailed(err);
+			////return err;
+			return;
 		}
 		
 		// create backup record
 		if (!backup.addBackupRecord()) {
-			return "Error while creating backup record!";
+			oliaUpdateFailed("error while creating backup !");
+			////return "Error while creating backup record!";
+			return;
 		};
 		
 		
@@ -473,33 +533,44 @@ public class LoginOntologyBean implements Serializable {
 				modelDefinition);
 		
 		// Start update
-		String updateError = ontologyManager.updateOliaModels(updatedModels);
+		//String updateError = ontologyManager.updateOliaModels(updatedModels);
+		String updateError="";
+		if (!updateError.isEmpty()) {
+			
+			setUpdateProcess(UpdateProcess.FAILED);
+			setProgressText(updateError);
+
+			// undo physical backup + backup record
+			String error = ExecutionBean.getPublicExecuter().deletePhysicalBackup(backup);
+			backup.deleteBackupRecord();
+			//executer.createNewResourceManagerInstance().deleteBackup(backup);
+		}
 		
 		ExecutionBean.initApplication(true);
 		//ExecutionBean.initResourceCache();
 		
-		if (!updateError.isEmpty()) {
-			showMessageDialog(updateError, FacesMessage.SEVERITY_INFO);
-			
-			// undo physical backup + backup record
-			updateError = ExecutionBean.getPublicExecuter().deletePhysicalBackup(backup);
-			backup.deleteBackupRecord();
-			//executer.createNewResourceManagerInstance().deleteBackup(backup);
-				
-			if (!updateError.isEmpty()) {
-				showMessageDialog(updateError, FacesMessage.SEVERITY_INFO);
-				return updateError;
-			} else {
-				//showInfo("Backup '"+backup.getName()+"' sucessfully deleted !");
-			}
-		} else {
-			showMessageDialog("Updating of OLiA models sucessfully finished !", FacesMessage.SEVERITY_INFO);
-			
-			// save changed modelDefinition to file
+		setUpdateCompleteMessage("Updating of OLiA models finished sucessfully !");		    
+	    }
 		}
+		// thread ends here
+		
+		Thread t = new Thread(new OneShotTask());
+		t.start();
+					
 		return "";
+
 	}
 	
+	
+	public void oliaUpdateFailed(String error) {
+		
+		Utils.debug("OLiA update failed : "+error);
+		setUpdateProcess(UpdateProcess.FAILED);
+		setUpdateCompleteMessage("OLiA update failed : "+error);	// ??	    
+		ExecutionBean.setProgressValue(100);
+		showError("OLiA update failed : "+error);  // ??
+		//showMessageDialog(error, FacesMessage.SEVERITY_ERROR);
+	}
 
 	/**
 	 * @param updateMessage
@@ -784,6 +855,11 @@ public class LoginOntologyBean implements Serializable {
 	
 	
 	public void modelCheckComplete() {
+		modelCheckCompleteImpl(new ArrayList<ModelInfo>());
+	}
+	
+	
+	public void modelCheckCompleteImpl(List<ModelInfo> models2bChecked) {
 		
 		Utils.debug("modelCheckComplete");
 				
@@ -798,25 +874,43 @@ public class LoginOntologyBean implements Serializable {
 						fidConfig,
 				modelDefinition);
 		
-		updatedModels = ontologyManager.checkUpdatedModels();
-			
+		List<ModelInfo> clist;
 		
-		for (ModelInfo mi : modelList) {
+		if(models2bChecked.isEmpty()) {
+			System.out.println("Checking all models !");
+			newOrupdatedModels = ontologyManager.checkUpdatedModels();
+			clist=modelList;
+		} else {
+			System.out.println("Checking models :");
+			for (ModelInfo m : models2bChecked) {
+				System.out.println(m.getName());
+				System.out.println(m.getUrl());
+			}
+
+			newOrupdatedModels = ontologyManager.checkUpdatedModels(models2bChecked);
+			clist=models2bChecked;
+		}
+		
+		for (ModelInfo mi : clist) {
 			
 			boolean isOnline = urls.get(mi.getUrl().toString());
 			
 			if (isOnline) {
-				if (updatedModels.contains(mi.getModelType())) {
+				if (newOrupdatedModels.contains(mi.getModelType())) {
 					mi.setDataLinkState(DataLinkState.OUTDATED);
+					Utils.debug(mi.getUrl()+" is "+DataLinkState.OUTDATED);
 				} else {
 					mi.setDataLinkState(DataLinkState.UP2DATE);
+					Utils.debug(mi.getUrl()+" is "+DataLinkState.UP2DATE);
 				}
 			} else {
 				mi.setDataLinkState(DataLinkState.BROKEN);
+				Utils.debug(mi.getUrl()+" is "+DataLinkState.BROKEN);
 			}
 			
 //			System.out.println(mi.getUrl().toString());
 //			System.out.println(urls.get(mi.getUrl().toString()));
+			
 		}
 		
 		//FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("form");
@@ -1169,6 +1263,63 @@ public class LoginOntologyBean implements Serializable {
 //		FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("form:toolbar");
 //		RequestContext.getCurrentInstance().update("form:toolbar");
 
+	}
+	
+	
+	public static synchronized UpdateProcess getUpdateProcess() {
+		return updateProcess;
+	}
+
+
+
+	public static synchronized void setUpdateProcess(UpdateProcess type) {
+		LoginOntologyBean.updateProcess = type;
+	}
+	
+	
+	public String modelUpdateComplete() {
+		
+		if (getUpdateProcess() == UpdateProcess.FAILED) return "";
+		
+		if (updateProcess == UpdateProcess.SUCCESS) {
+			//refreshResourceManager();
+			//initBackupManager();
+		}
+
+		showMessageDialog(getUpdateCompleteMessage(), FacesMessage.SEVERITY_INFO);
+		updateProcess=UpdateProcess.IDLE;
+        RequestContext.getCurrentInstance().update(("form:msgs"));
+		return "";
+	}
+
+
+	public static String getUpdateCompleteMessage() {
+		return updateCompleteMessage;
+	}
+
+
+	public static void setUpdateCompleteMessage(String updateCompleteMessage) {
+		LoginOntologyBean.updateCompleteMessage = updateCompleteMessage;
+	}
+
+
+	public synchronized String getSelectedModelNiceName() {
+		return selectedModelNiceName;
+	}
+
+
+	public synchronized void setSelectedModelNiceName(String selectedModelNiceName) {
+		this.selectedModelNiceName = selectedModelNiceName;
+	}
+
+
+	public String getSelectedModelNamespaces() {
+		return selectedModelNamespaces;
+	}
+
+
+	public void setSelectedModelNamespaces(String selectedModelNamespaces) {
+		this.selectedModelNamespaces = selectedModelNamespaces;
 	}
 	
 

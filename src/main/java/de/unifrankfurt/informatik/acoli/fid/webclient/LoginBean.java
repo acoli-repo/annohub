@@ -448,6 +448,7 @@ public class LoginBean implements Serializable {
 	    	showMyResources = true;
 	    	showSelectedResources = true;
 	    	showSearchResources = true;
+	    	resourceNameSearch = "http";
 	    }
 	    
 	    updateCounts();
@@ -4342,7 +4343,7 @@ public String searchByUser() {
     	if (createNewUser) {
     		String error = userManagement.checkLogin(selectedUserAccount);
     		if (!error.isEmpty()) {
-    			showError(error);
+    			showStickyMessage(error, FacesMessage.SEVERITY_ERROR);
     			return;
     		}
 		}
@@ -4403,7 +4404,7 @@ public String searchByUser() {
 
 		if(!error.isEmpty()) {
 			Utils.debug(error);
-			showError(error);
+			showStickyMessage(error, FacesMessage.SEVERITY_ERROR);
 			return false;
 		}
 		

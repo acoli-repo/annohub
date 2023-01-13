@@ -2,6 +2,11 @@ package de.unifrankfurt.informatik.acoli.fid.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 public class ModelGroup implements Serializable {
 	
@@ -61,16 +66,35 @@ public class ModelGroup implements Serializable {
 		return tagNamespaces;
 	}
 	
-	public void setTagNameSpaces(String[] nameSpaces) {
-		this.tagNamespaces = nameSpaces;
+	public void setTagNameSpaces(String[] namespaces) {
+		
+		HashSet<String> set = new HashSet<String>();
+		for (String ns : namespaces) {
+			set.add(ns.trim());
+		}
+		this.tagNamespaces = set.toArray(new String[set.size()]);
 	}
 	
 	public String[] getClassNameSpaces() {
 		return classNamespaces;
 	}
 	
-	public void setClassNameSpaces(String[] classNameSpaces) {
-		this.classNamespaces = classNameSpaces;
+	public void setClassNameSpaces(String[] namespaces) {
+
+		HashSet<String> set = new HashSet<String>();
+		for (String ns : namespaces) {
+			set.add(ns.trim());
+		}
+		this.classNamespaces = set.toArray(new String[set.size()]);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getNameSpaces() {
+		
+		Set<String> namespaces = new HashSet<String>();
+		namespaces.addAll(Arrays.asList(getTagNameSpaces()));
+		namespaces.addAll(Arrays.asList(getClassNameSpaces()));
+		return new ArrayList<String>(namespaces);
 	}
 	
 	public String getNiceName() {
@@ -91,6 +115,15 @@ public class ModelGroup implements Serializable {
 	
 	public String getID() {
 		return modelType.name();
+	}
+
+	public String getNameSpacesAsString() {
+		return String.join(",", getNameSpaces());
+	}
+
+	public void setNameSpaces(String[] namespaces) {
+		setTagNameSpaces(namespaces);
+		setClassNameSpaces(namespaces);
 	}
 	
 }

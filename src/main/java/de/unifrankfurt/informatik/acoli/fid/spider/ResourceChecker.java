@@ -101,7 +101,7 @@ public class ResourceChecker {
 			isOnline = false;
 			Utils.debug(resourceInfo.getDataURL()+" is broken !");
 		} else {
-			Utils.debug(resourceInfo.getDataURL()+"is online !");
+			Utils.debug(resourceInfo.getDataURL()+" is online !");
 			isOnline = true;
 		}
 

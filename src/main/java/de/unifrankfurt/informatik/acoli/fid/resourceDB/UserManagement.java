@@ -20,6 +20,9 @@ public class UserManagement {
 	
 	private ResourceManager resourceManager = null;
 	private XMLConfiguration config;
+	private final String usernameRule = "User creation error: username is at least 6 characters long with only alpha-numeric characters and at leat 1 upper-case and 1 lower-case letter !";
+	private final String passwordRule = "Password creation error: password is at least 6 characters long with at least 1 number, 1 upper-case, 1 lower-case and 1 non-alpha-numeric character !";
+
 	
 	public UserManagement(ResourceManager resourceManager, XMLConfiguration config) {
 		this.resourceManager = resourceManager;
@@ -145,11 +148,11 @@ public class UserManagement {
 		
 		if (passwd.isEmpty()) return "";
 		if (passwd.contains("'") || passwd.contains(" ") || passwd.contains("\\")) return "Password error : characters <space>, ' and \\ not allowed in password !";
-		if (passwd.length() < 6) return "Password error : password must have at least 6 characters !";
-		if (!passwd.matches(".*\\d.*")) return "Password error : password must contain at least one digit !";
-		if (!passwd.matches(".*[A-Z].*")) return "Password error : password must contain at least an upper case letter !";
-		if (!passwd.matches(".*[a-z].*")) return "Password error : password must contain at least a lower case letter !";
-		if (!passwd.matches(".*[^A-Za-z0-9].*")) return "Password error : password must contain at least one non-alphanumeric character !";
+		if (passwd.length() < 6) return passwordRule;
+		if (!passwd.matches(".*\\d.*")) return passwordRule;
+		if (!passwd.matches(".*[A-Z].*")) return passwordRule;
+		if (!passwd.matches(".*[a-z].*")) return passwordRule;
+		if (!passwd.matches(".*[^A-Za-z0-9].*")) return passwordRule;
 		if (passwd.contains("guest")) return "Password error : password can not have infix 'guest' !";
 		if (passwd.contains("admin")) return "Password error : password can not have infix 'admin' !";
 
@@ -164,13 +167,13 @@ public class UserManagement {
 		
 		String userLogin = userAccount.getUserID();
 		
-		if (!userLogin.matches("[A-Za-z0-9]+")) return "User creation error : user login must contain only alpha-numeric characters !";
-		if (!userLogin.matches(".*[A-Z].*")) return "User creation error : user login must contain at least one upper case letter !";
-		if (!userLogin.matches(".*[a-z].*")) return "User creation error : user login must contain at least one lower case letter !";
+		if (!userLogin.matches("[A-Za-z0-9]+")) return usernameRule;
+		if (!userLogin.matches(".*[A-Z].*")) return usernameRule;
+		if (!userLogin.matches(".*[a-z].*")) return usernameRule;
 
 		// check login starts with guest
 		if (userAccount.getUserID().trim().length() < 6){
-				return "User creation error : user login must have at least 6 characters !";
+				return usernameRule;
 		};
 		
 		// check login has reserved names
@@ -191,7 +194,7 @@ public class UserManagement {
 		HashSet<Character> diffSet = new HashSet<Character>();
 		int i = 0;
 		while (i < userLogin.length()) {
-			diffSet.add(userLogin.charAt(i));
+			diffSet.add(Character.toLowerCase(userLogin.charAt(i)));
 			i++;
 		}
 		

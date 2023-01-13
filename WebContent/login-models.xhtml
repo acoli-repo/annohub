@@ -177,7 +177,30 @@
 			<p:column>
 				<h:inputText value="#{obean.selectedModelDocumentationUrl}" style="width:775px"/>
 			</p:column>
+			</p:row>
 			
+			<p:row style="width:100%">
+			<p:column style="width:auto;text-align:left;">
+				<h:outputText style="font-style: italic" value="Namespaces" />
+			</p:column>
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column>
+				<h:inputText value="#{obean.selectedModelNamespaces}" style="width:775px"/>
+			</p:column>
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column style="width:auto;text-align:left;">
+				<h:outputText style="font-style: italic" value="Model nice name" />
+			</p:column>
+			</p:row>
+			
+			<p:row style="width:100%">
+			<p:column>
+				<h:inputText value="#{obean.selectedModelNiceName}" style="width:100px"/>
+			</p:column>
 			</p:row>
 		
 		</p:panelGrid>
@@ -221,8 +244,8 @@
 	  
 	  <p:confirmDialog id="yesNoDialog" message="#{obean.confirmMessage}"
 		header="Confirm Model Update" severity="alert" widgetVar="yesNoDialogW" responsive="true">
-		<p:commandButton id="confirmUpdate" value="Yes" action="#{obean.updateOliaModels}"
-		oncomplete="PF('yesNoDialogW').hide()" styleClass="ui-confirmdialog-yes"/>
+		<p:commandButton id="confirmUpdate" value="Yes" action="#{obean.updateOliaModels}" update="progressDialog"
+		oncomplete="PF('yesNoDialogW').hide();PF('modelUpdateProgress').show();PF('modelUpdateProgressbar').start()" styleClass="ui-confirmdialog-yes"/>
 		<p:commandButton value="No" onclick="PF('yesNoDialogW').hide();" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
 	  </p:confirmDialog>
 	  
@@ -252,6 +275,20 @@
      </p:progressBar>
       
 	</p:dialog>
+	
+	
+	<p:dialog id="progressDialog" widgetVar="modelUpdateProgress" header="#{obean.progressText}" closable="false" modal="true" showEffect="" hideEffect="" resizeable="false">
+      
+      	<p:progressBar  widgetVar="modelUpdateProgressbar" ajax="true" value="#{execute.progressValue}" interval="1000"
+                        labelTemplate="{value}%"
+                        global="false"
+                        style="width:500px">
+           <p:ajax event="complete" listener="#{obean.modelUpdateComplete}" oncomplete="PF('modelUpdateProgress').hide()"/>
+           
+      </p:progressBar>
+      
+	</p:dialog>
+	
 	   
  
 	</h:form>

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.jena.riot.RDFDataMgr;
@@ -208,6 +209,37 @@ public class OntologyManager {
 				}
 			}		
 		}
+		
+		return newOrChangedModels;
+	}
+	
+	
+	/**
+	 * Check if models have been updated or added
+	 * @return Models that are new or have been changed
+	 */
+	public HashSet<ModelType> checkUpdatedModels(List<ModelInfo> modelInfoList) {
+		
+		HashSet<ModelType> newOrChangedModels = new HashSet<ModelType>();
+			
+			for (ModelInfo model : modelInfoList) {
+
+				if (!model.isActive()) continue;
+				//if (!model.isActive() && !ModelGroupsNew.useAllModels) continue;
+				
+				String dataUrl = model.getUrl().toString();
+				System.out.println("dataUrl "+dataUrl);
+				String metadataUrl = "";
+				System.out.println("checking model "+ dataUrl);
+				
+				// Download all updated models of model group
+				ResourceInfo resourceInfo = new ResourceInfo(dataUrl, metadataUrl, "http://linghub/dummy/dataset", ResourceFormat.ONTOLOGY);
+				downloadManager.getResource(workerId, resourceInfo, false, false);
+
+				if (resourceInfo.getResource() != null) {					
+					newOrChangedModels.add(model.getModelType());
+				}
+			}		
 		
 		return newOrChangedModels;
 	}

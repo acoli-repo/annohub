@@ -171,6 +171,10 @@ public class Backup {
 			Utils.debug("Backup delete Error : record for Backup does not exist !");
 			return false;
 		}
+		if (!backupDirectoryExists()) {
+			Utils.debug("Backup delete Error : the backup directory does not exist - please check the file system !");
+			return false;
+		}
 		
 		File jsonFile = new File(backupRootDirectory,"backups.json");
 		List<Backup> backups = new ArrayList<Backup>(readBackups(jsonFile));
@@ -201,7 +205,7 @@ public class Backup {
 	
 	
 	public Boolean backupRecordExists() {
-		
+				
 		List<Backup> backups = readBackups(new File(backupRootDirectory,"backups.json"));
 		for (Backup b : backups) {
 			if (b.getName().equals(this.name)) return true;
@@ -211,6 +215,13 @@ public class Backup {
 	}
 	
 	
+	
+	public Boolean backupDirectoryExists() {
+		
+		if (new File (backupRootDirectory, this.getName()).exists()) return true;
+		else
+		return false;
+	}
 	
 	
 	
@@ -230,6 +241,22 @@ public class Backup {
 		
 		setChecksumList(fileChecksums);
 		return true;
+	}
+	
+	
+	
+	public static List<String> validateBackups(File backupFile) {
+		
+		List<Backup> backupList = readBackups(backupFile);
+		ArrayList<String> errors = new ArrayList<String>();
+		for (Backup backup : backupList) {
+			String error = validateBackup(backup, new File (backupFile.getParent(), backup.getName()));
+			if (!error.isEmpty()) {
+				errors.add(error);
+			}
+		}
+		
+		return errors;
 	}
 	
 	
@@ -266,8 +293,8 @@ public class Backup {
 //		}
 
 		if (fileChecksums.size() != backup.getChecksumList().size()) {
-			Utils.debug("Error : Backup folder was altered - file count does'nt match !");
-			return "Error : Backup folder was altered - file count does'nt match !";
+			Utils.debug("Error in Backup folder '"+backup.getName()+"' : file count has changed !");
+			return "Error in Backup folder '"+backup.getName()+"' : file count has changed !";
 		}
 		
 		// verify the sha256 checksum for every file in the backup directory  
@@ -277,8 +304,8 @@ public class Backup {
 				if (fileChecksum.equals(checksum)) found = true;
 			}
 			if (!found) {
-				Utils.debug("Checksum Error in backup '"+backup.getName()+"'. The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !");
-				return "Checksum Error in backup '"+backup.getName()+"'. The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !";
+				Utils.debug("Checksum Error in backup '"+backup.getName()+"' : The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !");
+				return "Checksum Error in backup '"+backup.getName()+"' : The file with the sha256-checksum '"+fileChecksum+"' is not registered in the backup record !";
 			}
 		}
 		return "";
