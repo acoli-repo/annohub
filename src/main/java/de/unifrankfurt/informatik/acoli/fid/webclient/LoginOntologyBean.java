@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
@@ -128,7 +129,33 @@ public class LoginOntologyBean implements Serializable {
 	    FAILED
 	  }
 	
+	enum EditStatus {
+	    UNCHANGED,
+	    NAME_MODIFIED,
+	    NAMESPACE_MODIFIED,
+	    DATA_URL_MODIFIED,
+	    DOC_URL_MODIFIED,
+	    MODEL_COUNT_CHANGED,
+	    NEWER_REVISION_AVAILABLE
+	  }
+	
+	enum UpdateAction {
+	    NONE,
+	    UPDATE_MODELS_AND_SAVE_DEFINITIONS,
+	    SAVE_DEFINITIONS,
+	    EDIT_MODELS,
+	    ERROR
+	  }
+	
+	
+	enum ErrorStatus {
+	    MODEL_IS_OFFLINE,
+	    DUPLICATE_MODEL_ID
+	  }
+	
 	private static String updateCompleteMessage = "";
+	
+	private static String updateActionMessage = "";
 	
 	private boolean debug = false;
 
@@ -409,12 +436,16 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
-	
-	public void checkUpdateOliaModels() {
+	/**
+	 * @deprecated
+	 * @return
+	 */
+	public Boolean checkModelUpdateRequired() {
 		
+		// 0. A model has been deleted or a new model has been added
+		if (modelList.size() != modelListOld.size()) return true;
 		
-		
-		// check conditions
+		// 1. Check models are online ?
 		HashSet<String> notOnline = new HashSet<String>();
 		for (ModelInfo mi : modelList) {
 			if (!mi.isOnline()) {
@@ -427,12 +458,12 @@ public class LoginOntologyBean implements Serializable {
 				errorMsg+="\n"+url;
 			}
 			showStickyMessage(errorMsg, FacesMessage.SEVERITY_ERROR);
-			return;
+			return false;
 		}
 		
 		if (debug) {
 			showInfo("Debug - not updating now");
-			return;
+			return false;
 		}
 			
 		OntologyManager ontologyManager = new OntologyManager(
@@ -446,27 +477,29 @@ public class LoginOntologyBean implements Serializable {
 						fidConfig,
 				modelDefinition);
 		
-		
+		// 2. Check models are up2date ?
 		String updateMessage = "All models are up to date !";  // default
 		newOrupdatedModels = ontologyManager.checkUpdatedModels();
 		
 		if (!newOrupdatedModels.isEmpty()) {
-			updateMessage = "The following models have been updated :";
+			updateMessage = "The following models will be updated :";
 			for (ModelType mtc : newOrupdatedModels) {
 				updateMessage += mtc.getId()+" ";
 			}
 		}
 		
-		if (updateMessage.startsWith("All models")) {
+		if (updateMessage.equals("All models are up to date !")) {
 			showMessageDialog(updateMessage, FacesMessage.SEVERITY_INFO);
-			return;
-		} else {
-			showConfirmDialog(updateMessage);
+			return false;
 		}
+		
+		showConfirmDialog(updateMessage);
+		return true;
 	}
 		
 		
-	public String updateOliaModels() {
+	public String startModelUpdateProcess() {
+		
 		
 		setUpdateProcess(UpdateProcess.INPROGRESS);
 		ExecutionBean.setProgressValue(1);
@@ -515,6 +548,10 @@ public class LoginOntologyBean implements Serializable {
 		
 	
 		// continue with model update
+		
+		// Save (edited) model list to file, only after old ModelDef.json has been backuped
+		//modelDefinition.saveModelDef();
+		
 		try {
 			Thread.sleep(fidConfig.getLong("Databases.restartTimeoutInMilliseconds"));
 		} catch (InterruptedException e) {
@@ -996,12 +1033,14 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
-	public void checkModelsOnline() {
+	public void checkModelsGui() {
 		
 		if (true) {
 			checkModels(1);
 			return;
 		}
+		
+		// old imlementation of checkModels
 		
 		RequestContext context = RequestContext.getCurrentInstance();
 		context.execute("PF('checkModels').show();");
@@ -1110,35 +1149,46 @@ public class LoginOntologyBean implements Serializable {
 	
 	public String exit(int mode) {
 		
-		int modelsNeedUpdateAfterEdit = modelsNeedUpdateAfterEdit();
+//		int modelsNeedUpdateAfterEdit = updateRequiredAfterModelEdit();
+//		System.out.println("Exit code "+modelsNeedUpdateAfterEdit);
+
 		
-		System.out.println("Exit code "+modelsNeedUpdateAfterEdit);
+		UpdateAction action = computeUpdateAction();
+		Utils.debug ("UpdateAction "+action);
+
 		
-		// no changes in modelList
-		if(modelsNeedUpdateAfterEdit == 0 || mode == 1) {
+		switch (action) {
+		
+		case NONE:
 			loginBean.closeOntologyManager();
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
 			//return "login?faces-redirect=true";
 			return "";
-		}
-
-		// changes made to modelList that require an update of the model database
-		if (modelsNeedUpdateAfterEdit == 1) {
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('confirmDBupdate').show()");
-		}
 		
-		// changes made to modelList, that will be saved to ModelDef.json
-		if (modelsNeedUpdateAfterEdit == 2) {
-			// no update, but save modelList to ModelDef.json because documentationUrl was changed
-			System.out.println("saving only");
+		case EDIT_MODELS:
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
+			
+			// TODO add cancel dialog (in order to exit ontology manager)
+			
+			return "";
+		
+		case SAVE_DEFINITIONS:
+			// changes that were made will be saved to ModelDef.json
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
 			saveModelDefinition();
 			return "login?faces-redirect=true";
-		}
-		
-		// error, because at least 2 models in modelList have equal ID (same modelType, URL, modelUsage, active)
-		if (modelsNeedUpdateAfterEdit == 3) {
-			showError("Model list contains two models with same ID");
+			
+		case UPDATE_MODELS_AND_SAVE_DEFINITIONS:
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('confirmDBupdate').show()");
 			return "";
+			
+		case ERROR:
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_FATAL);
+			return "";
+		
+		default:
+			break;
 		}
 		
 		return "";
@@ -1152,9 +1202,15 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
-	public void updateModelDatabase() {
+	public void startModelUpdate() {
 		
-		System.out.println("update model database");
+		System.out.println("startModelUpdate");
+		
+		// check if update is required
+		if (!checkModelUpdateRequired()) return;
+		
+		// make backup and update olia models
+		startModelUpdateProcess();
 		
 		// there are 3 locations for olia models
 		// 1. ModelDef.json
@@ -1200,26 +1256,19 @@ public class LoginOntologyBean implements Serializable {
 		
 		// modelDefinition set in init()
 		// list of model definitions is changed
-		
-		// save edited modelList to ModelDef.json
-		//modelDefinition.saveModelDef();
-		
-		// check for new or
-		checkUpdateOliaModels();
-		
-		// make backup and update olia models
-		//updateOliaModels();
-		
+
 	}
 	
 	
-	public int modelsNeedUpdateAfterEdit() {
+	public int updateRequiredAfterModelEdit() {
 		
 		// return codes : 0 = don't update, 1 = update, 2 = save, 3 = error
 				
-		// at least one new model has been added
+		// A model has been deleted or a new model has been added
 		if (modelList.size() != modelListOld.size()) return 1;
 		
+		
+		// Check if a documentation URL has changed 
 		int changedDocumentationUrls = 0;
 		HashSet<String> matchedModelIDs = new HashSet<String>();
 		for (ModelInfo mi : modelList) {
@@ -1320,6 +1369,98 @@ public class LoginOntologyBean implements Serializable {
 
 	public void setSelectedModelNamespaces(String selectedModelNamespaces) {
 		this.selectedModelNamespaces = selectedModelNamespaces;
+	}
+	
+	
+	public UpdateAction computeUpdateAction () {
+		
+		Set<EditStatus> modifications = new HashSet<EditStatus>();		
+		
+		// I. Check all models in list are online
+		HashSet<String> notOnline = new HashSet<String>();
+		HashSet<String> outdated = new HashSet<String>();
+		
+		for (ModelInfo mi : modelList) {
+			if (!mi.isOnline()) {
+//				notOnline.add(mi.getID()+" : "+mi.getUrl().toString());
+				notOnline.add(mi.getID()+"."+mi.getUsage());
+
+			}
+			if (mi.getDataLinkState() == DataLinkState.OUTDATED) {
+//				outdated.add(mi.getID()+" : "+mi.getUrl().toString());
+				outdated.add(mi.getID()+"."+mi.getUsage());
+			}
+		}
+		if (!notOnline.isEmpty()) {
+			String errorMsg ="Editing for some models is required because model URLs seem to be broken : \n";
+			for (String url : notOnline) {
+				errorMsg+="\n"+url;
+			}
+			updateActionMessage = errorMsg;
+			return UpdateAction.EDIT_MODELS;
+		}
+		
+		// II. Check if all models in list are up-2-date
+		if (outdated.size() > 0) modifications.add(EditStatus.NEWER_REVISION_AVAILABLE);
+		
+		
+		// III. A model has been deleted or a new model has been added
+		if (modelList.size() != modelListOld.size()) modifications.add(EditStatus.MODEL_COUNT_CHANGED);
+		
+		// IV. Check if documentation URLs were changed 
+		int changedDocumentationUrls = 0;
+		HashSet<String> matchedModelIDs = new HashSet<String>();
+		for (ModelInfo mi : modelList) {
+			
+			// error, because of two models with the same id in the modelList
+			if (matchedModelIDs.contains(mi.getID())) {
+				
+				updateActionMessage = "Error : Model list contains two models with ID "+mi.getID();
+				return UpdateAction.ERROR;
+			}
+			
+			// check if model IDs match
+			boolean ok = false;
+			for (ModelInfo mo : modelListOld) {
+				// skip models that already have been matched
+				if (mi.getID().equals(mo.getID())) {
+					ok = true;
+					matchedModelIDs.add(mi.getID());
+					if (!mi.getDocumentationUrl().equals(mo.getDocumentationUrl())) {
+						changedDocumentationUrls++;
+					}
+					break;
+				}
+			}
+			if (!ok) modifications.add(EditStatus.MODEL_COUNT_CHANGED);
+		}
+		if (changedDocumentationUrls > 0) modifications.add(EditStatus.DOC_URL_MODIFIED);
+		
+		
+		
+		if (modifications.contains(EditStatus.MODEL_COUNT_CHANGED)			||
+			modifications.contains(EditStatus.DATA_URL_MODIFIED)			||
+			modifications.contains(EditStatus.NAMESPACE_MODIFIED)			||
+			modifications.contains(EditStatus.NEWER_REVISION_AVAILABLE)) {
+
+			// run model update
+			updateActionMessage = "An model update is required due to several changes !";
+			return UpdateAction.UPDATE_MODELS_AND_SAVE_DEFINITIONS;
+		}
+		
+		
+		if (modifications.contains(EditStatus.DOC_URL_MODIFIED)		||
+			modifications.contains(EditStatus.NAME_MODIFIED)) {
+			
+			// only save modelList to ModelDef.json
+			updateActionMessage = "Modifications are saved, but an update is not required!";
+			return UpdateAction.SAVE_DEFINITIONS;
+		}
+		
+		// no update required
+		updateActionMessage = "All models are up-2date, no update is required!";
+		return UpdateAction.NONE;
+			
 	}
 	
 

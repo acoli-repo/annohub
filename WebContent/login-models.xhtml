@@ -62,7 +62,7 @@
 	        <f:facet name="left">
 	            <p:menuButton value="" icon="ui-icon-wrench">
 	            	
-	            	<p:menuitem id="checkMI" value="Check Online" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkModelsOnline}" icon=" ui-icon-check" update="modelInfo" />
+	            	<p:menuitem id="checkMI" value="Check Online" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkModelsGui}" icon=" ui-icon-check" update="modelInfo" />
 	           		<p:menuitem value="Add Model" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.addModel}" icon="ui-icon-plusthick" oncomplete="PF('addOrEditModel').show()" />
 	            	<p:menuitem id="updateOlia" value="Update" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkUpdateOliaModels}" icon="ui-icon-arrowrefresh-1-e"/>
 	            	<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
@@ -254,7 +254,7 @@
         <p:panelGrid styleClass="ui-noborder">
         <p:row>
 		<p:column>
-		<p:commandButton value="Yes" action="#{obean.updateModelDatabase()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		<p:commandButton value="Yes" action="#{obean.startModelUpdate()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
 		</p:column>
 		<p:column>
 		<p:commandButton value="No" action="#{obean.exit(1)}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
