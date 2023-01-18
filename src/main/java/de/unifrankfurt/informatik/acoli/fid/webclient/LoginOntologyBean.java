@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -140,7 +141,7 @@ public class LoginOntologyBean implements Serializable {
 	  }
 	
 	enum UpdateAction {
-	    NONE,
+	    NO_UPDATE_REQUIRED,
 	    UPDATE_MODELS_AND_SAVE_DEFINITIONS,
 	    SAVE_DEFINITIONS,
 	    EDIT_MODELS,
@@ -158,6 +159,10 @@ public class LoginOntologyBean implements Serializable {
 	private static String updateActionMessage = "";
 	
 	private boolean debug = false;
+	
+	private final int EXIT_FROM_GUI = 1;
+
+	private boolean exitCalled = false;
 
 	
 	
@@ -272,14 +277,32 @@ public class LoginOntologyBean implements Serializable {
 		RequestContext.getCurrentInstance().reset("form:modelEditDialog");
 	}
 	
-	public void deleteModel() {
+	public String deleteModel() {
 		
 		if (selectedModel.getModelType().equals(ModelType.valueOf("olia"))) {
 			showError("Cannot delete OLIA model - try edit !");
 		}
 		
 		System.out.println("delete model");
+		String deleteMsg = selectedModel.getModelType()+":"+selectedModel.getUsage();
+		boolean found = false;
+		Iterator<ModelInfo> iterator = modelList.iterator();
+		while (iterator.hasNext()) {
+			ModelInfo y = iterator.next();
+			if (y.getModelType() == selectedModel.getModelType() &&
+				y.getUsage() == selectedModel.getUsage()) {
+				iterator.remove(); found = true;
+				break;
+			}
+		}
+		if (found) {
+			showStickyMessage("Model "+deleteMsg+" was sucessfully removed !", FacesMessage.SEVERITY_INFO);
+		} else {
+			showStickyMessage("An error occured while deleting "+deleteMsg+" !", FacesMessage.SEVERITY_ERROR);
+		}
 		setModelsUpdated();
+//		return "login-models?faces-redirect=true";
+		return "";
  	}
 	
 	
@@ -1151,25 +1174,32 @@ public class LoginOntologyBean implements Serializable {
 		
 //		int modelsNeedUpdateAfterEdit = updateRequiredAfterModelEdit();
 //		System.out.println("Exit code "+modelsNeedUpdateAfterEdit);
+		
+		exitCalled=true;
 
+		if (mode == EXIT_FROM_GUI) {
+			loginBean.closeOntologyManager();
+			return "";
+		}
 		
 		UpdateAction action = computeUpdateAction();
 		Utils.debug ("UpdateAction "+action);
+		RequestContext context = RequestContext.getCurrentInstance();
 
 		
 		switch (action) {
 		
-		case NONE:
+		case NO_UPDATE_REQUIRED:
 			loginBean.closeOntologyManager();
 			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
 			//return "login?faces-redirect=true";
 			return "";
 		
 		case EDIT_MODELS:
-			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
-			
-			// TODO add cancel dialog (in order to exit ontology manager)
-			
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);			
+			FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("form:exitDialog");
+			RequestContext.getCurrentInstance().reset("form:yesNoDialog");
+			context.execute("PF('exitDialogW').show();");
 			return "";
 		
 		case SAVE_DEFINITIONS:
@@ -1179,7 +1209,6 @@ public class LoginOntologyBean implements Serializable {
 			return "login?faces-redirect=true";
 			
 		case UPDATE_MODELS_AND_SAVE_DEFINITIONS:
-			RequestContext context = RequestContext.getCurrentInstance();
 			context.execute("PF('confirmDBupdate').show()");
 			return "";
 			
@@ -1195,6 +1224,15 @@ public class LoginOntologyBean implements Serializable {
 	}
 	
 	
+	public void cancelUpdate() {
+		
+		if(exitCalled) {
+			loginBean.closeOntologyManager();
+		}
+		exitCalled=false;
+	}
+	
+	
 	public void saveModelDefinition() {
 		
 		// save edited modelList to ModelDef.json
@@ -1205,12 +1243,49 @@ public class LoginOntologyBean implements Serializable {
 	public void startModelUpdate() {
 		
 		System.out.println("startModelUpdate");
+			
+		UpdateAction action = computeUpdateAction();
+		Utils.debug ("UpdateAction "+action);
+		RequestContext context = RequestContext.getCurrentInstance();
+
+		
+		switch (action) {
+		
+		case NO_UPDATE_REQUIRED:
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
+			break;
+		
+		case EDIT_MODELS:
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);	
+//			FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("form:exitDialog");
+//			RequestContext.getCurrentInstance().reset("form:yesNoDialog");
+//			context.execute("PF('exitDialogW').show();");
+			break;
+		
+		case SAVE_DEFINITIONS:
+			// changes that were made will be saved to ModelDef.json
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_INFO);
+			saveModelDefinition();
+			break;
+			
+		case UPDATE_MODELS_AND_SAVE_DEFINITIONS:
+			context.execute("PF('confirmDBupdate').show()");
+			break;
+			
+		case ERROR:
+			showStickyMessage(updateActionMessage, FacesMessage.SEVERITY_FATAL);
+			break;
+		
+		default:
+			break;
+		}
+		
+		return;
 		
 		// check if update is required
-		if (!checkModelUpdateRequired()) return;
-		
+//		if (!checkModelUpdateRequired()) return;
 		// make backup and update olia models
-		startModelUpdateProcess();
+//		startModelUpdateProcess(); // triggered from dialog
 		
 		// there are 3 locations for olia models
 		// 1. ModelDef.json
@@ -1383,20 +1458,20 @@ public class LoginOntologyBean implements Serializable {
 		for (ModelInfo mi : modelList) {
 			if (!mi.isOnline()) {
 //				notOnline.add(mi.getID()+" : "+mi.getUrl().toString());
-				notOnline.add(mi.getID()+"."+mi.getUsage());
+				notOnline.add(mi.getModelType()+":"+mi.getUsage());
 
 			}
 			if (mi.getDataLinkState() == DataLinkState.OUTDATED) {
 //				outdated.add(mi.getID()+" : "+mi.getUrl().toString());
-				outdated.add(mi.getID()+"."+mi.getUsage());
+				outdated.add(mi.getModelType()+"."+mi.getUsage());
 			}
 		}
 		if (!notOnline.isEmpty()) {
-			String errorMsg ="Editing for some models is required because model URLs seem to be broken : \n";
-			for (String url : notOnline) {
-				errorMsg+="\n"+url;
+			String errorMsg ="Editing of some models is required, because model URLs seem to be broken for : \n";
+			for (String x : notOnline) {
+				errorMsg+="\n"+x+",";
 			}
-			updateActionMessage = errorMsg;
+			updateActionMessage = errorMsg.substring(0, errorMsg.length()-1);
 			return UpdateAction.EDIT_MODELS;
 		}
 		
@@ -1415,7 +1490,7 @@ public class LoginOntologyBean implements Serializable {
 			// error, because of two models with the same id in the modelList
 			if (matchedModelIDs.contains(mi.getID())) {
 				
-				updateActionMessage = "Error : Model list contains two models with ID "+mi.getID();
+				updateActionMessage = "Error : Model list contains two models with same ID "+mi.getID();
 				return UpdateAction.ERROR;
 			}
 			
@@ -1444,7 +1519,7 @@ public class LoginOntologyBean implements Serializable {
 			modifications.contains(EditStatus.NEWER_REVISION_AVAILABLE)) {
 
 			// run model update
-			updateActionMessage = "An model update is required due to several changes !";
+			updateActionMessage = "Updating the model database is required due to changes being made !";
 			return UpdateAction.UPDATE_MODELS_AND_SAVE_DEFINITIONS;
 		}
 		
@@ -1453,13 +1528,13 @@ public class LoginOntologyBean implements Serializable {
 			modifications.contains(EditStatus.NAME_MODIFIED)) {
 			
 			// only save modelList to ModelDef.json
-			updateActionMessage = "Modifications are saved, but an update is not required!";
+			updateActionMessage = "Modifications are saved !";
 			return UpdateAction.SAVE_DEFINITIONS;
 		}
 		
 		// no update required
-		updateActionMessage = "All models are up-2date, no update is required!";
-		return UpdateAction.NONE;
+		updateActionMessage = "All models are up-to-date, no update is required!";
+		return UpdateAction.NO_UPDATE_REQUIRED;
 			
 	}
 	

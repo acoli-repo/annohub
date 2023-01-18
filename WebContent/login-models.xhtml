@@ -64,7 +64,7 @@
 	            	
 	            	<p:menuitem id="checkMI" value="Check Online" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkModelsGui}" icon=" ui-icon-check" update="modelInfo" />
 	           		<p:menuitem value="Add Model" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.addModel}" icon="ui-icon-plusthick" oncomplete="PF('addOrEditModel').show()" />
-	            	<p:menuitem id="updateOlia" value="Update" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.checkUpdateOliaModels}" icon="ui-icon-arrowrefresh-1-e"/>
+	            	<p:menuitem id="updateOlia" value="Update" rendered="#{login.userAccount.accountTypeAsString == 'admin'}" action="#{obean.startModelUpdate}" icon="ui-icon-arrowrefresh-1-e"/>
 	            	<p:menuitem value="Documentation" target="_blank" url="/FID-Documentation.pdf" icon="ui-icon-info"/>
 					
 	            </p:menuButton>
@@ -76,7 +76,7 @@
     	</p:toolbar>
     	
     	
-    	<p:blockUI block="form" trigger="checkMI updateOlia">
+    	<p:blockUI block="form" trigger="checkMI">
     	<h:outputText value="Verifying changes ..."/>
     			<p:graphicImage name="/images/ajax-loader.gif" style="display: block; margin-left: auto;margin-right: auto; width: 100%;"/>
 		</p:blockUI>
@@ -144,7 +144,7 @@
       
     	 <p:contextMenu widgetVar="modelFunctions_wv" for="modelInfo">
     	 <p:menuitem value="Edit" icon="ui-icon-pencil" action="#{obean.editModel}" oncomplete="PF('addOrEditModel').show()"/>
-		 <p:menuitem value="Delete" icon="ui-icon-trash" action="#{obean.deleteModel}">
+		 <p:menuitem value="Delete" icon="ui-icon-trash" action="#{obean.deleteModel}" update="modelInfo">
 		 <p:confirm header="Confirm delete" message="#{obean.deleteMessage}" icon="ui-icon-alert"/>
 		 </p:menuitem>
 	  	 </p:contextMenu>
@@ -250,14 +250,14 @@
 	  </p:confirmDialog>
 	  
 	  
-	<p:dialog header="Models have been edited, confirm update of model database ?" id="a6000a" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="confirmDBupdate" resizeable="false">
+	<p:dialog header="Confirm update of model database ?" id="a6000a" closable="false" modal="true" showEffect="" hideEffect="" widgetVar="confirmDBupdate" resizeable="false">
         <p:panelGrid styleClass="ui-noborder">
         <p:row>
 		<p:column>
-		<p:commandButton value="Yes" action="#{obean.startModelUpdate()}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		<p:commandButton value="Yes" action="#{obean.startModelUpdateProcess}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
 		</p:column>
 		<p:column>
-		<p:commandButton value="No" action="#{obean.exit(1)}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
+		<p:commandButton value="No" action="#{obean.cancelUpdate}" oncomplete="PF('confirmDBupdate').hide()"/>	                              
 		</p:column>
 		</p:row>
 		 </p:panelGrid>
@@ -288,6 +288,13 @@
       </p:progressBar>
       
 	</p:dialog>
+	
+	 <p:confirmDialog id="exitDialog" message="Exit anyway ?"
+		header="Model database not up to date !" severity="alert" widgetVar="exitDialogW" responsive="true">
+		<p:commandButton id="confirmExit" value="Yes" action="#{obean.exit(1)}" update=""
+		oncomplete="PF('exitDialogW').hide()" styleClass="ui-confirmdialog-yes"/>
+		<p:commandButton value="No" onclick="PF('exitDialogW').hide();" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+	  </p:confirmDialog>
 	
 	   
  
