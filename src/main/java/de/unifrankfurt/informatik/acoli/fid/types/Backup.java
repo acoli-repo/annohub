@@ -171,13 +171,16 @@ public class Backup {
 			Utils.debug("Backup delete Error : record for Backup does not exist !");
 			return false;
 		}
-		if (!backupDirectoryExists()) {
-			Utils.debug("Backup delete Error : the backup directory does not exist - please check the file system !");
-			return false;
-		}
+		
+// 		obsolete : physical already done in caller
+//		if (!backupDirectoryExists()) {
+//			Utils.debug("Backup delete Error : the backup directory does not exist - please check the file system !");
+//			return false;
+//		}
 		
 		File jsonFile = new File(backupRootDirectory,"backups.json");
 		List<Backup> backups = new ArrayList<Backup>(readBackups(jsonFile));
+
 	
 		Utils.debug("Delete backup record : "+this.name);
 		Iterator<Backup> iterator = backups.iterator();

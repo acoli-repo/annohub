@@ -67,7 +67,7 @@ public class LoginBackupBean implements Serializable {
 	private int autobackupInterval=0;
 
 	private String progressText = "";
-	private static String backupCompleteMessage = "";
+	private String backupCompleteMessage = "";
 	private static BackupProcess backupProcess = BackupProcess.IDLE;
 	enum BackupProcess {
 	    CREATE,
@@ -226,7 +226,8 @@ public class LoginBackupBean implements Serializable {
 	
 	
 	public void showMessageDialog(String message, Severity severity) {
-	   	 FacesMessage msg = new FacesMessage(severity, "", message);
+		
+	   	 FacesMessage msg = new FacesMessage(severity, "Backup complete", message);
 	     RequestContext.getCurrentInstance().showMessageInDialog(msg);
 	}
 
@@ -358,7 +359,12 @@ public class LoginBackupBean implements Serializable {
 	   			// String error = ExecutionBean.getPublicExecuter().makeBackup(backup);
 	   			
 	   			refreshResourceManager();
-	   			setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");	
+	   			setBackupCompleteMessage("Successfully created backup '"+backup.getName()+"' !");
+	   			try {
+	   				ExecutionBean.setProgressValue(100);
+	   			} catch (Exception e1) {
+	   				e1.printStackTrace();
+	   			}
 	        }
 	    }
 		
@@ -436,6 +442,7 @@ public class LoginBackupBean implements Serializable {
 				
 		String error = ExecutionBean.getPublicExecuter().deletePhysicalBackup(selectedBackup);
 		if (!error.isEmpty()) {
+			Utils.debug(error);
 			showError(error);
 			return "";
 		} else {
@@ -619,7 +626,7 @@ public class LoginBackupBean implements Serializable {
 
 
 	public void setBackupCompleteMessage(String message) {
-		LoginBackupBean.backupCompleteMessage = message;
+		this.backupCompleteMessage = message;
 	}
 
 

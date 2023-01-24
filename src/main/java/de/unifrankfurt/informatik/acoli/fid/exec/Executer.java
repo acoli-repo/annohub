@@ -1637,7 +1637,7 @@ public class Executer {
 		}
 		
 		try {
-			ExecutionBean.setProgressValue(25);
+			ExecutionBean.setProgressValue(20);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -1649,7 +1649,7 @@ public class Executer {
 		ScriptUtils.tarDirectory(sourceDirectory, new File(targetDirectory, sourceDirectory.getName()));
 		
 		try {
-			ExecutionBean.setProgressValue(50);
+			ExecutionBean.setProgressValue(40);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -1659,7 +1659,7 @@ public class Executer {
 		ScriptUtils.tarDirectory(sourceDirectory, new File(targetDirectory, sourceDirectory.getName()));
 		
 		try {
-			ExecutionBean.setProgressValue(75);
+			ExecutionBean.setProgressValue(60);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -1684,7 +1684,7 @@ public class Executer {
 		}
 		
 		try {
-			ExecutionBean.setProgressValue(100);
+			ExecutionBean.setProgressValue(80);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
