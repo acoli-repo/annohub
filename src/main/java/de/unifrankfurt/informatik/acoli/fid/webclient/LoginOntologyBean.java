@@ -592,9 +592,13 @@ public class LoginOntologyBean implements Serializable {
 						fidConfig,
 				modelDefinition);
 		
+		// TODO
+		HashSet<ModelType> updatedModels = new HashSet<ModelType>();
+		updatedModels.add(ModelType.valueOf("EAGLES"));
+	
 		// Start update
-		//String updateError = ontologyManager.updateOliaModels(updatedModels);
-		String updateError="";
+		String updateError = ontologyManager.updateOliaModels(updatedModels);
+		//String updateError="";
 		if (!updateError.isEmpty()) {
 			
 			setUpdateProcess(UpdateProcess.FAILED);

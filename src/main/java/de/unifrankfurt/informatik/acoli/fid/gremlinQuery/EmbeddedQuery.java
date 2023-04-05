@@ -848,7 +848,13 @@ public class EmbeddedQuery {
 				ModelMatch modelMatch = new ModelMatch(ModelType.valueOf(modelType), 0L, 0L, DetectionMethod.AUTO);
 				modelMatch.setConllColumn(col);
 				
-				modelMatch.setTotalTokenCount(colPropAttrValues);
+				// debug
+				try {
+					modelMatch.setTotalTokenCount(colPropAttrValues);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				if(resourceInfo.getFileInfo().isRDFFile()) {
 					modelMatch.setRdfProperty(propOrAttr);
@@ -868,9 +874,15 @@ public class EmbeddedQuery {
 				// Compute coverage with hits per model / number of different values
 				if (showLog) {
 					Utils.debug("hello "+modelType+" "+col);
-					Utils.debug(1.0f * modelCounts.get(modelType) / colPropAttrValues);
-					Utils.debug(modelCounts.get(modelType));
-					Utils.debug(colPropAttrValues);
+					// debug
+					try {
+						Utils.debug(1.0f * modelCounts.get(modelType) / colPropAttrValues);
+						Utils.debug(modelCounts.get(modelType));
+						Utils.debug(colPropAttrValues);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				/*
 				hello MAMBA 1
@@ -878,8 +890,13 @@ public class EmbeddedQuery {
 				3
 				10261
 				*/
-				
-				modelMatch.setCoverage(1.0f * modelCounts.get(modelType) / colPropAttrValues);
+				// debug
+				try {
+					modelMatch.setCoverage(1.0f * modelCounts.get(modelType) / colPropAttrValues);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//modelMatch.setCoverage(1.0f * modelCounts.get(modelType) / columnHitCount); // old
 				
 				// Set xml attributes

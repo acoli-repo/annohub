@@ -110,6 +110,13 @@ public class RDFSerializer {
 			ModelDefinition modelDefinition
 			) {
 		
+//		System.out.println("DEBUG: serializeResourceInfo2RDFModel");
+//		System.out.println("resourceInfoList "+resourceInfoList.size());
+//		System.out.println("BllTools "+bllTools == null);
+//		System.out.println("publicVersion "+publicVersion);
+//		System.out.println("modelDefinition "+modelDefinition == null);
+//		System.out.println("DEBUG: ");
+		
 		ClassMatrixParser bllMatrixParser;
 		HashMap<String, String> bllLanguageMap = null;
 		HashMap<String, HashSet<String>> bllModelMap = null;
@@ -316,7 +323,17 @@ public class RDFSerializer {
 		int i = 0;
 		boolean found;
 		boolean isXML; // fixes missing XML state
+		int resourceCounter=1;
 		for (ResourceInfo rs : resourceInfoList) {
+			
+			System.out.println("resource "+(resourceCounter++)+"/"+resourceInfoList.size());
+//			System.out.println("DEBUG resource is null "+rs == null);
+			if (rs != null) {
+				System.out.println(rs.getDataURL());
+			} else {
+				System.out.println("Error resource has no data URL -> skipping !");
+				continue;
+			}
 			
 			if (rs.getFileInfo().getProcessState() != ProcessState.ACCEPTED) continue;
 			
@@ -335,8 +352,12 @@ public class RDFSerializer {
 			distroURL = datasetURL+"/distribution/";
 			analysisURL = datasetURL+"/file/"+sha256(rs.getFileInfo().getRelFilePath())+"/analysis";
 			
-		
+//			System.out.println("DEBUG trace #1");
+
 			if (!doneDatasets.keySet().contains(datasetURL)) {
+				
+//				System.out.println("DEBUG trace #2");
+
 			
 				// Create main dataset
 				mainDataset = model.createResource(datasetURL);
@@ -351,7 +372,8 @@ public class RDFSerializer {
 				
 				// Where does the metadata come from ?
 				if (rs.getResourceMetadata().getMetadataSource() != MetadataSource.NONE) {
-					
+//					System.out.println("DEBUG trace #3");
+
 					// add comment for metadate source
 					mainDataset.addProperty(comment,"Metadata generated from "+rs.getResourceMetadata().getMetadataSource());
 					
@@ -373,7 +395,8 @@ public class RDFSerializer {
 				if (!Utils.filterNa(rs.getResourceMetadata().getTitle()).isEmpty()) {
 					mainDataset.addProperty(dcTitle, rs.getResourceMetadata().getTitle());
 				}
-				
+//				System.out.println("DEBUG trace #4");
+
 				// UB title
 				if (!publicVersion) {
 				if (!rs.getResourceMetadata().getUbTitle().isEmpty()) {
@@ -385,40 +408,57 @@ public class RDFSerializer {
 					}
 				}
 				}
+//				System.out.println("DEBUG trace #5");
+
 				
 				if (!Utils.filterNa(rs.getResourceMetadata().getLicense()).isEmpty()) {
 					mainDataset.addProperty(dcLicense, rs.getResourceMetadata().getLicense());
 				}
+//				System.out.println("DEBUG trace #6");
+
 				if (!Utils.filterNa(rs.getResourceMetadata().getRights()).isEmpty()) {
 					mainDataset.addProperty(dcRights, rs.getResourceMetadata().getRights());
 				}
+//				System.out.println("DEBUG trace #7");
+
 				if (!Utils.filterNa(rs.getResourceMetadata().getDctIdentifier()).isEmpty()) {
 					mainDataset.addProperty(dctIdentifier, rs.getResourceMetadata().getDctIdentifier());
 				}
+//				System.out.println("DEBUG trace #8");
+
 				if (!Utils.filterNa(rs.getResourceMetadata().getDctSource()).isEmpty()) {
 					mainDataset.addProperty(dctSource, rs.getResourceMetadata().getDctSource());
 				}
+//				System.out.println("DEBUG trace #9");
+
 				if (!rs.getResourceMetadata().getCreatorList().isEmpty()) {
 					for (String c : rs.getResourceMetadata().getCreatorList()) {
 						if (!c.trim().isEmpty()) mainDataset.addProperty(dcCreator, c.trim());
 					}
 				}
+//				System.out.println("DEBUG trace #10");
+
 				if (!rs.getResourceMetadata().getContributorList().isEmpty()) {
 					for (String c : rs.getResourceMetadata().getContributorList()) {
 						if (!c.trim().isEmpty()) mainDataset.addProperty(dcContributor, c.trim());
 					}
 				}
+//				System.out.println("DEBUG trace #11");
+
 				if (!rs.getResourceMetadata().getPublisherList().isEmpty()) {
 					for (String c : rs.getResourceMetadata().getPublisherList()) {
 						if (!c.trim().isEmpty()) mainDataset.addProperty(dcPublisher, c.trim());
 					}
 				}
-				
+//				System.out.println("DEBUG trace #12");
+
 				if (rs.getFileInfo().getResourceType() != null) {
 					if (resourceTypeMap.containsKey(rs.getFileInfo().getResourceType())) {
 						mainDataset.addProperty(dctType, resourceTypeMap.get(rs.getFileInfo().getResourceType()));
 					}
 				}
+//				System.out.println("DEBUG trace #13");
+
 				for (String subject : rs.getResourceMetadata().getKeywords().split(",")) {
 					if (!subject.isEmpty()) mainDataset.addProperty(dcSubject, subject);
 				}
@@ -429,7 +469,8 @@ public class RDFSerializer {
 				if (!datasetLanguages.containsKey(datasetURL)) {
 					datasetLanguages.put(datasetURL,new HashSet<String>());
 				}
-				
+//				System.out.println("DEBUG trace #14");
+
 				// optional
 				/*if (!rs.getFileInfo().getSelectedLanguages().isEmpty() &&
 					!datasetLanguages.containsKey(datasetURL)) {
@@ -444,7 +485,9 @@ public class RDFSerializer {
 					}
 				}*/
 				
+//				System.out.println("DEBUG trace #15");
 				if (!Utils.filterNa(rs.getResourceMetadata().getEmailContact()).isEmpty()) {
+					
 					Resource contactPoint = model.createResource(datasetURL+"/"+"contactPoint");
 					mainDataset.addProperty(dcatContactPoint, contactPoint);
 					contactPoint.addProperty(a, vcardIndividual);
@@ -453,6 +496,7 @@ public class RDFSerializer {
 					//contactPoint.addProperty(mshareEmail, rs.getLinghubAttributes().getEmailContact());
 				}
 				
+//				System.out.println("DEBUG trace #16");
 				if (!rs.getHttpContentType().isEmpty()) {
 					mainDataset.addProperty(dctFileFormat, rs.getHttpContentType());
 				}
@@ -460,6 +504,7 @@ public class RDFSerializer {
 			
 			} else {
 				mainDataset = doneDatasets.get(datasetURL).get(0);
+//				System.out.println("DEBUG trace #17");
 			}
 			
 			// Check if distribution is new
@@ -471,6 +516,8 @@ public class RDFSerializer {
 					found = true;break;
 				}
 			}
+//			System.out.println("DEBUG trace #18");
+
 			if (!found) {
 				
 				// Create a dcat distribution and connect it to the main dataset
@@ -489,7 +536,8 @@ public class RDFSerializer {
 				resources.add(linghubDistro);
 				doneDatasets.put(datasetURL,resources);
 			}
-			
+//			System.out.println("DEBUG trace #19");
+
 			// For each file included in the distribution (e.g. file of a zip-archive) : 
 			// Create a separate dataset which is then assigned to the corresponding linghub dataset via
 			// the dct:hasPart property
@@ -512,9 +560,12 @@ public class RDFSerializer {
 				/******************************
 				 * Add all results to dataset *
 				 ******************************/
-				
+//				System.out.println("DEBUG trace #20");
+
 				langId = 1;
 				for (LanguageMatch lm : rs.getFileInfo().getSelectedLanguages()) {
+					
+//					System.out.println("DEBUG trace language #21");
 					
 					// add dct:language to main dataset
 					if (!datasetLanguages.get(datasetURL).contains(lm.getLanguageISO639Identifier())) {
@@ -524,7 +575,8 @@ public class RDFSerializer {
 						datasetLanguages.put(datasetURL, languages);
 					}
 					
-				
+//					System.out.println("DEBUG trace language #22");
+
 					// create language analysis
 					Resource annohubLanguage = model.createResource(analysisURL+"/"+(langId++)+"/"+lm.getLanguageISO639Identifier());
 					
@@ -536,6 +588,8 @@ public class RDFSerializer {
 					
 					if (bllLanguageMap != null && bllLanguageMap.containsKey(lm.getLanguageISO639Identifier())) {
 						
+//						System.out.println("DEBUG trace language #24");
+
 						// add BLL concept
 						annohubLanguage.addProperty(hasBllConcept, model.createResource(bllLanguageMap.get(lm.getLanguageISO639Identifier())));
 						
@@ -556,10 +610,12 @@ public class RDFSerializer {
 							langSequence.addProperty(bllHierarchyItem, model.createResource(languageClassHierarchy.get(k)+"/"+k));
 						}*/
 					}
-					
+//					System.out.println("DEBUG trace language #25");
+
 					switch (rs.getFileInfo().getProcessingFormat()) {
 					
 						case CONLL:
+							
 							// fixes missing XML state
 							if (!lm.getXmlAttribute().trim().isEmpty()) {
 								annohubLanguage.addProperty(xmlAttribute, model.createResource(lm.getXmlAttribute()));
@@ -585,20 +641,37 @@ public class RDFSerializer {
 						default:
 							break;
 					}
+//					System.out.println("DEBUG trace language #26");
 					
+//					System.out.println("ERRORLOG start");
+//					System.out.println("lm.getDetectionSource() : "+lm.getDetectionSource());
+//					System.out.println("variable model : "+model == null);
+//					System.out.println("variable wasGeneratedBy : "+wasGeneratedBy);
+//					System.out.println("variable label : "+label);
+//					System.out.println("lm.getLanguageISO639Identifier() :"+lm.getLanguageISO639Identifier());
+//					System.out.println("ParserISONames.getIsoCodes2Names().get(lm.getLanguageISO639Identifier()) : "+ParserISONames.getIsoCodes2Names().get(lm.getLanguageISO639Identifier()));
+
 					if (lm.getDetectionSource() == DetectionSource.LANGPROFILE)
 						annohubLanguage.addProperty(wasGeneratedBy, model.createResource("https://github.com/optimaize/language-detector"));
-
+//					System.out.println("trace 1");
 					// add label with language name @en
-					annohubLanguage.addProperty(label, ParserISONames.getIsoCodes2Names().get(lm.getLanguageISO639Identifier()),"en");
-
+					if (ParserISONames.getIsoCodes2Names().get(lm.getLanguageISO639Identifier()) != null) {
+						annohubLanguage.addProperty(label, ParserISONames.getIsoCodes2Names().get(lm.getLanguageISO639Identifier()),"en");
+					}
+//					System.out.println("trace 2");
 					// add language to dataset
 					dataset.addProperty(analysis, annohubLanguage);
+//					System.out.println("trace 3");
+//					System.out.println("ERRORLOG end");
 				}
-				
+//				System.out.println("DEBUG trace #28");
+
 				
 				modelId = 0;
 				for (ModelMatch mm : rs.getFileInfo().getSelectedModels()) {
+					
+//					System.out.println("DEBUG trace model #29");
+
 					
 					if (mm.getModelType().equals(ModelType.valueOf("UNKNOWN"))) continue;
 					
@@ -613,7 +686,8 @@ public class RDFSerializer {
 					annotationScheme.addProperty(exclusiveHitCount, Long.toString(mm.getExclusiveHitCountTotal()));
 					annotationScheme.addProperty(method, mm.getDetectionSource().name());
 					
-					
+//					System.out.println("DEBUG trace model #30");
+
 					switch (rs.getFileInfo().getProcessingFormat()) {
 					
 					case CONLL: // (real conll | xml->conll | rdf->conll) 
@@ -661,6 +735,8 @@ public class RDFSerializer {
 					default:
 						break;
 				}
+//					System.out.println("DEBUG trace model #31");
+
 					
 				// Create reference to definition of annotation model
 				if (modelDefinition.getModelDefinitions().containsKey(mm.getModelType())) {
@@ -672,10 +748,14 @@ public class RDFSerializer {
 						}
 					}
 				}
-				
+//				System.out.println("DEBUG trace #32");
+
 				resultId = 1;
 				if (! rs.getFileInfo().getFileResults().containsKey(mm)) continue; // catch bug
 				for (FileResult r : rs.getFileInfo().getFileResults().get(mm)) {
+					
+//					System.out.println("DEBUG trace file #33");
+
 					
 					if (r.getFoundTagOrClass().equals(AnnotationUtil.unmatchedAnnotations)) {
 						annotationScheme.addProperty(unmatchedCount, Integer.toString(r.getMatchingTagOrClass().split(",").length));
@@ -784,6 +864,9 @@ public class RDFSerializer {
 						dataset.addProperty(dctFileFormat, resourceFormatMap.get(rf));
 					}
 		 		}
+		 		
+//				System.out.println("DEBUG trace #34");
+
 
 				/*if (!isXML) { // replaced by rf = IndexUtils.determineFileFormat(rs); (see above)
 					// also not correct for udcatalan.rdf -> CONLL (because its CONLL-RDF)
@@ -801,6 +884,8 @@ public class RDFSerializer {
 			}
 			
 		}
+		
+//		System.out.println("DEBUG trace file #35");
 		
 		return model;
 	}

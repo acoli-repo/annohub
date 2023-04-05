@@ -104,6 +104,9 @@ public class LanguageMatch implements Serializable {
 	 */
 	public void setLanguageISO639IdentifierAndLexvoUrl(URL lexvoUrl) throws InvalidLanguageException {
 		
+		if (!TikaTools.isLexvoUrl(lexvoUrl.toString())) {
+			throw new InvalidLanguageException("Error : invalid lexvo URL \n"+lexvoUrl.toString());
+		}
 		this.lexvoUrl = lexvoUrl;
 		this.languageISO639Identifier = TikaTools.getISO639_3CodeFromLexvoUrl(lexvoUrl);
 		try {
