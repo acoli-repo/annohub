@@ -240,7 +240,9 @@
 <groupId>org.apache.tika</groupId>
 <artifactId>tika-core</artifactId>
 <!-- <version>1.14</version> -->
-<version>1.28</version>
+<version>1.28.3</version>
+<!-- version>1.28</version-->
+<!-- 1.28.3 untested -->
 </dependency>
 
 <dependency> 
@@ -425,8 +427,9 @@ updated jackson from above
 <dependency>
     <groupId>edu.stanford.nlp</groupId>
     <artifactId>stanford-corenlp</artifactId>
-    <version>3.6.0</version>
-<!--  <version>4.4.0</version> -->
+    <!-- version>3.6.0</version-->
+    <version>4.4.0</version>
+    <!-- 4.4.0 untested -->
 </dependency>
 
 
@@ -435,8 +438,8 @@ updated jackson from above
     <groupId>commons-fileupload</groupId>
     <artifactId>commons-fileupload</artifactId>
 <!--     <version>1.3.3</version> -->
-    <version>1.3.3</version>
-
+    <version>1.5</version>
+    <!-- 1.5 untested -->
 </dependency>
 
 
@@ -459,7 +462,9 @@ updated jackson from above
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.2.3.jre7</version>
+    <!-- version>42.2.3.jre7</version-->
+    <version>42.6.0</version>
+    <!-- 42.6.0 untested -->
 </dependency>
 
 
