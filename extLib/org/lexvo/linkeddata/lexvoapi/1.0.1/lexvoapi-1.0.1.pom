@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.lexvo.linkeddata</groupId>
   <artifactId>lexvoapi</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>LexvoApi</name>
-  <url>http://unkonwn.org</url>
+  <url>http://unknown.org</url>
   <description>
   Lexvo functions
   </description>

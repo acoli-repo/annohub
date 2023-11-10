@@ -30,9 +30,7 @@ import de.unifrankfurt.informatik.acoli.fid.parser.ParserLexvoMap;
 import de.unifrankfurt.informatik.acoli.fid.parser.ParserSILMap;
 import de.unifrankfurt.informatik.acoli.fid.util.IndexUtils;
 import de.unifrankfurt.informatik.acoli.fid.util.Utils;
-
-
-
+import org.lexvo.linkeddata.Identifiers;
 
 
 
