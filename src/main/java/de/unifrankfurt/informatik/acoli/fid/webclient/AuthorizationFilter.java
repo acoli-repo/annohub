@@ -55,7 +55,7 @@ public class AuthorizationFilter implements Filter {
 				return;
 			}
 			
-			if (reqURI.contains("/annohub/javax.faces.resource")) {
+			if (reqURI.contains("/beta/javax.faces.resource")) {
 				chain.doFilter(request, response);
 				return;
 			}
